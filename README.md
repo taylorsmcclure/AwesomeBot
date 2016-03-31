@@ -84,6 +84,7 @@ The file you attach should have the following basic structure:
     case: boolean for case sensitivity for a keyword, 
     interval: timer interval in seconds,
     usage: (optional) parameters for a command, e.g. "<param1> <param2>",
+    extended: (optional) detailed help for command extensions
     channels: (optional) array of applicable channel names,
     process: code to execute, as a string
 }
@@ -93,8 +94,10 @@ The file you attach should have the following basic structure:
 
  - `unirest`: lightweight HTTP request library
  - `imgur`: preauthenticated `imgur-node-api` module
- - `image`: Google Image Search, usage `image(query, "&start=num", callback(url))`
+ - `image`: Google Image Search, usage `image(query, num, svrid, callback(url))`
  - `message`: full content of the message
+ - `svrid`: the Discord ID of the server you're in
+ - `selected`: *for keyword extensions* the index of the match in the `key` array
  - `author`: tag for the sender
  - `setTimeout`, `JSON`, `Math`, `isNaN`, `Date`, `Array`, `Number`
  - `send`: write final output to this
@@ -106,13 +109,15 @@ Outside of this sandbox, the extension cannot use other Node modules or methods.
 Changelog
 ---------
 
-Latest, version **3.3.3**:
+Latest, version **3.3.4**:
 
- - Extended help command
- - Auto-add bot admins
- - Controls on AwesomePoints
- - New lottery game
- - Consolidated PM commands  
+ - Extended help for extensions  
+ - Matched index available to keyword extensions  
+ - Made image search respect NSFW filter setting  
+ - New tag command to set responses  
+ - Added timer option to quiet command  
+ - Ability to set custom roles/colors  
+ - Many bug fixes  
  
 Open an issue to report a bug or suggest a new feature!
 

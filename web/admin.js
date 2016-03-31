@@ -204,12 +204,16 @@ function switchExtensions() {
         } else {
             info += "All";
         }
-        info += "</td><td><span class=\"removetool\" onclick=\"javascript:config('extensions', this.parentNode.parentNode.id.substring(16), switchExtensions);\"><i>(remove)</i></span></td></tr>";
+        info += "</td><td><span class=\"removetool\" onclick=\"javascript:config('extensions', this.parentNode.parentNode.id.substring(16), switchExtensions);\"><i>(remove)</i></span>&nbsp;<span class=\"removetool\" onclick=\"javascript:showExtension(" + i + ");\"><i>(view code)</i></span></td></tr>";
         document.getElementById("extensionstablebody").innerHTML += info;
     }
     if(botData.configs.extensions.length==0) {
         document.getElementById("extensionstable").style.display = "none";
     }
+}
+
+function showExtension(i) {
+    window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(botData.configs.extensions[i][3])));
 }
 
 function newExtension(uploads) {
