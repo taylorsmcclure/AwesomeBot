@@ -45,7 +45,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.4";
+var version = "3.3.4p1";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -4672,7 +4672,7 @@ function getCommandHelp(svr, cmd) {
         }
     }
     for(var ext in configs.servers[svr.id].extensions) {
-        if(configs.servers[svr.id].extensions.type.toLowerCase()=="command" && configs.servers[svr.id].extensions.extended) {
+        if(configs.servers[svr.id].extensions[ext].type.toLowerCase()=="command" && configs.servers[svr.id].extensions[ext].extended) {
             info += (filled ? "\n\n" : "") + "**Help for public extension command `" + ext.key + "`:**\n" + configs.servers[svr.id].extensions[ext].extended;
             filled = true; 
         }

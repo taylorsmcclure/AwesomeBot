@@ -118,6 +118,8 @@ Latest, version **3.3.4**:
  - Added timer option to quiet command  
  - Ability to set custom roles/colors  
  - Many bug fixes  
+
+Patch #1: Fixed extended help crash  
  
 Open an issue to report a bug or suggest a new feature!
 
