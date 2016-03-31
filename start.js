@@ -45,7 +45,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.4p1";
+var version = "3.3.4p2";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -138,10 +138,10 @@ var commands = {
                 var value = suffix.substring(suffix.indexOf("|")+1);
                 if(!key || !value) {
                     logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, msg.author.username + " did not provide proper key and value for tag command");
-                    bot.sendMessage(msg.channel, msg.author + "`@" + bot.user.username + " tag <key>|<value>` is the syntax I need");
+                    bot.sendMessage(msg.channel, msg.author + " `@" + bot.user.username + " tag <key>|<value>` is the syntax I need");
                 } else if((configs.servers[msg.channel.server.id].tags[key] || ["lenny", "shrug"].indexOf(key)>-1) && value!=".") {
                     logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, msg.author.username + " tried to set tag key that already exists");
-                    bot.sendMessage(msg.channel, msg.author + "I already have a tag set for that. Try `@" + bot.user.username + " tag " + key + "|.` to remove it");
+                    bot.sendMessage(msg.channel, msg.author + " I already have a tag set for that. Try `@" + bot.user.username + " tag " + key + "|.` to remove it");
                 } else if(configs.servers[msg.channel.server.id].tags[key] && value==".") {
                     delete configs.servers[msg.channel.server.id].tags[key];
                     logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Deleted tag '" + key + "'");

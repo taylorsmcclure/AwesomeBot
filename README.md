@@ -120,6 +120,7 @@ Latest, version **3.3.4**:
  - Many bug fixes  
 
 Patch #1: Fixed extended help crash  
+Patch #2: Fixed display bug in tag command  
  
 Open an issue to report a bug or suggest a new feature!
 
