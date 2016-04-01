@@ -44,7 +44,8 @@
     "cross-spawn": "*",
     "write-file-atomic": "*",
     "money": "*",
-    "forbes-quote": "*"
+    "forbes-quote": "*",
+    "searchitunes": "*"
   },
   "scripts": {
     "start": "node start.js"

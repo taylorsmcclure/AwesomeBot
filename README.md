@@ -109,18 +109,12 @@ Outside of this sandbox, the extension cannot use other Node modules or methods.
 Changelog
 ---------
 
-Latest, version **3.3.4**:
+Latest, version **3.3.5**:
 
- - Extended help for extensions  
- - Matched index available to keyword extensions  
- - Made image search respect NSFW filter setting  
- - New tag command to set responses  
- - Added timer option to quiet command  
- - Ability to set custom roles/colors  
- - Many bug fixes  
-
-Patch #1: Fixed extended help crash  
-Patch #2: Fixed display bug in tag command  
+ - Me command for status
+ - Richest members in stats section  
+ - App Store links in addition to Google Play  
+ - Fixed quiet bug among others  
  
 Open an issue to report a bug or suggest a new feature!
 

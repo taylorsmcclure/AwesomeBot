@@ -37,6 +37,7 @@ try {
     const readline = require("readline");
     const searcher = require("google-search-scraper");
     const urlInfo = require("url-info-scraper");
+    const itunes = require("searchitunes");
 } catch(startError) {
     console.log("Failed to start: ");
     console.log(startError);
@@ -45,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.4p2";
+var version = "3.3.5";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -280,6 +281,18 @@ var commands = {
             var e = new Date(a.getFullYear()+1, 0, 1, 0, 0, 0, 0);
             var info = secondsToString((e-a)/1000) + "until " + (a.getFullYear()+1) + "!";
             bot.sendMessage(msg.channel, info);
+        }
+    },
+    // Emulates /me command
+    "me": {
+        usage: "<something>",
+        extended: "This commands emulates the /me command in other bots. For example, `me is going to bed` would produce `@you is going to bed`.",
+        process: function(bot, msg, suffix) {
+            if(!suffix) {
+                bot.sendMessage(msg.channel, msg.author + " is doing nothing");
+            } else {
+                bot.sendMessage(msg.channel, msg.author + " " + suffix);
+            }
         }
     },
     // Says something
@@ -546,10 +559,11 @@ var commands = {
         process: function(bot, msg, suffix) {
             var timestr = "";
             if(configs.servers[msg.channel.server.id].admins.value.indexOf(msg.author.id)>-1 && suffix.toLowerCase()=="all") {
-                for(var i=0; i<msg.channel.server.channels; i++) {
-                    stats[msg.channel.server.id].botOn[msg.channel.server.channels[i].id] = false;
+                timestr = " in all channels";
+                for(var chid in stats[msg.channel.server.id].botOn) {
+                    stats[msg.channel.server.id].botOn[chid] = false;
                 }
-            } else if(configs.servers[msg.channel.server.id].admins.value.indexOf(msg.author.id)>-1 && !isNaN(suffix)) {
+            } else if(configs.servers[msg.channel.server.id].admins.value.indexOf(msg.author.id)>-1 && suffix.length>0 && !isNaN(suffix)) {
                 if(suffix<1 || suffix>3600) {
                     logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "Invalid quiet time provided by " + msg.author.username);
                     bot.sendMessage(msg.channel, msg.author + " I only accept values between 1 and 3600, inclusive.");
@@ -894,7 +908,6 @@ var commands = {
                             });
                         } else {
                             bot.createRole(msg.channel.server, {color: parseInt("0x" + colornm, 16), hoist: false, name: rolenm}, function(err, role) {
-                                console.log(err);
                                 if(!err) {
                                     bot.addMemberToRole(msg.author, role, function(error) {
                                         logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Colored " + msg.author.username + " to #" + colornm);
@@ -2465,6 +2478,14 @@ bot.on("message", function (msg, user) {
             }
             stats[msg.channel.server.id].members[msg.author.id].messages++;
             
+            // If start statement is issued, say hello and begin listening
+            if(msg.content.indexOf(bot.user.mention())==0 && msg.content.indexOf("start") > -1 && configs.servers[msg.channel.server.id].admins.value.indexOf(msg.author.id)>-1 && !stats[msg.channel.server.id].botOn[msg.channel.id]) {
+                logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Bot has been started by an admin");
+                stats[msg.channel.server.id].botOn[msg.channel.id] = true;
+                bot.sendMessage(msg.channel, "Hello!");
+                return;
+            }
+            
             // Stop responding if the author is a blocked user or bot isn't on
             if(configs.servers[msg.channel.server.id].blocked.value.indexOf(msg.author.id)>-1 || !stats[msg.channel.server.id].botOn[msg.channel.id]) {
                 return;
@@ -2578,14 +2599,6 @@ bot.on("message", function (msg, user) {
                         }
                     }
                 });
-            }
-            
-            // If start statement is issued, say hello and begin listening
-            if(msg.content.indexOf(bot.user.mention()) == 0 && msg.content.indexOf("start") > -1 && configs.servers[msg.channel.server.id].admins.value.indexOf(msg.author.id)>-1 && !stats[msg.channel.server.id].botOn[msg.channel.id]) {
-                logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Bot has been started by an admin");
-                stats[msg.channel.server.id].botOn[msg.channel.id] = true;
-                bot.sendMessage(msg.channel, "Hello!");
-                return;
             }
             
             // Check for spam
@@ -2732,14 +2745,18 @@ bot.on("message", function (msg, user) {
                 }
             }
 
-            // Google Play Store links bot
-            if(msg.author.id!=bot.user.id && msg.content.toLowerCase().indexOf("linkme ")>-1 && configs.servers[msg.channel.server.id].linkme.value && stats[msg.channel.server.id].botOn[msg.channel.id]) {
+            // Google Play Store/Apple App Store links bot
+            if(msg.author.id!=bot.user.id && (msg.content.toLowerCase().indexOf("linkme ")>-1 || msg.content.toLowerCase().indexOf("appstore ")>-1) && configs.servers[msg.channel.server.id].linkme.value && stats[msg.channel.server.id].botOn[msg.channel.id]) {
                 if(!stats[msg.channel.server.id].commands.linkme) {
                     stats[msg.channel.server.id].commands.linkme = 0;
                 }
                 stats[msg.channel.server.id].commands.linkme++;
                 
-                var app = msg.content.substring(msg.content.indexOf("linkme"));
+                if(msg.content.toLowerCase().indexOf("linkme ")>-1) {
+                    var app = msg.content.substring(msg.content.indexOf("linkme"));
+                } else if(msg.content.toLowerCase().indexOf("appstore ")>-1) {
+                    var app = msg.content.substring(msg.content.indexOf("appstore"));
+                }
                 app = app.substring(app.indexOf(" ")+1);
                 var apps = [];
                 
@@ -2763,34 +2780,55 @@ bot.on("message", function (msg, user) {
                 }
                 
                 // Fetch app links
-                logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, msg.author.username + " requested the following app(s): " + apps);
                 bot.startTyping(msg.channel);
-                for(var i=0; i<apps.length; i++) {
-                    var basePath = "https://play.google.com/store/search?&c=apps&q=" + apps[i] + "&hl=en";
-                    var data;
-                    // Scrapes Play Store search results webpage for information
-                    var u;
-                    unirest.get(basePath)
-                    .end(function(response) {
-                        data = scrapeSearch(response.raw_body);
-                            var send = "";
-                            if(data.items[0] != null) {
-                                send = data.items[0].name + " by " + data.items[0].company + ", ";
-                                if(data.items[0].price.indexOf("$")>-1) {
-                                    send += data.items[0].price.substring(0, data.items[0].price.lastIndexOf("$"));
+                if(msg.content.toLowerCase().indexOf("linkme ")>-1) {
+                    logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, msg.author.username + " requested the following Play Store app(s): " + apps);
+                    for(var i=0; i<apps.length; i++) {
+                        var basePath = "https://play.google.com/store/search?&c=apps&q=" + apps[i] + "&hl=en";
+                        var data;
+                        // Scrapes Play Store search results webpage for information
+                        var u;
+                        unirest.get(basePath)
+                        .end(function(response) {
+                            data = scrapeSearch(response.raw_body);
+                                var send = "";
+                                if(data.items[0]) {
+                                    send = data.items[0].name + " by " + data.items[0].company + ", ";
+                                    if(data.items[0].price.indexOf("$")>-1) {
+                                        send += data.items[0].price.substring(0, data.items[0].price.lastIndexOf("$"));
+                                    } else {
+                                        send += "free"
+                                    }
+                                    send += " and rated " + data.items[0].rating + " stars: " + data.items[0].url + "\n";
                                 } else {
-                                    send += "free"
+                                    logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "App " + apps[i] + " not found to link for " + msg.author.username);
+                                    send = msg.author + " Sorry, no such app exists.\n";
                                 }
-                                send += " and rated " + data.items[0].rating + " stars: " + data.items[0].url + "\n";
+                                bot.sendMessage(msg.channel, send);
+                        });
+                    }
+                } else if(msg.content.toLowerCase().indexOf("appstore ")>-1) {
+                    logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, msg.author.username + " requested the following App Store app(s): " + apps);
+                    for(var i=0; i<apps.length; i++) {
+                        itunes({
+                            entity: "software",
+                            country: "US",
+                            term: apps[i],
+                            limit: 1
+                        }, function (err, data) {
+                            var send = "";
+                            if(!err) {
+                                send = data.results[0].trackCensoredName + " by " + data.results[0].artistName + ", " + data.results[0].formattedPrice + " and rated " + data.results[0].averageUserRating + " stars: " + data.results[0].trackViewUrl + "\n";
                             } else {
                                 logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "App " + apps[i] + " not found to link for " + msg.author.username);
                                 send = msg.author + " Sorry, no such app exists.\n";
                             }
-                            bot.stopTyping(msg.channel);
                             bot.sendMessage(msg.channel, send);
-                    });
+                        });
+                    }
                 }
                 
+                bot.stopTyping(msg.channel);
                 return;
             }
         }
@@ -3861,6 +3899,10 @@ var defaultConfigFile = {
         value: true,
         option: "<enabled? y/n>"
     },
+    me: {
+        value: true,
+        option: "<allow? y/n>"
+    },
     convert: {
         value: true,
         option: "<allow? y/n>"
@@ -4143,7 +4185,7 @@ function kickUser(msg, desc1, desc2) {
 
 // Searches Google Images for keyword(s)
 function giSearch(query, num, svrid, callback) {
-	var url = "https://www.googleapis.com/customsearch/v1?key=" + AuthDetails.google_api_key + "&cx=" + AuthDetails.custom_search_id + (configs.servers[svrid].nsfwfilter.value ? "&safe=high&q=" : "") + (query.replace(/\s/g, '+').replace(/&/g, '')) + "&alt=json&searchType=image" + "&start=" + num;
+	var url = "https://www.googleapis.com/customsearch/v1?key=" + AuthDetails.google_api_key + "&cx=" + AuthDetails.custom_search_id + (configs.servers[svrid].nsfwfilter.value ? "&safe=high&q=" : "") + (query.replace(/\s/g, '+').replace(/&/g, '')) + "&alt=json&searchType=image" + (num ? ("&start=" + num) : "");
     unirest.get(url)
     .header("Accept", "application/json")
     .end(function(response) {
@@ -4255,10 +4297,15 @@ function ytSearch(query, callback) {
 // Generate printable stats for a server
 function getStats(svr) {
     var sortedMembers = [];
+    var sortedRichest = [];
     for(var member in stats[svr.id].members) {
         sortedMembers.push([member, stats[svr.id].members[member].messages]);
+        sortedRichest.push([member, profileData[member] ? profileData[member].points : 0]);
     }
     sortedMembers.sort(function(a, b) {
+        return a[1] - b[1];
+    });
+    sortedRichest.sort(function(a, b) {
         return a[1] - b[1];
     });
     var sortedGames = [];
@@ -4280,6 +4327,7 @@ function getStats(svr) {
     
     var info = {
         "Most active members": [],
+        "Richest members": [],
         "Most played games": [],
         "Command usage": [],
         "Data since": prettyDate(new Date(stats.timestamp))
@@ -4291,6 +4339,15 @@ function getStats(svr) {
         var usr = svr.members.get("id", sortedMembers[i][0]);
         if(usr && sortedMembers[i][1]>0) {
             info["Most active members"].push(usr.username.replaceAll("\"", "'") + ": " + sortedMembers[i][1] + " message" + (sortedMembers[i][1]==1 ? "" : "s"));
+        }
+    }
+    for(var i=sortedRichest.length-1; i>sortedRichest.length-6; i--) {
+        if(i<0) {
+            break;
+        }
+        var usr = svr.members.get("id", sortedRichest[i][0]);
+        if(usr && sortedRichest[i][1]>0) {
+            info["Richest members"].push(usr.username.replaceAll("\"", "'") + ": " + sortedRichest[i][1] + " point" + (sortedRichest[i][1]==1 ? "" : "s"));
         }
     }
     for(var i=sortedGames.length-1; i>sortedGames.length-6; i--) {
