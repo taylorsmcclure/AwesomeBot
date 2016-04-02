@@ -115,6 +115,8 @@ Latest, version **3.3.5**:
  - Richest members in stats section  
  - App Store links in addition to Google Play  
  - Fixed quiet bug among others  
+
+Patch #1: Fixed poll creation bug  
  
 Open an issue to report a bug or suggest a new feature!
 

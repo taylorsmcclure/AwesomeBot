@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.5";
+var version = "3.3.5p1";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1870,34 +1870,6 @@ var pmcommands = {
                         }
                     }
                 }
-            // Gets poll title from user and asks for poll options
-            } else if(polls[msg.author.id] && polls[msg.author.id].title=="") {
-                polls[msg.author.id].title = msg.content;
-                bot.sendMessage(msg.channel, "Enter poll options, separated by commas, or `.` for yes/no:");
-            // Gets poll options from user and starts voting
-            } else if(polls[msg.author.id] && polls[msg.author.id].options.length==0) {
-                if(msg.content==".") {
-                    polls[msg.author.id].options = ["No", "Yes"];
-                } else {
-                    var start = 0;
-                    for(var i=0; i<msg.content.length; i++) {
-                        if(msg.content.charAt(i)==',') {
-                            polls[msg.author.id].options.push(msg.content.substring(start, i));
-                            start = i+1;
-                        }
-                    }
-                    polls[msg.author.id].options.push(msg.content.substring(start, msg.content.length));
-                }
-                bot.sendMessage(msg.channel, "OK, got it. You can end the poll by sending me `poll close`.");
-                polls[msg.author.id].open = true;
-
-                var ch = bot.channels.get("id", polls[msg.author.id].channel);
-                var info = msg.author + " has started a new poll: **" + polls[msg.author.id].title + "**";
-                for(var i=0; i<polls[msg.author.id].options.length; i++) {
-                    info += "\n\t" + i + ": " + polls[msg.author.id].options[i];
-                }
-                info += "\nYou can vote by typing `@" + bot.user.username + " vote <no. of choice>`. If you don't include a number, I'll just show results";
-                bot.sendMessage(ch, info);
             }
         }
     },
@@ -2423,6 +2395,36 @@ bot.on("message", function (msg, user) {
             // Update command from maintainer
             if(updateconsole && msg.author.id==configs.maintainer && msg.content=="update") {
                 updateBot(msg);
+            }
+            
+            // Gets poll title from user and asks for poll options
+            if(polls[msg.author.id] && polls[msg.author.id].title=="") {
+                polls[msg.author.id].title = msg.content;
+                bot.sendMessage(msg.channel, "Enter poll options, separated by commas, or `.` for yes/no:");
+            // Gets poll options from user and starts voting
+            } else if(polls[msg.author.id] && polls[msg.author.id].options.length==0) {
+                if(msg.content==".") {
+                    polls[msg.author.id].options = ["No", "Yes"];
+                } else {
+                    var start = 0;
+                    for(var i=0; i<msg.content.length; i++) {
+                        if(msg.content.charAt(i)==',') {
+                            polls[msg.author.id].options.push(msg.content.substring(start, i));
+                            start = i+1;
+                        }
+                    }
+                    polls[msg.author.id].options.push(msg.content.substring(start, msg.content.length));
+                }
+                bot.sendMessage(msg.channel, "OK, got it. You can end the poll by sending me `poll close`.");
+                polls[msg.author.id].open = true;
+
+                var ch = bot.channels.get("id", polls[msg.author.id].channel);
+                var info = msg.author + " has started a new poll: **" + polls[msg.author.id].title + "**";
+                for(var i=0; i<polls[msg.author.id].options.length; i++) {
+                    info += "\n\t" + i + ": " + polls[msg.author.id].options[i];
+                }
+                info += "\nYou can vote by typing `@" + bot.user.username + " vote <no. of choice>`. If you don't include a number, I'll just show results";
+                bot.sendMessage(ch, info);
             }
             
             // Check if message is a PM command
