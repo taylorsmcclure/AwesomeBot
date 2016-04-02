@@ -117,6 +117,7 @@ Latest, version **3.3.5**:
  - Fixed quiet bug among others  
 
 Patch #1: Fixed poll creation bug  
+Patch #2: Made custom roles/colors options independent  
  
 Open an issue to report a bug or suggest a new feature!
 

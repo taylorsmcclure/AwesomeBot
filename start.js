@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.5p1";
+var version = "3.3.5p2";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -889,7 +889,7 @@ var commands = {
                 }
                 return;
             } else if(suffix.indexOf("color")==0) {
-                if(configs.servers[msg.channel.server.id].customroles.value) {
+                if(configs.servers[msg.channel.server.id].customcolors.value) {
                     var colornm = suffix.substring(suffix.indexOf("#")+1);
                     var rolenm = "color-" + msg.author.id.toString();
                     var roles = msg.channel.server.roles;
@@ -3874,6 +3874,10 @@ var defaultConfigFile = {
         option: "<enabled? y/n>"
     },
     customroles: {
+        value: true,
+        option: "<enabled? y/n>"
+    },
+    customcolors: {
         value: true,
         option: "<enabled? y/n>"
     },
