@@ -6,9 +6,11 @@ function doAdminSetup() {
     
     switchAdmins();
     switchBlocked();
+    switchStrikes();
     switchRss();
     switchCommands();
     switchManage();
+    switchTriviaSets();
     switchExtensions();
     
     destroyLoader();
@@ -57,6 +59,18 @@ function switchBlocked() {
     document.getElementById("blockedselector").innerHTML = "<option value=\"\">Select Member</option>";
     for(var i=0; i<possibleBlocked.length; i++) {
         document.getElementById("blockedselector").innerHTML += "<option value=\"" + possibleBlocked[i][0] + "\">" + possibleBlocked[i][1] + "</option>";
+    }
+}
+
+function switchStrikes() {
+    document.getElementById("strikestable").style.display = "";
+    document.getElementById("strikestablebody").innerHTML = "";
+    
+    for(var i=0; i<botData.strikes.length; i++) {
+        document.getElementById("strikestablebody").innerHTML += "<tr id=\"strikesentry-" + i + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.strikes[i][0] + "\" /></td><td>" + botData.strikes[i][1] + "</td><td>" + botData.strikes[i][2] + "</td></tr>";
+    }
+    if(botData.strikes.length==0) {
+        document.getElementById("strikestable").style.display = "none";
     }
 }
 
@@ -187,6 +201,43 @@ function configCA(type) {
             switchManage();
         });
     }
+}
+
+function switchTriviaSets() {
+    document.getElementById("triviasetstable").style.display = "";
+    document.getElementById("triviasetstablebody").innerHTML = "";
+    
+    for(var i=0; i<botData.configs.triviasets.length; i++) {
+        var info = "<tr id=\"triviasetsentry-" + encodeURI(botData.configs.triviasets[i][0]) + "\"><td>" + botData.configs.triviasets[i][0] + "</td><td>" + botData.configs.triviasets[i][1] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('triviasets', this.parentNode.parentNode.id.substring(16), switchTriviaSets);\"><i>(remove)</i></span></td></tr>";
+        document.getElementById("triviasetstablebody").innerHTML += info;
+    }
+    if(botData.configs.triviasets.length==0) {
+        document.getElementById("triviasetstable").style.display = "none";
+    }
+}
+
+function newTriviaSet(uploads) {
+    if(!uploads) {
+        alert("Upload a file and enter a name");
+        return;
+    }
+    
+    var reader = new FileReader();
+    reader.onload = function(event) {
+        try {
+            var tset = JSON.parse(event.target.result);
+            config("triviasets", tset, function(err) {
+                if(err) {
+                    alert("Error adding trivia set, see logs for details");
+                } else {
+                    switchTriviaSets();
+                }
+            });
+        } catch(err) {
+            alert("File must be JSON format");
+        }
+    };
+    reader.readAsText(uploads[0]);
 }
 
 function switchExtensions() {

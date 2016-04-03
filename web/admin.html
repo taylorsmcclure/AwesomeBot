@@ -25,17 +25,19 @@
             <br>
         </span>
         <div class="container" id="admins">
-            <table class="tablelist contrastable" id="adminstable">
-                <thead>
-                    <tr>
-                        <th>Avatar</th>
-                        <th>Name</th>
-                        <th>ID</td>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="adminstablebody"></tbody>
-            </table>
+            <div style="max-height: 50%;overflow: scroll;overflow-x: hidden;">
+                <table class="tablelist contrastable" id="adminstable">
+                    <thead>
+                        <tr>
+                            <th>Avatar</th>
+                            <th>Name</th>
+                            <th>ID</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminstablebody"></tbody>
+                </table>
+            </div>
             <span id="adminsadd">
                 Add: 
                 <select id="adminsselector" onChange="javascript:config('admins', this.value, function() {switchAdmins();switchBlocked();});">
@@ -49,17 +51,19 @@
             <br>
         </span>
         <div class="container" id="blocked">
-            <table class="tablelist contrastable" id="blockedtable">
-                <thead>
-                    <tr>
-                        <th>Avatar</th>
-                        <th>Name</th>
-                        <th>ID</td>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="blockedtablebody"></tbody>
-            </table>
+            <div style="max-height: 50%;overflow: scroll;overflow-x: hidden;">
+                <table class="tablelist contrastable" id="blockedtable">
+                    <thead>
+                        <tr>
+                            <th>Avatar</th>
+                            <th>Name</th>
+                            <th>ID</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="blockedtablebody"></tbody>
+                </table>
+            </div>
             <span id="blockedadd">
                 Block: 
                 <select id="blockedselector" onChange="javascript:config('blocked', this.value, function() {switchAdmins();switchBlocked();});"></select>
@@ -68,20 +72,43 @@
         <br>
         
         <span style="font-size: 20;">
+            <u>Strikes for Users</u>
+            <br>
+        </span>
+        <div class="container" id="strikes">
+            <i>Strikes are a way of marking when a user has violated the rules of the server. You can add a strike with "@user strike+" and remove it with "@user strike-". This gives admins a way to know who needs to be warned/kicked/banned. Strikes are automatically added for spamming or fetching NSFW content (if enabled).</i><br>
+            <div style="max-height: 50%;overflow: scroll;overflow-x: hidden;">
+                <table class="tablelist contrastable" id="strikestable">
+                    <thead>
+                        <tr>
+                            <th>Avatar</th>
+                            <th>Name</th>
+                            <th>Strikes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="strikestablebody"></tbody>
+                </table>
+            </div>
+        </div>
+        <br>
+        
+        <span style="font-size: 20;">
             <u>RSS Feeds</u>
             <br>
         </span>
         <div class="container" id="rss">
-            <table class="tablelist contrastable" id="rsstable">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>URL</td>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="rsstablebody"></tbody>
-            </table>
+            <div style="max-height: 50%;overflow: scroll;overflow-x: hidden;">
+                <table class="tablelist contrastable" id="rsstable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>URL</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rsstablebody"></tbody>
+                </table>
+            </div>
             New:
             <input id="rssnewname" type="text" style="width: 100;" placeholder="Feed Name"></input>
             <input id="rssnewurl" type="text" style="width: 250;" placeholder="RSS URL" onkeydown="if(event.keyCode==13){newRss()}"></input>
@@ -127,22 +154,47 @@
         <br>
         
         <span style="font-size: 20;">
+            <u>Trivia Sets</u>
+            <br>
+        </span>
+        <div id="triviasets">
+            <i>Custom trivia sets will be available to all users on this server. Provide a JSON file with a "name" and "stream", the latter being an array of objects, each with a "category", "question", and "answer".</i><br>
+            <div style="max-height: 50%;overflow: scroll;overflow-x: hidden;">
+                <table class="tablelist contrastable" id="triviasetstable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Length</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="triviasetstablebody"></tbody>
+                </table>
+            </div>
+            Upload: 
+            <input id="triviasetsupload" type="file" style="width: 300;" accept="application/json" onchange="javascript:newTriviaSet(this.files)" />
+        </div>
+        <br>
+        
+        <span style="font-size: 20;">
             <u>Extensions</u>
             <br>
         </span>
         <div id="extensions">
             <i>Extensions allow you to add server-specific functionality to the bot. Learn more <a href="https://git.io/vaaaU">here</a>.</i><br>
-            <table class="tablelist contrastable" id="extensionstable">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Type</td>
-                        <th>Channel(s)</td>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="extensionstablebody"></tbody>
-            </table>
+            <div style="max-height: 50%;overflow: scroll;overflow-x: hidden;">
+                <table class="tablelist contrastable" id="extensionstable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Channel(s)</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="extensionstablebody"></tbody>
+                </table>
+            </div>
             Upload: 
             <input id="extensionsupload" type="file" style="width: 300;" accept="application/json" onchange="javascript:newExtension(this.files)" />
         </div>

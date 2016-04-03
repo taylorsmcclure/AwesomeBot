@@ -109,15 +109,13 @@ Outside of this sandbox, the extension cannot use other Node modules or methods.
 Changelog
 ---------
 
-Latest, version **3.3.5**:
+Latest, version **3.3.6**:
 
- - Me command for status
- - Richest members in stats section  
- - App Store links in addition to Google Play  
- - Fixed quiet bug among others  
-
-Patch #1: Fixed poll creation bug  
-Patch #2: Made custom roles/colors options independent  
+ - Ability to quote yourself  
+ - Strikes system for admin use  
+ - Custom trivia sets per-server  
+ - Removed PM config console entirely  
+ - Many bug fixes  
  
 Open an issue to report a bug or suggest a new feature!
 

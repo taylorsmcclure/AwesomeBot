@@ -36,18 +36,20 @@
             <br>
         </span>
         <div id="servers">
-            <table class="tablelist contrastable" id="servertable">
-                <thead>
-                    <tr>
-                        <th>Icon</th>
-                        <th>Name</th>
-                        <th>ID</td>
-                        <th>Owner</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="servertablebody"></tbody>
-            </table>
+            <div style="max-height: 50%;overflow: scroll;overflow-x: hidden;">
+                <table class="tablelist contrastable" id="servertable">
+                    <thead>
+                        <tr>
+                            <th>Icon</th>
+                            <th>Name</th>
+                            <th>ID</th>
+                            <th>Owner</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="servertablebody"></tbody>
+                </table>
+            </div>
             <input id="addserverinput" type="text" style="width: 300;" placeholder="Join Server: Invite Link" onkeydown="if(event.keyCode==13){addServer(this.value)}"></input>
         </div>
         <br>
