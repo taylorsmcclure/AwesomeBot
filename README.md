@@ -40,6 +40,8 @@ This repository provides the source for the already-running `@AwesomeBot` instan
 2. You may **not** remove the credit to @BitQuote in the help section. If you wish, you may rephrase this along the lines of: `based on AwesomeBot <version> by @BitQuote`
 3. Join our private server if you are modifying the code in any way: [Join BotMakers, Inc.](https://discord.gg/0pRFCTcG2aIY53Jk)
 
+If you want a stable bot, please use the [latest milestone release](https://github.com/BitQuote/AwesomeBot/releases/tag/v3.3.6p4).
+
 Note that I am very busy with work, so this repository will only be updated for milestone releases and development may cease at any time. Also, I know this project is *very* poorly written; keep in mind that I have spent embarrassingly little time on this.
 
 Setup
