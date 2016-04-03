@@ -126,6 +126,7 @@ Patch #4: Fixed previous patch
 Patch #5: Bug fixes and cleanup  
 Patch #6: Fixed checkConfig bug  
 Patch #7: Added option to end lottery  
+Patch #8: Fixed newgreeting config and lottery bugs  
  
 Open an issue to report a bug or suggest a new feature!
 

@@ -1057,6 +1057,7 @@ var commands = {
             } else if(suffix=="lottery end") {
                 // End lottery and pick winner
                 if(lottery[msg.channel.server.id]) {
+                    clearTimeout(lottery[msg.channel.server.id].timer);
                     endLottery(msg.channel);
                 } else {
                     logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "Cannot end lottery, not started");
@@ -1538,7 +1539,7 @@ bot.on("ready", function() {
         // Run timer extensions
         runTimerExtensions();
         // Send hello message
-        bot.sendMessage(bot.servers[i].defaultChannel, "*I am " + bot.user.username + " v" + version + " by* **@BitQuote**, *https://git.io/vaa2F*");
+        //bot.sendMessage(bot.servers[i].defaultChannel, "*I am " + bot.user.username + " v" + version + " by* **@BitQuote**, *https://git.io/vaa2F*");
         bot.stopTyping(bot.servers[i].defaultChannel);
     }
     
@@ -3382,7 +3383,7 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                 callback(false);
                 return;
             default:
-                if(configs.servers[svr.id][key]) {
+                if(configs.servers[svr.id][key]!=null) {
                     configs.servers[svr.id][key] = delta[key];
                     var yn = delta[key] ? "on" : "off";
                     logMsg(new Date().getTime(), "INFO", consoleid, null, "Command " + key + " turned " + yn + " in " + svr.name);
