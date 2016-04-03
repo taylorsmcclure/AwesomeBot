@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p2";
+var version = "3.3.6p3";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -85,7 +85,7 @@ var commands = {
     "ping": {
         extended: "A useful command to tell if the bot is alive. Also displays AwesomeBot version and status page URL if available.",
         process: function(bot, msg) {
-            var info = "Pong! " + bot.user.username + " v" + version + " running for " + secondsToString(bot.uptime/1000);
+            var info = "Pong! " + bot.user.username + " v" + version + " by **@BitQuote** running for " + secondsToString(bot.uptime/1000);
             if(configs.hosting!="") {
                 info =  info.substring(0, info.length-1);
                 info += ". Status: " + configs.hosting;
@@ -1964,7 +1964,7 @@ bot.on("message", function (msg, user) {
                     if(error) {
                         logMsg(new Date().getTime(), "WARN", msg.author.id, null, "Could not join new server, most likely user error");
                         bot.sendMessage(msg.channel, "Failed to join server. Please check your invite URL.");
-                    } else {
+                    } else if(bot.servers.indexOf(server.id)==-1) {
                         bot.sendMessage(msg.channel, "Processing invite...Should be done soon!");
                     }
                     bot.stopTyping(msg.channel);

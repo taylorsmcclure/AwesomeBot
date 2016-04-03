@@ -119,6 +119,7 @@ Latest, version **3.3.6**:
 
 Patch #1: Fixed `forceFetchUsers` crash  
 Patch #2: A few bug fixes  
+Patch #3: Improved auto-join  
  
 Open an issue to report a bug or suggest a new feature!
 
