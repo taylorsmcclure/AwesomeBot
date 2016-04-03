@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p3";
+var version = "3.3.6p4";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1964,7 +1964,7 @@ bot.on("message", function (msg, user) {
                     if(error) {
                         logMsg(new Date().getTime(), "WARN", msg.author.id, null, "Could not join new server, most likely user error");
                         bot.sendMessage(msg.channel, "Failed to join server. Please check your invite URL.");
-                    } else if(bot.servers.indexOf(server.id)==-1) {
+                    } else if(!bot.servers.get("id", server.id)) {
                         bot.sendMessage(msg.channel, "Processing invite...Should be done soon!");
                     }
                     bot.stopTyping(msg.channel);
