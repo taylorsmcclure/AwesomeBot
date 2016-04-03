@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p7";
+var version = "3.3.6p8";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1539,7 +1539,7 @@ bot.on("ready", function() {
         // Run timer extensions
         runTimerExtensions();
         // Send hello message
-        //bot.sendMessage(bot.servers[i].defaultChannel, "*I am " + bot.user.username + " v" + version + " by* **@BitQuote**, *https://git.io/vaa2F*");
+        bot.sendMessage(bot.servers[i].defaultChannel, "*I am " + bot.user.username + " v" + version + " by* **@BitQuote**, *https://git.io/vaa2F*");
         bot.stopTyping(bot.servers[i].defaultChannel);
     }
     
