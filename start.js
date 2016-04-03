@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p6";
+var version = "3.3.6p7";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1030,36 +1030,12 @@ var commands = {
                 if(!lottery[msg.channel.server.id]) {
                     lottery[msg.channel.server.id] = {
                         members: [],
-                        timestamp: new Date().getTime()
+                        timestamp: new Date().getTime(),
+                        timer: setTimeout(function() {
+                            endLottery(msg.channel);
+                        }, 3600000)
                     };
                     logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Lottery started, ends in 60 minutes");
-                    setTimeout(function() {
-                        var usrid = lottery[msg.channel.server.id].members[getRandomInt(0, lottery[msg.channel.server.id].members.length-1)];
-                        var usr = msg.channel.server.members.get("id", usrid);
-                        if(usr && !lottery[msg.channel.server.id].members.allValuesSame() && configs.servers[msg.channel.server.id].blocked.indexOf(usrid)==-1) {
-                            if(!profileData[usr.id]) {
-                                profileData[usr.id] = {
-                                    points: 0,
-                                }
-                            }
-                            if(pointsball>1000000) {
-                                pointsball = 20;
-                            }
-                            profileData[usr.id].points += pointsball;
-                            logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, usr.username + " won the lottery for " + pointsball);
-                            saveData("./data/profiles.json", function(err) {
-                                if(err) {
-                                    logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile data for " + usr.username);
-                                }
-                            });
-                            bot.sendMessage(msg.channel.server.defaultChannel, "The PointsBall lottery amount is `" + pointsball + "` points, here's the winner..." + usr);
-                        } else {
-                            logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "No winner of lottery for " + pointsball);
-                            bot.sendMessage(msg.channel.server.defaultChannel, "The PointsBall lottery amount is `" + pointsball + "` points, here's the winner... NO ONE, rip");
-                        }
-                        delete lottery[msg.channel.server.id];
-                        pointsball *= 2;
-                    }, 3600000);
                 }
                 
                 // Buy a lottery ticket
@@ -1077,6 +1053,15 @@ var commands = {
                         logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile data for " + msg.author.username);
                     }
                 });
+                return;
+            } else if(suffix=="lottery end") {
+                // End lottery and pick winner
+                if(lottery[msg.channel.server.id]) {
+                    endLottery(msg.channel);
+                } else {
+                    logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "Cannot end lottery, not started");
+                    bot.sendMessage(msg.channel, msg.author + " A lottery hasn't been started yet in this server. Please use `@" + bot.user.username + " points lottery` to start one.");
+                }
                 return;
             } else if(["me", "@me"].indexOf(suffix.toLowerCase())>-1) {
                 usr = msg.author;
@@ -3002,6 +2987,35 @@ function clearStatCounter() {
     setTimeout(function() {
         clearStatCounter();
     }, 300000);
+}
+
+// End a lottery and pick a winner
+function endLottery(ch) {
+    var usrid = lottery[ch.server.id].members[getRandomInt(0, lottery[ch.server.id].members.length-1)];
+    var usr = ch.server.members.get("id", usrid);
+    if(usr && !lottery[ch.server.id].members.allValuesSame() && configs.servers[ch.server.id].blocked.indexOf(usrid)==-1) {
+        if(!profileData[usr.id]) {
+            profileData[usr.id] = {
+                points: 0,
+            }
+        }
+        if(pointsball>1000000) {
+            pointsball = 20;
+        }
+        profileData[usr.id].points += pointsball;
+        logMsg(new Date().getTime(), "INFO", ch.server.name, ch.name, usr.username + " won the lottery for " + pointsball);
+        saveData("./data/profiles.json", function(err) {
+            if(err) {
+                logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile data for " + usr.username);
+            }
+        });
+        bot.sendMessage(ch.server.defaultChannel, "The PointsBall lottery amount is `" + pointsball + "` points, here's the winner..." + usr);
+    } else {
+        logMsg(new Date().getTime(), "WARN", ch.server.name, ch.name, "No winner of lottery for " + pointsball);
+        bot.sendMessage(ch.server.defaultChannel, "The PointsBall lottery amount is `" + pointsball + "` points, here's the winner... NO ONE, rip");
+    }
+    delete lottery[ch.server.id];
+    pointsball *= 2;
 }
 
 // Clear stats.json for a server
