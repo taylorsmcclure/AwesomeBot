@@ -118,6 +118,7 @@ Latest, version **3.3.6**:
  - Many bug fixes  
 
 Patch #1: Fixed `forceFetchUsers` crash  
+Patch #2: A few bug fixes  
  
 Open an issue to report a bug or suggest a new feature!
 

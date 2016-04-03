@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p1";
+var version = "3.3.6p2";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -856,14 +856,19 @@ var commands = {
             });
             var info = "";
             for(var i=games.length-1; i>=0; i--) {
-                info += "**" + games[i][0] + "** (" + games[i][1].length + ")";
+                var tmpinfo = "**" + games[i][0] + "** (" + games[i][1].length + ")";
                 if(games[i][2]) {
-                    info+="\n*" + games[i][2] + "*";
+                    tmpinfo+="\n*" + games[i][2] + "*";
                 }
                 for(var j=0; j<games[i][1].length; j++) {
-                    info += "\n\t@" + games[i][1][j];
+                    tmpinfo += "\n\t@" + games[i][1][j];
                 }
-                info += "\n";
+                tmpinfo += "\n";
+                if((tmpinfo.length + info.length)>2000) {
+                    break;
+                } else {
+                    info += tmpinfo;
+                }
             }
             bot.sendMessage(msg.channel, info);
         }
@@ -1010,7 +1015,12 @@ var commands = {
                 });
                 var info = "";
                 for(var i=memberPoints.length-1; i>=0; i--) {
-                    info += "**@" + memberPoints[i][0] + "**: " + memberPoints[i][1] + " AwesomePoint" + (memberPoints[i][1]==1 ? "" : "s") + "\n";
+                    var tmpinfo = "**@" + memberPoints[i][0] + "**: " + memberPoints[i][1] + " AwesomePoint" + (memberPoints[i][1]==1 ? "" : "s") + "\n";
+                    if((tmpinfo.length + info.length)>2000) {
+                        break;
+                    } else {
+                        info += tmpinfo;
+                    }
                 }
                 bot.sendMessage(msg.channel, info);
                 return;
@@ -1519,7 +1529,7 @@ function rssfeed(bot, msg, url, count, full) {
 }
 
 // Initializes bot and outputs to console
-var bot = new Discord.Client();
+var bot = new Discord.Client({forceFetchUsers: true});
 bot.on("ready", function() {
     checkVersion();
     
@@ -3718,7 +3728,7 @@ function checkConfig(svr) {
     for(var config in defaultConfigFile) {
         if(!configs.servers[svr.id][config]) {
             changed = true;
-            configs.servers[svr.id][config] = defaultConfigFile[config];
+            configs.servers[svr.id][config] = JSON.parse(JSON.stringify(defaultConfigFile[config]));
         }
     }
     
