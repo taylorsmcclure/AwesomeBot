@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p5";
+var version = "3.3.6p6";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -3633,14 +3633,14 @@ function checkConfig(svr) {
     var changed = false;
      
     for(var config in defaultConfigFile) {
-        if(!configs.servers[svr.id][config]) {
+        if(configs.servers[svr.id][config]==null) {
             changed = true;
             configs.servers[svr.id][config] = JSON.parse(JSON.stringify(defaultConfigFile[config]));
         }
     }
     
     for(config in configs.servers[svr.id]) {
-        if(!defaultConfigFile[config]) {
+        if(defaultConfigFile[config]==null) {
             changed = true;
             delete configs.servers[svr.id][config];
         }
