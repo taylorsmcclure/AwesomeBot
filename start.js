@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6";
+var version = "3.3.6p1";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1522,7 +1522,6 @@ function rssfeed(bot, msg, url, count, full) {
 var bot = new Discord.Client();
 bot.on("ready", function() {
     checkVersion();
-    bot.forceFetchUsers();
     
     // Clear stats and configs for old servers
     pruneData();
@@ -2717,6 +2716,7 @@ bot.on("disconnected", function() {
         setTimeout(function() {
             try {
                 bot.login(AuthDetails.email, AuthDetails.password);
+                bot.forceFetchUsers();
             } catch(err) {
                 logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to reconnect to Discord");
             }

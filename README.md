@@ -116,6 +116,8 @@ Latest, version **3.3.6**:
  - Custom trivia sets per-server  
  - Removed PM config console entirely  
  - Many bug fixes  
+
+Patch #1: Fixed `forceFetchUsers` crash  
  
 Open an issue to report a bug or suggest a new feature!
 
