@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p11";
+var version = "3.3.6p12";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1770,15 +1770,19 @@ bot.on("ready", function() {
                         }
                     }
                     
+                    // TODO: allow strikes to be added/removed from web interface
                     var strikeList = [];
                     for(var usrid in stats[svr.id].members) {
                         if(stats[svr.id].members[usrid].strikes>0) {
                             var usr = bot.users.get("id", usrid);
                             if(usr) {
-                                strikeList.push([usr.avatarURL || "http://i.imgur.com/fU70HJK.png", usr.username, stats[svr.id].members[usrid].strikes]);
+                                strikeList.push([usr.id, usr.avatarURL || "http://i.imgur.com/fU70HJK.png", usr.username, stats[svr.id].members[usr.id].strikes]);
                             }
                         }
                     }
+                    strikeList.sort(function(a, b) {
+                        return a[3] - b[3];
+                    });
                     
                     data = {
                         botnm: bot.user.username,
@@ -2616,7 +2620,7 @@ bot.on("serverMemberUpdate", function(svr, usr) {
 
 bot.on("serverNewMember", function(svr, usr) {
     // Check if this has been enabled in admin console and the bot is listening
-    if(configs.servers[svr.id].servermod && stats[svr.id].botOn[svr.defaultChannel.id]) {
+    if(configs.servers[svr.id].servermod && configs.servers[svr.id].membermsg && stats[svr.id].botOn[svr.defaultChannel.id]) {
         logMsg(new Date().getTime(), "INFO", svr.name, null, "New member: " + usr.username);
         var greetings = ["++ Welcome to our little corner of hell!", "++ has joined the server.", "++ You're gonna have a jolly good time here!", "++ is new here.", "++ is here, everybody!", "++ sends his/her regards.", "++, welcome to the server!", "++ is our next victim...", "Hello ++!", "Please welcome our newest member, ++"];
         bot.sendMessage(svr.defaultChannel, greetings[getRandomInt(0, greetings.length-1)].replace("++", usr));
@@ -2647,6 +2651,10 @@ bot.on("serverNewMember", function(svr, usr) {
 bot.on("serverMemberRemoved", function(svr, usr) {
     logMsg(new Date().getTime(), "INFO", svr.name, null, "Member removed: " + usr.username);
     delete stats[svr.id].members[usr.id];
+    if(configs.servers[svr.id].servermod && configs.servers[svr.id].membermsg && stats[svr.id].botOn[svr.defaultChannel.id]) {
+        var goodbyes = ["++ has left us :(", "Goodbye ++", "++ Come back!", "++ is gone *cries*", "++ has left the server", "RIP ++", "Uh-oh, ++ went away", "Please convince ++ to come back!"];
+        bot.sendMessage(svr.defaultChannel, goodbyes[getRandomInt(0, goodbyes.length-1)].replace("++", "**@" + usr.username + "**"));
+    }
 });
 
 // Reduces activity score when message is publicly deleted
@@ -2714,7 +2722,7 @@ bot.on("presence", function(oldusr, newusr) {
                 if(oldusr.status=="online" && newusr.status!="online") {
                     stats[bot.servers[i].id].members[oldusr.id].seen = new Date().getTime();
                 }
-                if(oldusr.username!=newusr.username && configs.servers[bot.servers[i].id].servermod && stats[bot.servers[i].id].botOn[bot.servers[i].defaultChannel.id]) {
+                if(oldusr.username!=newusr.username && configs.servers[bot.servers[i].id].servermod && configs.servers[svr.id].membermsg && stats[bot.servers[i].id].botOn[bot.servers[i].defaultChannel.id]) {
                     bot.sendMessage(bot.servers[i].defaultChannel, "**@" + oldusr.username + "** is now **@" + newusr.username + "**");
                 }
             }
@@ -3306,9 +3314,47 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                         if(key=="blocked" && (usr.id==consoleid || usr.id==svr.owner.id || usr.id==configs.maintainer)) {
                             callback(true);
                             return;
+                        } else if(key=="admins" && stats[svr.id].members[usr.id]) {
+                            stats[svr.id].members[usr.id].strikes = 0;
                         }
                         logMsg(new Date().getTime(), "INFO", consoleid, null, "Added " + usr.username + " to " + key + " list in " + svr.name);
                         configs.servers[svr.id][key].push(usr.id);
+                    }
+                } else {
+                    callback(true);
+                    return;
+                }
+                break;
+            case "strikes":
+                if(Array.isArray(delta[key]) && delta[key].length==2) {
+                    var usr = svr.members.get("id", delta[key][0]);
+                    if(usr) {
+                        if(delta[key][1]=="+1") {
+                            if(!stats[svr.id].members[usr.id]) {
+                                stats[svr.id].members[usr.id] = {
+                                    messages: 0,
+                                    seen: new Date().getTime(),
+                                    mentions: {
+                                        pm: false,
+                                        stream: []
+                                    },
+                                    strikes: 0
+                                };
+                            }
+                            stats[svr.id].members[usr.id].strikes++;
+                            logMsg(new Date().getTime(), "INFO", consoleid, null, "Strike for " + usr.username + " in " + svr.name);
+                        } else if(delta[key][1]=="-1") {
+                            if(stats[svr.id].members[usr.id]) {
+                                stats[svr.id].members[usr.id].strikes--;
+                                logMsg(new Date().getTime(), "INFO", consoleid, null, "Removed strike for " + usr.username + " in " + svr.name);
+                            } else {
+                                callback(true);
+                                return;
+                            }
+                        }
+                    } else {
+                        callback(true);
+                        return;
                     }
                 } else {
                     callback(true);
@@ -3541,6 +3587,7 @@ var defaultConfigFile = {
     newgreeting: "",
     rss: [true, ["http://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=h&num=3&output=rss"], ["gnews"]],
     servermod: true,
+    membermsg: true,
     spamfilter: true,
     nsfwfilter: true,
     customroles: true,

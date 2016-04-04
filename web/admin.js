@@ -23,7 +23,7 @@ function switchAdmins() {
     var blacklist = [];
     for(var i=0; i<botData.configs.admins.length; i++) {
         blacklist.push(botData.configs.admins[i][2]);
-        document.getElementById("adminstablebody").innerHTML += "<tr id=\"adminsentry-" + botData.configs.admins[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.configs.admins[i][0] + "\" /></td><td>" + botData.configs.admins[i][1] + "</td><td>" + botData.configs.admins[i][2] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('admins', this.parentNode.parentNode.id.substring(12), function() {switchAdmins();switchBlocked();});\"><i>(remove)</i></span></td></tr>";
+        document.getElementById("adminstablebody").innerHTML += "<tr id=\"adminsentry-" + botData.configs.admins[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.configs.admins[i][0] + "\" /></td><td>" + botData.configs.admins[i][1] + "</td><td>" + botData.configs.admins[i][2] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('admins', this.parentNode.parentNode.id.substring(12), function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(remove)</i></span></td></tr>";
     }
     if(botData.configs.admins.length==0) {
         document.getElementById("adminstable").style.display = "none";
@@ -46,7 +46,7 @@ function switchBlocked() {
     var blacklist = [];
     for(var i=0; i<botData.configs.blocked.length; i++) {
         blacklist.push(botData.configs.blocked[i][2]);
-        document.getElementById("blockedtablebody").innerHTML += "<tr id=\"blockedentry-" + botData.configs.blocked[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.configs.blocked[i][0] + "\" /></td><td>" + botData.configs.blocked[i][1] + "</td><td>" + botData.configs.blocked[i][2] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('blocked', this.parentNode.parentNode.id.substring(13), function() {switchAdmins();switchBlocked();});\"><i>(remove)</i></span></td></tr>";
+        document.getElementById("blockedtablebody").innerHTML += "<tr id=\"blockedentry-" + botData.configs.blocked[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.configs.blocked[i][0] + "\" /></td><td>" + botData.configs.blocked[i][1] + "</td><td>" + botData.configs.blocked[i][2] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('blocked', this.parentNode.parentNode.id.substring(13), function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(remove)</i></span></td></tr>";
     }
     if(botData.configs.blocked.length==0) {
         document.getElementById("blockedtable").style.display = "none";
@@ -66,11 +66,22 @@ function switchStrikes() {
     document.getElementById("strikestable").style.display = "";
     document.getElementById("strikestablebody").innerHTML = "";
     
-    for(var i=0; i<botData.strikes.length; i++) {
-        document.getElementById("strikestablebody").innerHTML += "<tr id=\"strikesentry-" + i + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.strikes[i][0] + "\" /></td><td>" + botData.strikes[i][1] + "</td><td>" + botData.strikes[i][2] + "</td></tr>";
+    var blacklist = [];
+    for(var i=botData.strikes.length-1; i>=0; i--) {
+        blacklist.push(botData.strikes[i][0]);
+        document.getElementById("strikestablebody").innerHTML += "<tr id=\"strikesentry-" + botData.strikes[i][0] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.strikes[i][1] + "\" /></td><td>" + botData.strikes[i][2] + "</td><td>" + botData.strikes[i][3] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('strikes', [this.parentNode.parentNode.id.substring(13), '+1'], function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(+1)</i></span></td><td><span class=\"removetool\" onclick=\"javascript:config('strikes', [this.parentNode.parentNode.id.substring(13), '-1'], function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(-1)</i></span></td></tr>";
     }
     if(botData.strikes.length==0) {
         document.getElementById("strikestable").style.display = "none";
+    }
+    
+    for(var i=0; i<botData.configs.admins.length; i++) {
+        blacklist.push(botData.configs.admins[i][2]);
+    }
+    var possibleStrikes = filterMembers(blacklist);
+    document.getElementById("strikesselector").innerHTML = "<option value=\"\">Select Member</option>";
+    for(var i=0; i<possibleStrikes.length; i++) {
+        document.getElementById("strikesselector").innerHTML += "<option value=\"" + possibleStrikes[i][0] + "\">" + possibleStrikes[i][1] + "</option>";
     }
 }
 
@@ -115,8 +126,12 @@ function switchManage() {
     if(document.getElementById("manageentry-servermod").checked!=botData.configs.servermod) {
         document.getElementById("manageentry-servermod").checked = botData.configs.servermod;
     }
+    document.getElementById("manageentry-membermsg").disabled = !botData.configs.servermod;
     document.getElementById("manageentry-spamfilter").disabled = !botData.configs.servermod;
     document.getElementById("manageentry-nsfwfilter").disabled = !botData.configs.servermod;
+    if(document.getElementById("manageentry-membermsg").checked!=botData.configs.membermsg) {
+        document.getElementById("manageentry-membermsg").checked = botData.configs.membermsg;
+    }
     if(document.getElementById("manageentry-spamfilter").checked!=botData.configs.spamfilter) {
         document.getElementById("manageentry-spamfilter").checked = botData.configs.spamfilter;
     }

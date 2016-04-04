@@ -89,6 +89,10 @@
                     <tbody id="strikestablebody"></tbody>
                 </table>
             </div>
+            <span id="strikesadd">
+                Add Strike: 
+                <select id="strikesselector" onChange="javascript:config('strikes', [this.value, '+1'], function() {switchAdmins();switchBlocked();switchStrikes();});"></select>
+            </span>
         </div>
         <br>
         
@@ -126,6 +130,8 @@
         </span>
         <div class="container" id="management">
             <label><input style="height: auto;" id="manageentry-servermod" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, switchManage);">Act as a server moderator</label>
+            <br>
+            <label><input style="height: auto;" id="manageentry-membermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, switchManage);">Member joined/left messages</label>
             <br>
             <label><input style="height: auto;" id="manageentry-spamfilter" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, switchManage);">Spam filter</label>
             <br>
