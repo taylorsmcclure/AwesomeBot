@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p15";
+var version = "3.3.6p16";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1093,14 +1093,14 @@ var commands = {
         extended: "Shows the complete list of bot commands and features, specific to this server. You can include a command name as the parameter to get more information about it. Include the `pm` option to get the information sent via private message.",
         process: function(bot, msg, suffix) {
             if(!suffix) {
-                bot.sendMessage(msg.channel, "Tag me then state one of the following commands:" + getHelp(msg.channel.server));
-            } else if(suffix.toLowerCase()=="pm") {
                 bot.sendMessage(msg.author, "Tag me in the main chat then state one of the following commands:" + getHelp(msg.channel.server));
+            } else if(suffix.toLowerCase()=="public") {
+                bot.sendMessage(msg.channel, "Tag me then state one of the following commands:" + getHelp(msg.channel.server));
             } else {
-                if(suffix.indexOf(" ")>-1 && suffix.substring(suffix.indexOf(" ")+1).toLowerCase()=="pm" && suffix.substring(0, suffix.indexOf(" "))) {
-                    bot.sendMessage(msg.author, getCommandHelp(msg.channel.server, suffix.toLowerCase()));
-                } else {
+                if(suffix.indexOf(" ")>-1 && suffix.substring(suffix.indexOf(" ")+1).toLowerCase()=="public" && suffix.substring(0, suffix.indexOf(" "))) {
                     bot.sendMessage(msg.channel, getCommandHelp(msg.channel.server, suffix.toLowerCase()));
+                } else {
+                    bot.sendMessage(msg.author, getCommandHelp(msg.channel.server, suffix.toLowerCase()));
                 }
             }
         }
@@ -1979,6 +1979,27 @@ bot.on("message", function (msg, user) {
                 return;
             }
             
+            // Join new servers via PM
+            if((msg.content.indexOf("https://discord.gg")>-1 || msg.content.indexOf("https://discordapp.com/invite/")>-1)) {
+                try {
+                    bot.startTyping(msg.channel);
+                    bot.joinServer(msg.content, function(error, server) {
+                        if(error) {
+                            logMsg(new Date().getTime(), "WARN", msg.author.id, null, "Could not join new server, most likely user error");
+                            bot.sendMessage(msg.channel, "Failed to join server. Please check your invite URL.");
+                        } else if(!bot.servers.get("id", server.id)) {
+                            bot.sendMessage(msg.channel, "Processing invite...Should be done soon!");
+                        }
+                        bot.stopTyping(msg.channel);
+                        return;
+                    });
+                } catch(err) {
+                    logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to join new server, invited by " + msg.author.username);
+                    bot.sendMessage(msg.channel, "Failed to join server. I might be terminally ill...");
+                }
+                return;
+            }
+            
             // Check if message is a PM command
             var cmdTxt = msg.content;
             var suffix;
@@ -1992,27 +2013,6 @@ bot.on("message", function (msg, user) {
                 cmd.process(bot, msg, suffix);
                 return;
             }
-        }
-        
-        // Join new servers
-        if((msg.content.indexOf("https://discord.gg")>-1 || msg.content.indexOf("https://discordapp.com/invite/")>-1)) {
-            try {
-                bot.startTyping(msg.channel);
-                bot.joinServer(msg.content, function(error, server) {
-                    if(error) {
-                        logMsg(new Date().getTime(), "WARN", msg.author.id, null, "Could not join new server, most likely user error");
-                        bot.sendMessage(msg.channel, "Failed to join server. Please check your invite URL.");
-                    } else if(!bot.servers.get("id", server.id)) {
-                        bot.sendMessage(msg.channel, "Processing invite...Should be done soon!");
-                    }
-                    bot.stopTyping(msg.channel);
-                    return;
-                });
-            } catch(err) {
-                logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to join new server, invited by " + msg.author.username);
-                bot.sendMessage(msg.channel, "Failed to join server. I might be terminally ill...");
-            }
-            return;
         }
 
         // Stuff that only applies to public messages
