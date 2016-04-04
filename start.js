@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p10";
+var version = "3.3.6p11";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1094,10 +1094,10 @@ var commands = {
         process: function(bot, msg, suffix) {
             if(!suffix) {
                 bot.sendMessage(msg.channel, "Tag me then state one of the following commands:" + getHelp(msg.channel.server));
-            } else if(suffix.toLowerCase=="pm") {
+            } else if(suffix.toLowerCase()=="pm") {
                 bot.sendMessage(msg.author, "Tag me in the main chat then state one of the following commands:" + getHelp(msg.channel.server));
             } else {
-                if(suffix.indexOf(" ")>-1 && suffix.substring(suffix.indexOf(" ")+1)=="pm" && suffix.substring(0, suffix.indexOf(" "))) {
+                if(suffix.indexOf(" ")>-1 && suffix.substring(suffix.indexOf(" ")+1).toLowerCase()=="pm" && suffix.substring(0, suffix.indexOf(" "))) {
                     bot.sendMessage(msg.author, getCommandHelp(msg.channel.server, suffix.toLowerCase()));
                 } else {
                     bot.sendMessage(msg.channel, getCommandHelp(msg.channel.server, suffix.toLowerCase()));

@@ -129,6 +129,7 @@ Patch #7: Added option to end lottery
 Patch #8: Fixed newgreeting config and lottery bugs  
 Patch #9: Fixed poll creation and mentions bugs  
 Patch #10: Misc. tweaks  
+Patch #11: Fixed PM help  
  
 Open an issue to report a bug or suggest a new feature!
 
