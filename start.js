@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p8";
+var version = "3.3.6p9";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1425,9 +1425,14 @@ var pmcommands = {
                 var info = "";
                 if(stats[svr.id].members[msg.author.id].mentions.stream.length>0) {
                     info = "**Mentions on " + svr.name + " in the last week**";
-                    for(var i=0; i<stats[svr.id].members[msg.author.id].mentions.stream.length; i++) {
+                    for(var i=stats[svr.id].members[msg.author.id].mentions.stream.length-1; i>=0; i--) {
                         var time = prettyDate(new Date(stats[svr.id].members[msg.author.id].mentions.stream[i].timestamp))
-                        info += "\n__*@" + stats[svr.id].members[msg.author.id].mentions.stream[i].author + " at " + time.substring(1, time.length-2) + ":*__\n" + stats[svr.id].members[msg.author.id].mentions.stream[i].message;
+                        var tmpinfo = "\n__*@" + stats[svr.id].members[msg.author.id].mentions.stream[i].author + " at " + time + ":*__\n" + stats[svr.id].members[msg.author.id].mentions.stream[i].message;
+                        if((tmpinfo.length + info.length)>2000) {
+                            break;
+                        } else {
+                            info += tmpinfo;
+                        }
                     }
                     info += "\n\n";
                     stats[svr.id].members[msg.author.id].mentions.stream = [];
@@ -1901,6 +1906,7 @@ bot.on("message", function (msg, user) {
             if(polls[msg.author.id] && polls[msg.author.id].title=="") {
                 polls[msg.author.id].title = msg.content;
                 bot.sendMessage(msg.channel, "Enter poll options, separated by commas, or `.` for yes/no:");
+                return;
             // Gets poll options from user and starts voting
             } else if(polls[msg.author.id] && polls[msg.author.id].options.length==0) {
                 if(msg.content==".") {
@@ -1925,6 +1931,7 @@ bot.on("message", function (msg, user) {
                 }
                 info += "\nYou can vote by typing `@" + bot.user.username + " vote <no. of choice>`. If you don't include a number, I'll just show results";
                 bot.sendMessage(ch, info);
+                return;
             }
             
             // Check if message is a PM command
