@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p14";
+var version = "3.3.6p15";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1549,8 +1549,7 @@ bot.on("ready", function() {
         spams[bot.servers[i].id] = {};
         // Run timer extensions
         runTimerExtensions();
-        // Send hello message
-        bot.sendMessage(bot.servers[i].defaultChannel, "*I am " + bot.user.username + " v" + version + " by* **@BitQuote**, *https://git.io/vaa2F*");
+        
         bot.stopTyping(bot.servers[i].defaultChannel);
     }
     
@@ -2364,7 +2363,7 @@ bot.on("message", function (msg, user) {
             }
 
             // Google Play Store/Apple App Store links bot
-            if(msg.author.id!=bot.user.id && ((msg.content.toLowerCase().indexOf("linkme ")>-1 && configs.servers[msg.channel.server.id].linkme) || msg.content.toLowerCase().indexOf("appstore ")>-1 && configs.servers[msg.channel.server.id].appstore) && stats[msg.channel.server.id].botOn[msg.channel.id]) {                
+            if(msg.author.id!=bot.user.id && (((msg.content.toLowerCase().indexOf("linkme ")>-1 || msg.content.toLowerCase().indexOf("linkme: ")>-1 || msg.content.toLowerCase().indexOf("linkme! ")>-1) && configs.servers[msg.channel.server.id].linkme) || msg.content.toLowerCase().indexOf("appstore ")>-1 && configs.servers[msg.channel.server.id].appstore) && stats[msg.channel.server.id].botOn[msg.channel.id]) {                
                 if(msg.content.toLowerCase().indexOf("linkme ")>-1) {
                     var app = msg.content.substring(msg.content.indexOf("linkme"));
                     if(!stats[msg.channel.server.id].commands.linkme) {
@@ -2772,18 +2771,23 @@ bot.on("presence", function(oldusr, newusr) {
 // Attempt authentication if disconnected
 bot.on("disconnected", function() {
     if(readyToGo) {
-        disconnects++;
-        logMsg(new Date().getTime(), "ERROR", "General", null, "Disconnected from Discord, will try again in 5s");
-        setTimeout(function() {
-            try {
-                bot.login(AuthDetails.email, AuthDetails.password);
-                bot.forceFetchUsers();
-            } catch(err) {
-                logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to reconnect to Discord");
-            }
-        }, 5000);
+        reconnect();
     }
 });
+
+// Disconnect handler function
+function reconnect() {
+    disconnects++;
+    logMsg(new Date().getTime(), "ERROR", "General", null, "Disconnected from Discord, will try again in 5s");
+    setTimeout(function() {
+        try {
+            bot.login(AuthDetails.email, AuthDetails.password);
+        } catch(err) {
+            logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to reconnect to Discord");
+            reconnect();
+        }
+    }, 5000);
+}
 
 // Returns a new trivia question from external questions/answers list
 function triviaQ(ch, tset) {

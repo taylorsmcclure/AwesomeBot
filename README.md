@@ -133,6 +133,7 @@ Patch #11: Fixed PM help
 Patch #12: Added membermsg option and discreet strikes  
 Patch #13: A few improvements  
 Patch #14: Fixed membermsg crash  
+Patch #15: Linkme and disconnected improvements  
  
 Open an issue to report a bug or suggest a new feature!
 
