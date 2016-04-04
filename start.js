@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p9";
+var version = "3.3.6p10";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -573,7 +573,7 @@ var commands = {
                     bot.sendMessage(msg.channel, msg.author + " I only accept values between 1 and 3600, inclusive.");
                     return;
                 }
-                timestr = " for" + suffix + " seconds";
+                timestr = " for " + suffix + " seconds";
                 stats[msg.channel.server.id].botOn[msg.channel.id] = false;
                 setTimeout(function() {
                     stats[msg.channel.server.id].botOn[msg.channel.id] = true;
@@ -1089,13 +1089,19 @@ var commands = {
     },
     // Displays list of options and RSS feeds
     "help": {
-        usage: "[<command name>]",
-        extended: "Shows the complete list of bot commands and features, specific to this server. You can include a command name as the parameter to get more information about it.",
+        usage: "[<command name>] [\"pm\"]",
+        extended: "Shows the complete list of bot commands and features, specific to this server. You can include a command name as the parameter to get more information about it. Include the `pm` option to get the information sent via private message.",
         process: function(bot, msg, suffix) {
             if(!suffix) {
                 bot.sendMessage(msg.channel, "Tag me then state one of the following commands:" + getHelp(msg.channel.server));
+            } else if(suffix.toLowerCase=="pm") {
+                bot.sendMessage(msg.author, "Tag me in the main chat then state one of the following commands:" + getHelp(msg.channel.server));
             } else {
-                bot.sendMessage(msg.channel, getCommandHelp(msg.channel.server, suffix.toLowerCase()));
+                if(suffix.indexOf(" ")>-1 && suffix.substring(suffix.indexOf(" ")+1)=="pm" && suffix.substring(0, suffix.indexOf(" "))) {
+                    bot.sendMessage(msg.author, getCommandHelp(msg.channel.server, suffix.toLowerCase()));
+                } else {
+                    bot.sendMessage(msg.channel, getCommandHelp(msg.channel.server, suffix.toLowerCase()));
+                }
             }
         }
     }
@@ -3017,10 +3023,10 @@ function endLottery(ch) {
                 logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile data for " + usr.username);
             }
         });
-        bot.sendMessage(ch.server.defaultChannel, "The PointsBall lottery amount is `" + pointsball + "` points, here's the winner..." + usr);
+        bot.sendMessage(ch, "The PointsBall lottery amount is `" + pointsball + "` points, here's the winner..." + usr);
     } else {
         logMsg(new Date().getTime(), "WARN", ch.server.name, ch.name, "No winner of lottery for " + pointsball);
-        bot.sendMessage(ch.server.defaultChannel, "The PointsBall lottery amount is `" + pointsball + "` points, here's the winner... NO ONE, rip");
+        bot.sendMessage(ch, "The PointsBall lottery amount is `" + pointsball + "` points, here's the winner... NO ONE, rip");
     }
     delete lottery[ch.server.id];
     pointsball *= 2;
