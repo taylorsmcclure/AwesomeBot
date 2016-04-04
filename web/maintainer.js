@@ -12,6 +12,7 @@ function doMaintainerSetup() {
     
     switchUsage();
     switchServers();
+    switchBotBlocked();
     
     destroyLoader();
 }
@@ -68,6 +69,26 @@ function addServer(link) {
     config("joinserver", link, function() {
         switchServers();
     });
+}
+
+function switchBotBlocked() {
+    document.getElementById("botblockedtable").style.display = "";
+    document.getElementById("botblockedtablebody").innerHTML = "";
+    
+    var blacklist = [];
+    for(var i=0; i<botData.botblocked.length; i++) {
+        blacklist.push(botData.botblocked[i][2]);
+        document.getElementById("botblockedtablebody").innerHTML += "<tr id=\"botblockedentry-" + botData.botblocked[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.botblocked[i][0] + "\" /></td><td>" + botData.botblocked[i][1] + "</td><td>" + botData.botblocked[i][2] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('botblocked', this.parentNode.parentNode.id.substring(16), switchBotBlocked);\"><i>(remove)</i></span></td></tr>";
+    }
+    if(botData.botblocked.length==0) {
+        document.getElementById("botblockedtable").style.display = "none";
+    }
+    
+    var possibleBotBlocked = filterMembers(blacklist);
+    document.getElementById("botblockedselector").innerHTML = "<option value=\"\">Select User</option>";
+    for(var i=0; i<possibleBotBlocked.length; i++) {
+        document.getElementById("botblockedselector").innerHTML += "<option value=\"" + possibleBotBlocked[i][0] + "\">" + possibleBotBlocked[i][1] + "</option>";
+    }
 }
 
 function configUsername() {

@@ -31,6 +31,20 @@ function doAuth() {
     }
 }
 
+function filterMembers(toRemove) {
+    var memberRaw = [];
+    for(var i=0; i<botData.members.length; i++) {
+        memberRaw.push(botData.members[i][1]);
+    }
+    var filtered = [];
+    for(var i=0; i<memberRaw.length; i++) {
+        if(toRemove.indexOf(memberRaw[i])==-1) {
+            filtered.push([memberRaw[i], botData.members[i][0]]);
+        }
+    }
+    return filtered;
+}
+
 function postJSON(data, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open("post", "/config?auth=" + authtoken + "&type=" + authtype + (authtype=="admin" ? ("&svrid=" + JSON.parse(localStorage.getItem("auth")).svrid + "&usrid=" + JSON.parse(localStorage.getItem("auth")).usrid) : ""), true);

@@ -54,6 +54,31 @@
         </div>
         <br>
         
+        <span style="font-size: 20;">
+            <u>Globally Blocked Users</u>
+            <br>
+        </span>
+        <div class="container" id="botblocked">
+            <div style="max-height: 50%;overflow: scroll;overflow-x: hidden;">
+                <table class="tablelist contrastable" id="botblockedtable">
+                    <thead>
+                        <tr>
+                            <th>Avatar</th>
+                            <th>Name</th>
+                            <th>ID</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="botblockedtablebody"></tbody>
+                </table>
+            </div>
+            <span id="botblockedadd">
+                Block: 
+                <select id="botblockedselector" onChange="javascript:config('botblocked', this.value, switchBotBlocked);"></select>
+            </span>
+        </div>
+        <br>
+        
         <button id="refresher" onclick="javascript:document.body.style.opacity = 0;setTimeout(function() {location.reload();}, 250);">Refresh</button>
         
         <select id="themeswitcher" onChange="javascript:switchColors(this.value);">

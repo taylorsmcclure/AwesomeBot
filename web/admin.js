@@ -46,7 +46,7 @@ function switchBlocked() {
     var blacklist = [];
     for(var i=0; i<botData.configs.blocked.length; i++) {
         blacklist.push(botData.configs.blocked[i][2]);
-        document.getElementById("blockedtablebody").innerHTML += "<tr id=\"blockedentry-" + botData.configs.blocked[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.configs.blocked[i][0] + "\" /></td><td>" + botData.configs.blocked[i][1] + "</td><td>" + botData.configs.blocked[i][2] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('blocked', this.parentNode.parentNode.id.substring(13), function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(remove)</i></span></td></tr>";
+        document.getElementById("blockedtablebody").innerHTML += "<tr id=\"blockedentry-" + botData.configs.blocked[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.configs.blocked[i][0] + "\" /></td><td>" + botData.configs.blocked[i][1] + "</td><td>" + botData.configs.blocked[i][2] + "</td>" + (botData.configs.blocked[i][3] ? "" : "<td><span class=\"removetool\" onclick=\"javascript:config('blocked', this.parentNode.parentNode.id.substring(13), function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(remove)</i></span></td>") + "</tr>";
     }
     if(botData.configs.blocked.length==0) {
         document.getElementById("blockedtable").style.display = "none";
@@ -304,20 +304,6 @@ function newExtension(uploads) {
         }
     };
     reader.readAsText(uploads[0]);
-}
-
-function filterMembers(toRemove) {
-    var memberRaw = [];
-    for(var i=0; i<botData.members.length; i++) {
-        memberRaw.push(botData.members[i][1]);
-    }
-    var filtered = [];
-    for(var i=0; i<memberRaw.length; i++) {
-        if(toRemove.indexOf(memberRaw[i])==-1) {
-            filtered.push([memberRaw[i], botData.members[i][0]]);
-        }
-    }
-    return filtered;
 }
 
 function leaveServer() {

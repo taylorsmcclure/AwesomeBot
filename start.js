@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p12";
+var version = "3.3.6p13";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1685,6 +1685,32 @@ bot.on("ready", function() {
                 for(var i=0; i<bot.servers.length; i++) {
                     servers.push([bot.servers[i].iconURL || "http://i.imgur.com/fU70HJK.png", bot.servers[i].name, bot.servers[i].id, "@" + bot.servers[i].owner.username]);
                 }
+                
+                var userList = [];
+                for(var i=0; i<bot.users.length; i++) {
+                    if([bot.user.id, configs.maintainer].indexOf(bot.users[i].id)==-1) {
+                        userList.push([bot.users[i].username, bot.users[i].id, bot.users[i].avatarURL || "http://i.imgur.com/fU70HJK.png"]);
+                    }
+                }
+                userList.sort(function(a, b) {
+                    a = a[0].toUpperCase();
+                    b = b[0].toUpperCase();
+                    return a < b ? -1 : a > b ? 1 : 0;
+                });
+                
+                var blockedUsers = [];
+                for(var i=0; i<configs.botblocked.length; i++) {
+                    var usr = bot.users.get("id", configs.botblocked[i]);
+                    if(usr) {
+                        blockedUsers.push([usr.avatarURL || "http://i.imgur.com/fU70HJK.png", usr.username, usr.id]);
+                    }
+                }
+                blockedUsers.sort(function(a, b) {
+                    a = a[1].toUpperCase();
+                    b = b[1].toUpperCase();
+                    return a < b ? -1 : a > b ? 1 : 0;
+                });
+                
                 data = {
                     maintainer: bot.users.get("id", configs.maintainer) ? bot.users.get("id", configs.maintainer).username : null,
                     commandusage: totalCommandUsage(),
@@ -1693,6 +1719,8 @@ bot.on("ready", function() {
                     avatar: bot.user.avatarURL || "http://i.imgur.com/fU70HJK.png",
                     game: getGame(bot.user),
                     status: bot.user.status,
+                    members: userList,
+                    botblocked: blockedUsers,
                     servers: servers
                 };
             } else if(req.query.type=="admin" && Object.keys(data).length>0) {
@@ -1736,8 +1764,16 @@ bot.on("ready", function() {
                             currentConfig[key] = [];
                             for(var i=0; i<configs.servers[svr.id][key].length; i++) {
                                 var usr = svr.members.get("id", configs.servers[svr.id][key][i]);
-                                if(usr) {
+                                if(usr && configs.botblocked.indexOf(usr.id)==-1) {
                                     currentConfig[key].push([usr.avatarURL || "http://i.imgur.com/fU70HJK.png",usr.username, usr.id]);
+                                }
+                            }
+                            if(key=="blocked") {
+                                for(var i=0; i<configs.botblocked.length; i++) {
+                                    var usr = bot.users.get("id", configs.botblocked[i]);
+                                    if(usr) {
+                                        currentConfig[key].push([usr.avatarURL || "http://i.imgur.com/fU70HJK.png",usr.username + " (global)", usr.id, true]);
+                                    }
                                 }
                             }
                             currentConfig[key].sort(function(a, b) {
@@ -2328,16 +2364,19 @@ bot.on("message", function (msg, user) {
             }
 
             // Google Play Store/Apple App Store links bot
-            if(msg.author.id!=bot.user.id && (msg.content.toLowerCase().indexOf("linkme ")>-1 || msg.content.toLowerCase().indexOf("appstore ")>-1) && configs.servers[msg.channel.server.id].linkme && stats[msg.channel.server.id].botOn[msg.channel.id]) {
-                if(!stats[msg.channel.server.id].commands.linkme) {
-                    stats[msg.channel.server.id].commands.linkme = 0;
-                }
-                stats[msg.channel.server.id].commands.linkme++;
-                
+            if(msg.author.id!=bot.user.id && ((msg.content.toLowerCase().indexOf("linkme ")>-1 && configs.servers[msg.channel.server.id].linkme) || msg.content.toLowerCase().indexOf("appstore ")>-1 && configs.servers[msg.channel.server.id].appstore) && stats[msg.channel.server.id].botOn[msg.channel.id]) {                
                 if(msg.content.toLowerCase().indexOf("linkme ")>-1) {
                     var app = msg.content.substring(msg.content.indexOf("linkme"));
+                    if(!stats[msg.channel.server.id].commands.linkme) {
+                        stats[msg.channel.server.id].commands.linkme = 0;
+                    }
+                    stats[msg.channel.server.id].commands.linkme++;
                 } else if(msg.content.toLowerCase().indexOf("appstore ")>-1) {
                     var app = msg.content.substring(msg.content.indexOf("appstore"));
+                    if(!stats[msg.channel.server.id].commands.appstore) {
+                        stats[msg.channel.server.id].commands.appstore = 0;
+                    }
+                    stats[msg.channel.server.id].commands.appstore++;
                 }
                 app = app.substring(app.indexOf(" ")+1);
                 var apps = [];
@@ -3204,6 +3243,27 @@ function getOnlineConsole(token) {
 function parseMaintainerConfig(delta, callback) {
     for(var key in delta) {
         switch(key) {
+            case "botblocked":
+                var usr = bot.users.get("id", delta[key]);
+                if(usr) {
+                    if(configs.botblocked.indexOf(usr.id)>-1) {
+                        configs.botblocked.splice(configs.botblocked.indexOf(usr.id), 1);
+                        logMsg(new Date().getTime(), "INFO", "General", null, "Removed " + usr.username + " from botblocked list");
+                    } else {
+                        configs.botblocked.push(usr.id);
+                        logMsg(new Date().getTime(), "INFO", "General", null, "Added " + usr.username + " from botblocked list");
+                    }
+                    saveData("./data/config.json", function(err) {
+                        if(err) {
+                            logMsg(new Date().getTime(), "ERROR", "General", null, "Could not save new config");
+                            throw new Error;
+                        }
+                        callback(err);
+                    });
+                } else {
+                    callback(true);
+                }
+                break;
             case "username":
                 bot.setUsername(delta[key], function(err) {
                     if(err) {
@@ -3598,6 +3658,7 @@ var defaultConfigFile = {
     lottery: true,
     chatterbot: true,
     linkme: true,
+    appstore: true,
     say: true,
     me: true,
     convert: true,
@@ -4347,7 +4408,17 @@ function getHelp(svr) {
         }
     }
 
-    info += "\n\nFor example, you could do `@" + bot.user.username + " remindme 5 s Hello`. You can get app links from the Google Play store by using `linkme <some app>`.\n\nThe following commands are also available via PM:";
+    if(configs.servers[svr.id].linkme) {
+        info += "\n\nYou can get app links from the Google Play store by using `linkme <some app>`";
+        if(configs.servers[svr.id].appstore) {
+            info += " or `appstore <some app>` for the Apple App Store.";
+        } else {
+            info += ".";
+        }
+    } else if(configs.servers[svr.id].appstore) {
+        info += "\n\nYou can get app links from the Apple App Store by using `appstore <some app>`.";
+    }
+    info += "\n\nThe following commands are also available via PM:";
     for(var cmd in pmcommands) {
         info += "\n\t" + cmd;
         if(pmcommands[cmd].usage) {
