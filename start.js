@@ -46,7 +46,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p13";
+var version = "3.3.6p14";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -2761,7 +2761,7 @@ bot.on("presence", function(oldusr, newusr) {
                 if(oldusr.status=="online" && newusr.status!="online") {
                     stats[bot.servers[i].id].members[oldusr.id].seen = new Date().getTime();
                 }
-                if(oldusr.username!=newusr.username && configs.servers[bot.servers[i].id].servermod && configs.servers[svr.id].membermsg && stats[bot.servers[i].id].botOn[bot.servers[i].defaultChannel.id]) {
+                if(oldusr.username!=newusr.username && configs.servers[bot.servers[i].id].servermod && configs.servers[bot.servers[i].id].membermsg && stats[bot.servers[i].id].botOn[bot.servers[i].defaultChannel.id]) {
                     bot.sendMessage(bot.servers[i].defaultChannel, "**@" + oldusr.username + "** is now **@" + newusr.username + "**");
                 }
             }
