@@ -137,6 +137,7 @@ Patch #15: Linkme and disconnected improvements
 Patch #16: Help and join tweaks  
 Patch #17: Fixed help extended help  
 Patch #18: Added config presets, web interface performances fixes  
+Patch #19: More web interface performance fixes  
  
 Open an issue to report a bug or suggest a new feature!
 
