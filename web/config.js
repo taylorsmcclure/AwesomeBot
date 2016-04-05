@@ -32,16 +32,9 @@ function doAuth() {
 }
 
 function filterMembers(toRemove, callback) {
-    /*var filterWorker = new Worker("filter.js");
-    filterWorker.postMessage([botData.members, toRemove]);
-    filterWorker.onmessage = function(e) {
-        callback(e);
-    }*/
-    console.log("starting now...");
     var filtered = botData.members.filter(function(obj) {
         return toRemove.indexOf(obj[1])==-1;
     });
-    console.log("done!");
     callback({data: filtered});
 }
 

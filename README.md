@@ -138,6 +138,7 @@ Patch #16: Help and join tweaks
 Patch #17: Fixed help extended help  
 Patch #18: Added config presets, web interface performances fixes  
 Patch #19: More web interface performance fixes  
+Patch #20: Cleaned up some test code  
  
 Open an issue to report a bug or suggest a new feature!
 

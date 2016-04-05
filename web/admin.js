@@ -5,21 +5,13 @@ function doAdminSetup() {
     document.getElementById("botsince").innerHTML = botData.botnm + " added " + botData.joined + " ago";
     
     switchAdmins();
-    console.log("done-admins");
     switchBlocked();
-    console.log("done-blocked");
     switchStrikes();
-    console.log("done-strikes");
     switchRss();
-    console.log("done-rss");
     switchCommands();
-    console.log("done-commands");
     switchManage();
-    console.log("done-manage");
     switchTriviaSets();
-    console.log("done-trivia");
     switchExtensions();
-    console.log("done-extensions");
     
     destroyLoader();
 }

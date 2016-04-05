@@ -47,7 +47,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p19";
+var version = "3.3.6p20";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
