@@ -5,26 +5,35 @@ function doAdminSetup() {
     document.getElementById("botsince").innerHTML = botData.botnm + " added " + botData.joined + " ago";
     
     switchAdmins();
+    console.log("done-admins");
     switchBlocked();
+    console.log("done-blocked");
     switchStrikes();
+    console.log("done-strikes");
     switchRss();
+    console.log("done-rss");
     switchCommands();
+    console.log("done-commands");
     switchManage();
+    console.log("done-manage");
     switchTriviaSets();
+    console.log("done-trivia");
     switchExtensions();
+    console.log("done-extensions");
     
     destroyLoader();
 }
 
 function switchAdmins() {
     document.getElementById("adminstable").style.display = "";
-    document.getElementById("adminstablebody").innerHTML = "";
     
     var blacklist = [];
+    var adminstablebody = "";
     for(var i=0; i<botData.configs.admins.length; i++) {
         blacklist.push(botData.configs.admins[i][2]);
-        document.getElementById("adminstablebody").innerHTML += "<tr id=\"adminsentry-" + botData.configs.admins[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.configs.admins[i][0] + "\" /></td><td>" + botData.configs.admins[i][1] + "</td><td>" + botData.configs.admins[i][2] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('admins', this.parentNode.parentNode.id.substring(12), function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(remove)</i></span></td></tr>";
+        adminstablebody += "<tr id=\"adminsentry-" + botData.configs.admins[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.configs.admins[i][0] + "\" /></td><td>" + botData.configs.admins[i][1] + "</td><td>" + botData.configs.admins[i][2] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('admins', this.parentNode.parentNode.id.substring(12), function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(remove)</i></span></td></tr>";
     }
+    document.getElementById("adminstablebody").innerHTML = adminstablebody;
     if(botData.configs.admins.length==0) {
         document.getElementById("adminstable").style.display = "none";
     }
@@ -32,22 +41,25 @@ function switchAdmins() {
     for(var i=0; i<botData.configs.blocked.length; i++) {
         blacklist.push(botData.configs.blocked[i][2]);
     }
-    var possibleAdmins = filterMembers(blacklist);
-    document.getElementById("adminsselector").innerHTML = "<option value=\"\">Select Member</option>";
-    for(var i=0; i<possibleAdmins.length; i++) {
-        document.getElementById("adminsselector").innerHTML += "<option value=\"" + possibleAdmins[i][0] + "\">" + possibleAdmins[i][1] + "</option>";
-    }
+    filterMembers(blacklist, function(possibleAdmins) {
+        var adminsselector = "<option value=\"\">Select Member</option>";
+        for(var i=0; i<possibleAdmins.data.length; i++) {
+            adminsselector += "<option value=\"" + possibleAdmins.data[i][1] + "\">" + possibleAdmins.data[i][0] + "</option>";
+        }
+        document.getElementById("adminsselector").innerHTML = adminsselector;
+    });
 }
 
 function switchBlocked() {
     document.getElementById("blockedtable").style.display = "";
-    document.getElementById("blockedtablebody").innerHTML = "";
     
     var blacklist = [];
+    var blockedtablebody = "";
     for(var i=0; i<botData.configs.blocked.length; i++) {
         blacklist.push(botData.configs.blocked[i][2]);
-        document.getElementById("blockedtablebody").innerHTML += "<tr id=\"blockedentry-" + botData.configs.blocked[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.configs.blocked[i][0] + "\" /></td><td>" + botData.configs.blocked[i][1] + "</td><td>" + botData.configs.blocked[i][2] + "</td>" + (botData.configs.blocked[i][3] ? "" : "<td><span class=\"removetool\" onclick=\"javascript:config('blocked', this.parentNode.parentNode.id.substring(13), function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(remove)</i></span></td>") + "</tr>";
+        blockedtablebody += "<tr id=\"blockedentry-" + botData.configs.blocked[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.configs.blocked[i][0] + "\" /></td><td>" + botData.configs.blocked[i][1] + "</td><td>" + botData.configs.blocked[i][2] + "</td>" + (botData.configs.blocked[i][3] ? "" : "<td><span class=\"removetool\" onclick=\"javascript:config('blocked', this.parentNode.parentNode.id.substring(13), function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(remove)</i></span></td>") + "</tr>";
     }
+    document.getElementById("blockedtablebody").innerHTML = blockedtablebody;
     if(botData.configs.blocked.length==0) {
         document.getElementById("blockedtable").style.display = "none";
     }
@@ -55,22 +67,25 @@ function switchBlocked() {
     for(var i=0; i<botData.configs.admins.length; i++) {
         blacklist.push(botData.configs.admins[i][2]);
     }
-    var possibleBlocked = filterMembers(blacklist);
-    document.getElementById("blockedselector").innerHTML = "<option value=\"\">Select Member</option>";
-    for(var i=0; i<possibleBlocked.length; i++) {
-        document.getElementById("blockedselector").innerHTML += "<option value=\"" + possibleBlocked[i][0] + "\">" + possibleBlocked[i][1] + "</option>";
-    }
+    filterMembers(blacklist, function(possibleBlocked) {
+        var blockedselector = "<option value=\"\">Select Member</option>";
+        for(var i=0; i<possibleBlocked.data.length; i++) {
+            blockedselector += "<option value=\"" + possibleBlocked.data[i][1] + "\">" + possibleBlocked.data[i][0] + "</option>";
+        }
+        document.getElementById("blockedselector").innerHTML = blockedselector;
+    });
 }
 
 function switchStrikes() {
     document.getElementById("strikestable").style.display = "";
-    document.getElementById("strikestablebody").innerHTML = "";
     
     var blacklist = [];
+    var strikestablebody = "";
     for(var i=botData.strikes.length-1; i>=0; i--) {
         blacklist.push(botData.strikes[i][0]);
-        document.getElementById("strikestablebody").innerHTML += "<tr id=\"strikesentry-" + botData.strikes[i][0] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.strikes[i][1] + "\" /></td><td>" + botData.strikes[i][2] + "</td><td>" + botData.strikes[i][3] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('strikes', [this.parentNode.parentNode.id.substring(13), '+1'], function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(+1)</i></span></td><td><span class=\"removetool\" onclick=\"javascript:config('strikes', [this.parentNode.parentNode.id.substring(13), '-1'], function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(-1)</i></span></td></tr>";
+        strikestablebody += "<tr id=\"strikesentry-" + botData.strikes[i][0] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.strikes[i][1] + "\" /></td><td>" + botData.strikes[i][2] + "</td><td>" + botData.strikes[i][3] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('strikes', [this.parentNode.parentNode.id.substring(13), '+1'], function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(+1)</i></span></td><td><span class=\"removetool\" onclick=\"javascript:config('strikes', [this.parentNode.parentNode.id.substring(13), '-1'], function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(-1)</i></span></td></tr>";
     }
+    document.getElementById("strikestablebody").innerHTML = strikestablebody;
     if(botData.strikes.length==0) {
         document.getElementById("strikestable").style.display = "none";
     }
@@ -78,20 +93,23 @@ function switchStrikes() {
     for(var i=0; i<botData.configs.admins.length; i++) {
         blacklist.push(botData.configs.admins[i][2]);
     }
-    var possibleStrikes = filterMembers(blacklist);
-    document.getElementById("strikesselector").innerHTML = "<option value=\"\">Select Member</option>";
-    for(var i=0; i<possibleStrikes.length; i++) {
-        document.getElementById("strikesselector").innerHTML += "<option value=\"" + possibleStrikes[i][0] + "\">" + possibleStrikes[i][1] + "</option>";
-    }
+    filterMembers(blacklist, function(possibleStrikes) {
+        var strikesselector = "<option value=\"\">Select Member</option>";
+        for(var i=0; i<possibleStrikes.data.length; i++) {
+            strikesselector += "<option value=\"" + possibleStrikes.data[i][1] + "\">" + possibleStrikes.data[i][0] + "</option>";
+        }
+        document.getElementById("strikesselector").innerHTML = strikesselector;
+    });
 }
 
 function switchRss() {
     document.getElementById("rsstable").style.display = "";
-    document.getElementById("rsstablebody").innerHTML = "";
     
+    var rsstablebody = "";
     for(var i=0; i<botData.configs.rss[1].length; i++) {
-        document.getElementById("rsstablebody").innerHTML += "<tr id=\"rssentry-" + i + "\"><td>" + botData.configs.rss[2][i] + "</td><td>" + botData.configs.rss[1][i] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('rss', this.parentNode.parentNode.id.substring(9), switchRss);\"><i>(remove)</i></span></td></tr>";
+        rsstablebody += "<tr id=\"rssentry-" + i + "\"><td>" + botData.configs.rss[2][i] + "</td><td>" + botData.configs.rss[1][i] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('rss', this.parentNode.parentNode.id.substring(9), switchRss);\"><i>(remove)</i></span></td></tr>";
     }
+    document.getElementById("rsstablebody").innerHTML = rsstablebody;
     if(botData.configs.rss[1].length==0) {
         document.getElementById("rsstable").style.display = "none";
     }
@@ -114,12 +132,13 @@ function newRss() {
 }
 
 function switchCommands() {
-    document.getElementById("commands").innerHTML = "";
+    var commands = "";
     for(var cmd in botData.configs) {
         if(["admins", "blocked", "extensions", "newgreeting", "nsfwfilter", "rss", "servermod", "spamfilter"].indexOf(cmd)==-1) {
-            document.getElementById("commands").innerHTML += "<label><input style=\"height: auto;\" id=\"commandsentry-" + cmd + "\" type=\"checkbox\" onclick=\"javascript:config(this.id.substring(14), this.checked, switchCommands);\" " + (botData.configs[cmd] ? "checked " : "") + "/>" + cmd + "</label><br>";
+            commands += "<label><input style=\"height: auto;\" id=\"commandsentry-" + cmd + "\" type=\"checkbox\" onclick=\"javascript:config(this.id.substring(14), this.checked, switchCommands);\" " + (botData.configs[cmd] ? "checked " : "") + "/>" + cmd + "</label><br>";
         }
     }
+    document.getElementById("commands").innerHTML = commands;
 }
 
 function switchManage() {
@@ -220,12 +239,12 @@ function configCA(type) {
 
 function switchTriviaSets() {
     document.getElementById("triviasetstable").style.display = "";
-    document.getElementById("triviasetstablebody").innerHTML = "";
     
+    var triviasetstablebody = "";
     for(var i=0; i<botData.configs.triviasets.length; i++) {
-        var info = "<tr id=\"triviasetsentry-" + encodeURI(botData.configs.triviasets[i][0]) + "\"><td>" + botData.configs.triviasets[i][0] + "</td><td>" + botData.configs.triviasets[i][1] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('triviasets', this.parentNode.parentNode.id.substring(16), switchTriviaSets);\"><i>(remove)</i></span></td></tr>";
-        document.getElementById("triviasetstablebody").innerHTML += info;
+        triviasetstablebody += "<tr id=\"triviasetsentry-" + encodeURI(botData.configs.triviasets[i][0]) + "\"><td>" + botData.configs.triviasets[i][0] + "</td><td>" + botData.configs.triviasets[i][1] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('triviasets', this.parentNode.parentNode.id.substring(16), switchTriviaSets);\"><i>(remove)</i></span></td></tr>";
     }
+    document.getElementById("triviasetstablebody").innerHTML = triviasetstablebody;
     if(botData.configs.triviasets.length==0) {
         document.getElementById("triviasetstable").style.display = "none";
     }
@@ -257,8 +276,8 @@ function newTriviaSet(uploads) {
 
 function switchExtensions() {
     document.getElementById("extensionstable").style.display = "";
-    document.getElementById("extensionstablebody").innerHTML = "";
     
+    var extensionstablebody = "";
     for(var i=0; i<botData.configs.extensions.length; i++) {
         var info = "<tr id=\"extensionsentry-" + encodeURI(botData.configs.extensions[i][0]) + "\"><td>" + botData.configs.extensions[i][0] + "</td><td>" + botData.configs.extensions[i][1] + "</td><td>";
         if(botData.configs.extensions[i][2]) {
@@ -271,8 +290,9 @@ function switchExtensions() {
             info += "All";
         }
         info += "</td><td><span class=\"removetool\" onclick=\"javascript:config('extensions', this.parentNode.parentNode.id.substring(16), switchExtensions);\"><i>(remove)</i></span>&nbsp;<span class=\"removetool\" onclick=\"javascript:showExtension(" + i + ");\"><i>(view code)</i></span></td></tr>";
-        document.getElementById("extensionstablebody").innerHTML += info;
+        extensionstablebody += info;
     }
+    document.getElementById("extensionstablebody").innerHTML = extensionstablebody;
     if(botData.configs.extensions.length==0) {
         document.getElementById("extensionstable").style.display = "none";
     }

@@ -31,18 +31,18 @@ function doAuth() {
     }
 }
 
-function filterMembers(toRemove) {
-    var memberRaw = [];
-    for(var i=0; i<botData.members.length; i++) {
-        memberRaw.push(botData.members[i][1]);
-    }
-    var filtered = [];
-    for(var i=0; i<memberRaw.length; i++) {
-        if(toRemove.indexOf(memberRaw[i])==-1) {
-            filtered.push([memberRaw[i], botData.members[i][0]]);
-        }
-    }
-    return filtered;
+function filterMembers(toRemove, callback) {
+    /*var filterWorker = new Worker("filter.js");
+    filterWorker.postMessage([botData.members, toRemove]);
+    filterWorker.onmessage = function(e) {
+        callback(e);
+    }*/
+    console.log("starting now...");
+    var filtered = botData.members.filter(function(obj) {
+        return toRemove.indexOf(obj[1])==-1;
+    });
+    console.log("done!");
+    callback({data: filtered});
 }
 
 function postJSON(data, callback) {

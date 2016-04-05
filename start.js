@@ -2,6 +2,7 @@ try {
     // Get all the basic modules and files setup
     const Discord = require("discord.js");
     var configs = require("./data/config.json");
+    var configDefaults = require("./defaults.json");
     const AuthDetails = require("./auth.json");
     var profileData = require("./data/profiles.json");
     var stats = require("./data/stats.json");
@@ -45,11 +46,8 @@ try {
     process.exit(1);
 }
 
-// TODO: configuration presets for full and lite
-// TODO: giveaway command via PM
-
 // Bot setup
-var version = "3.3.6p16";
+var version = "3.3.6p18";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1751,7 +1749,7 @@ bot.on("ready", function() {
                     var members = [];
                     for(var i=0; i<svr.members.length; i++) {
                         if(configs.botblocked.indexOf(svr.members[i].id)==-1 && svr.members[i].id!=bot.user.id) {
-                            members.push([svr.members[i].username.replaceAll("\"", "'"), svr.members[i].id]);
+                            members.push([svr.members[i].username, svr.members[i].id]);
                         }
                     }
                     members.sort(function(a, b) {
@@ -3362,6 +3360,21 @@ function parseMaintainerConfig(delta, callback) {
 function parseAdminConfig(delta, svr, consoleid, callback) {
     for(var key in delta) {
         switch(key) {
+            case "preset":
+                delta[key] = delta[key].toLowerCase();
+                if(configDefaults[delta[key]] && delta[key]!="default") {
+                    for(var config in configDefaults[delta[key]]) {
+                        configs.servers[svr.id][config] = JSON.parse(JSON.stringify(configDefaults[delta[key]][config]));
+                    }
+                    logMsg(new Date().getTime(), "INFO", consoleid, null, "Applied config preset " + delta[key] + " for server " + svr.name);
+                } else if(delta[key]=="default") {
+                    defaultConfig(svr);
+                    logMsg(new Date().getTime(), "INFO", consoleid, null, "Reset configs for server " + svr.name);
+                } else {
+                    callback(true);
+                    return;
+                }
+                break;
             case "admins":
             case "blocked":
                 if(isNaN(delta[key])) {
@@ -3647,49 +3660,6 @@ function addExtension(extension, svr, consoleid, callback) {
     }
 }
 
-// Default config file
-var defaultConfigFile = {
-    admins: [],
-    blocked: [],
-    newgreeting: "",
-    rss: [true, ["http://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=h&num=3&output=rss"], ["gnews"]],
-    servermod: true,
-    membermsg: true,
-    spamfilter: true,
-    nsfwfilter: true,
-    customroles: true,
-    customcolors: true,
-    tag: true,
-    stats: true,
-    points: true,
-    lottery: true,
-    chatterbot: true,
-    linkme: true,
-    appstore: true,
-    say: true,
-    me: true,
-    convert: true,
-    quote: true,
-    twitter: true,
-    youtube: true,
-    image: true,
-    gif: true,
-    wolfram: true,
-    wiki: true,
-    weather: true,
-    stock: true,
-    reddit: true,
-    roll: true,
-    games: true,
-    profile: true,
-    tagreaction: true,
-    poll: true,
-    trivia: true,
-    tags: {},
-    triviasets: {},
-    extensions: {}
-};
-
 // Adds default settings for a server to config.json
 function defaultConfig(svr) {
     if(!configs.servers[svr.id]) {
@@ -3706,8 +3676,11 @@ function defaultConfig(svr) {
                 }
             }
         }
-        configs.servers[svr.id] = JSON.parse(JSON.stringify(defaultConfigFile)); 
+        configs.servers[svr.id] = JSON.parse(JSON.stringify(configDefaults.default)); 
         configs.servers[svr.id].admins = adminList;
+        for(var key in configDefaults.full) {
+            configs.servers[svr.id][key] = JSON.parse(JSON.stringify(configDefaults.full[key]));
+        }
         saveData("./data/config.json", function(err) {
             if(err) {
                 logMsg(new Date().getTime(), "ERROR", svr.name, null, "Failed to save default configs");
@@ -3775,15 +3748,21 @@ function updateBot(msg) {
 function checkConfig(svr) {
     var changed = false;
      
-    for(var config in defaultConfigFile) {
-        if(configs.servers[svr.id][config]==null) {
+    for(var key in configDefaults.default) {
+        if(configs.servers[svr.id][key]==null) {
             changed = true;
-            configs.servers[svr.id][config] = JSON.parse(JSON.stringify(defaultConfigFile[config]));
+            configs.servers[svr.id][key] = JSON.parse(JSON.stringify(configDefaults.default[key]));
+        }
+    }
+    for(var key in configDefaults.full) {
+        if(configs.servers[svr.id][key]==null) {
+            changed = true;
+            configs.servers[svr.id][key] = JSON.parse(JSON.stringify(configDefaults.full[key]));
         }
     }
     
-    for(config in configs.servers[svr.id]) {
-        if(defaultConfigFile[config]==null) {
+    for(key in configs.servers[svr.id]) {
+        if(configDefaults.default[key]==null && configDefaults.full[key]==null) {
             changed = true;
             delete configs.servers[svr.id][config];
         }

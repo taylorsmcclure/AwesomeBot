@@ -47,10 +47,11 @@ function switchUsage() {
 }
 
 function switchServers() {
-    document.getElementById("servertablebody").innerHTML = "";
+    var servertablebody = "";
     for(var i=0; i<botData.servers.length; i++) {
-        document.getElementById("servertablebody").innerHTML += "<tr id=\"serverentry-" + botData.servers[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.servers[i][0] + "\" /></td><td>" + botData.servers[i][1] + "</td><td>" + botData.servers[i][2] + "</td><td>" + botData.servers[i][3] + "</td><td><span class=\"removetool\" onclick=\"javascript:removeServer(this.parentNode.parentNode.id)\"><i>(remove)</i></span>&nbsp;<span class=\"removetool\" onclick=\"javascript:config('clearstats', this.parentNode.parentNode.id.substring(12), function(err) {if(!err) {switchUsage()}});\"><i>(clear stats)</i></span></td></tr>";
+        servertablebody += "<tr id=\"serverentry-" + botData.servers[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.servers[i][0] + "\" /></td><td>" + botData.servers[i][1] + "</td><td>" + botData.servers[i][2] + "</td><td>" + botData.servers[i][3] + "</td><td><span class=\"removetool\" onclick=\"javascript:removeServer(this.parentNode.parentNode.id)\"><i>(remove)</i></span>&nbsp;<span class=\"removetool\" onclick=\"javascript:config('clearstats', this.parentNode.parentNode.id.substring(12), function(err) {if(!err) {switchUsage()}});\"><i>(clear stats)</i></span></td></tr>";
     }
+    document.getElementById("servertablebody").innerHTML = servertablebody;
 }
 
 function removeServer(svrid) {
@@ -73,22 +74,25 @@ function addServer(link) {
 
 function switchBotBlocked() {
     document.getElementById("botblockedtable").style.display = "";
-    document.getElementById("botblockedtablebody").innerHTML = "";
     
     var blacklist = [];
+    var botblockedtablebody = "";
     for(var i=0; i<botData.botblocked.length; i++) {
         blacklist.push(botData.botblocked[i][2]);
-        document.getElementById("botblockedtablebody").innerHTML += "<tr id=\"botblockedentry-" + botData.botblocked[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.botblocked[i][0] + "\" /></td><td>" + botData.botblocked[i][1] + "</td><td>" + botData.botblocked[i][2] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('botblocked', this.parentNode.parentNode.id.substring(16), switchBotBlocked);\"><i>(remove)</i></span></td></tr>";
+        botblockedtablebody += "<tr id=\"botblockedentry-" + botData.botblocked[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.botblocked[i][0] + "\" /></td><td>" + botData.botblocked[i][1] + "</td><td>" + botData.botblocked[i][2] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('botblocked', this.parentNode.parentNode.id.substring(16), switchBotBlocked);\"><i>(remove)</i></span></td></tr>";
     }
+    document.getElementById("botblockedtablebody").innerHTML = botblockedtablebody;
     if(botData.botblocked.length==0) {
         document.getElementById("botblockedtable").style.display = "none";
     }
     
-    var possibleBotBlocked = filterMembers(blacklist);
-    document.getElementById("botblockedselector").innerHTML = "<option value=\"\">Select User</option>";
-    for(var i=0; i<possibleBotBlocked.length; i++) {
-        document.getElementById("botblockedselector").innerHTML += "<option value=\"" + possibleBotBlocked[i][0] + "\">" + possibleBotBlocked[i][1] + "</option>";
-    }
+    filterMembers(blacklist, function(possibleBotBlocked) {
+        var botblockedselector = "<option value=\"\">Select User</option>";
+        for(var i=0; i<possibleBotBlocked.data.length; i++) {
+            botblockedselector += "<option value=\"" + possibleBotBlocked.data[i][1] + "\">" + possibleBotBlocked.data[i][0] + "</option>";
+        }
+        document.getElementById("botblockedselector").innerHTML = botblockedselector;
+    });
 }
 
 function configUsername() {
