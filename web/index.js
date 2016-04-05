@@ -53,7 +53,7 @@ function writeInterface() {
             for(var i=0; i<data.stream.length; i++) {
                 statsselect += "<option value=\"" + data.stream[i][1] + "\">" + data.stream[i][0] + "</option>";
             }
-            document.getElementById("statsselect").innerHTML = statsselect;
+            document.getElementById("statsselect").innerHTML += statsselect;
             
             switchStats("null", true);
             

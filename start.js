@@ -47,7 +47,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p20";
+var version = "3.3.6p21";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -131,6 +131,7 @@ var commands = {
             }
         }
     },
+    // Database of easily accessible responses
     "tag": {
         usage: "<key>[|<value>]",
         extended: "A quick snippet response system, inspired by the command in 42. The parameters to set a tag are the keyword you want to set a response for and the response itself, separated by a pipe (not a space as it usually is). For example, after setting `tag bob|the builder`, `tag bob` would make the bot respond with `the builder`. Bot admins on this server can clear tags with `tag clear`.",
@@ -1090,11 +1091,12 @@ var commands = {
     },
     // Displays list of options and RSS feeds
     "help": {
-        usage: "[<command name>] [\"pm\"]",
+        usage: "[<command name>] [\"public\"]",
         extended: "Shows the complete list of bot commands and features, specific to this server via PM. You can include a command name as the parameter to get more information about it. Include the `public` option to get the information in the main chat.",
         process: function(bot, msg, suffix) {
             if(!suffix) {
                 bot.sendMessage(msg.author, "Tag me in the main chat then state one of the following commands:" + getHelp(msg.channel.server));
+                bot.sendMessage(msg.channel, msg.author + " Check your PMs");
             } else if(suffix.toLowerCase()=="public") {
                 bot.sendMessage(msg.channel, "Tag me then state one of the following commands:" + getHelp(msg.channel.server));
             } else {
@@ -1102,6 +1104,7 @@ var commands = {
                     bot.sendMessage(msg.channel, getCommandHelp(msg.channel.server, suffix.toLowerCase()));
                 } else {
                     bot.sendMessage(msg.author, getCommandHelp(msg.channel.server, suffix.toLowerCase()));
+                    bot.sendMessage(msg.channel, msg.author + " Check your PMs");
                 }
             }
         }
@@ -1112,7 +1115,7 @@ var pmcommands = {
     // Configuration options in wizard or online for maintainer and admins
     "config": {
         usage: "[<server>]",
-        extended: "Provides options to configure the bot overall or in a server. You must have privileges as the bot maintainer and/or admin in this server. Once you are authenticated, you will be " + (configs.hosting ? "given a link to the online interface for configuration" : "taken to a configuration wizard that allows you to enter configuration commands") + ".",
+        extended: configs.hosting ? "Provides options to configure the bot overall or in a server. You must have privileges as the bot maintainer and/or admin in this server. Once you are authenticated, you will be given a link to the online interface for configuration." : "Ordinarily, this command would allow you to configure the bot on a server or in general. However, the maintainer has not provided a web interface hosting URL, so `config` is not available.",
         process: function(bot, msg, suffix) {
             // Maintainer control panel for overall bot things
             if(msg.author.id==configs.maintainer && !suffix && !maintainerconsole) {
@@ -1491,39 +1494,6 @@ var pmcommands = {
             }
         }
     }
-}
-
-// Fetches posts from RSS feeds listed in config.json
-function rssfeed(bot, msg, url, count, full) {
-    if(count > 5 || !count || isNaN(count)) {
-        count = 5;
-    }
-    var FeedParser = require("feedparser");
-    var feedparser = new FeedParser();
-    request(url).pipe(feedparser);
-    feedparser.on("error", function(error){
-        logMsg(new Date().getTime(), "ERROR", msg.channel.server.name, msg.channel.name, "Failed to read requested feed");
-        bot.sendMessage(msg.channel, "Failed to read feed. Sorry.");
-    });
-    var shown = 0;
-    feedparser.on("readable", function() {
-        var stream = this;
-        shown++;
-        if(shown > count){
-            return;
-        }
-        var item = stream.read();
-        bot.sendMessage(msg.channel, item.title + " - " + item.link, function() {
-            if(full === true){
-                var text = htmlToText.fromString(item.description, {
-                    wordwrap:false,
-                    ignoreHref:true
-                });
-                bot.sendMessage(msg.channel, text);
-            }
-        });
-        stream.alreadyRead = true;
-    });
 }
 
 // Initializes bot and outputs to console
@@ -2788,6 +2758,39 @@ function reconnect() {
             reconnect();
         }
     }, 5000);
+}
+
+// Fetches posts from RSS feeds listed in config.json
+function rssfeed(bot, msg, url, count, full) {
+    if(count > 5 || !count || isNaN(count)) {
+        count = 5;
+    }
+    var FeedParser = require("feedparser");
+    var feedparser = new FeedParser();
+    request(url).pipe(feedparser);
+    feedparser.on("error", function(error){
+        logMsg(new Date().getTime(), "ERROR", msg.channel.server.name, msg.channel.name, "Failed to read requested feed");
+        bot.sendMessage(msg.channel, "Failed to read feed. Sorry.");
+    });
+    var shown = 0;
+    feedparser.on("readable", function() {
+        var stream = this;
+        shown++;
+        if(shown > count){
+            return;
+        }
+        var item = stream.read();
+        bot.sendMessage(msg.channel, item.title + " - " + item.link, function() {
+            if(full===true){
+                var text = htmlToText.fromString(item.description, {
+                    wordwrap: false,
+                    ignoreHref: true
+                });
+                bot.sendMessage(msg.channel, text);
+            }
+        });
+        stream.alreadyRead = true;
+    });
 }
 
 // Returns a new trivia question from external questions/answers list
