@@ -45,6 +45,9 @@ try {
     process.exit(1);
 }
 
+// TODO: configuration presets for full and lite
+// TODO: giveaway command via PM
+
 // Bot setup
 var version = "3.3.6p16";
 var outOfDate = 0;
@@ -1090,7 +1093,7 @@ var commands = {
     // Displays list of options and RSS feeds
     "help": {
         usage: "[<command name>] [\"pm\"]",
-        extended: "Shows the complete list of bot commands and features, specific to this server. You can include a command name as the parameter to get more information about it. Include the `pm` option to get the information sent via private message.",
+        extended: "Shows the complete list of bot commands and features, specific to this server via PM. You can include a command name as the parameter to get more information about it. Include the `public` option to get the information in the main chat.",
         process: function(bot, msg, suffix) {
             if(!suffix) {
                 bot.sendMessage(msg.author, "Tag me in the main chat then state one of the following commands:" + getHelp(msg.channel.server));
