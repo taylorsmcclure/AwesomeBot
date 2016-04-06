@@ -133,6 +133,17 @@ function switchCommands() {
     document.getElementById("commands").innerHTML = commands;
 }
 
+function resetConfigs() {
+    var u = confirm("All configs will be reset. Are you sure?");
+    if(u) {
+        config("preset", "default", function(err) {
+            if(!err) {
+                location.reload();
+            }
+        });
+    }
+}
+
 function switchManage() {
     if(document.getElementById("manageentry-servermod").checked!=botData.configs.servermod) {
         document.getElementById("manageentry-servermod").checked = botData.configs.servermod;
@@ -319,7 +330,7 @@ function newExtension(uploads) {
 }
 
 function leaveServer() {
-    var u = "Bot will leave this server. Are you sure?";
+    var u = confirm("Bot will leave this server. Are you sure?");
     if(u) {
         config("leave", true, function(err) {
             localStorage.removeItem("auth");

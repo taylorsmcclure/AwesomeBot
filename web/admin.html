@@ -123,7 +123,7 @@
             <u>Command Settings</u>
         </span>
         <div class="container" id="commands"></div>
-        Apply Preset: <button id="presetentry-full" onclick="javascript:config('preset', 'full', switchCommands);">Full</button>&nbsp;<button id="presetentry-lite" onclick="javascript:config('preset', 'lite', switchCommands);">Lite</button>&nbsp;<button id="presetentry-sense" onclick="javascript:config('preset', 'sense', switchCommands);">Sense</button><br>
+        Apply Preset: <button id="presetentry-full" onclick="javascript:config('preset', 'full', switchCommands);">Full</button>&nbsp;<button id="presetentry-lite" onclick="javascript:config('preset', 'lite', switchCommands);">Lite</button>&nbsp;<button id="presetentry-sense" onclick="javascript:config('preset', 'sense', switchCommands);">Sense</button>&nbsp;<button id="presetentry-sense" onclick="javascript:resetConfigs();">Default</button><br>
         <br>
         
         <span style="font-size: 20;">
@@ -152,11 +152,11 @@
             <span id="closeallspace" style="font-size: 6;"><br><br></span>
             Clean: 
             <select id="cleanselector"></select>
-            <input id="cleaninput" type="text" style="width: 25;" placeholder="#" onkeydown="if(event.keyCode==13){configCA('clean')}"></input>
+            <input id="cleaninput" type="number" style="width: 25;" placeholder="#" onkeydown="if(event.keyCode==13){configCA('clean')}"></input>
             <span style="font-size: 6;"><br><br></span>
             Archive: 
             <select id="archiveselector"></select>
-            <input id="archiveinput" type="text" style="width: 25;" placeholder="#" onkeydown="if(event.keyCode==13){configCA('archive')}"></input>
+            <input id="archiveinput" type="number" style="width: 25;" placeholder="#" onkeydown="if(event.keyCode==13){configCA('archive')}"></input>
         </div>
         <br>
         

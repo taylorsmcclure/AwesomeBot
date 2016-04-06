@@ -95,8 +95,9 @@ The file you attach should have the following basic structure:
 `process` is the crucial component here (you can compress your code into a string [using this website](http://javascriptcompressor.com/)). This code is given 3 seconds to run in a sandbox, with access to the following:
 
  - `unirest`: lightweight HTTP request library
- - `imgur`: preauthenticated `imgur-node-api` module
+ - `imgur`: preauthenticated [imgur-node-api](https://www.npmjs.com/package/imgur-node-api) module
  - `image`: Google Image Search, usage `image(query, num, svrid, callback(url))`
+ - `rss`: [feed-read](https://www.npmjs.com/package/feed-read) module, usage `rss(svrid, url, svrid, callback(err, articles))`
  - `message`: full content of the message
  - `svrid`: the Discord ID of the server you're in
  - `selected`: *for keyword extensions* the index of the match in the `key` array
@@ -140,6 +141,7 @@ Patch #18: Added config presets, web interface performances fixes
 Patch #19: More web interface performance fixes  
 Patch #20: Cleaned up some test code  
 Patch #21: Fixes and tweaks  
+Patch #22: Even more fixes and tweaks!  
  
 Open an issue to report a bug or suggest a new feature!
 

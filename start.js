@@ -21,10 +21,10 @@ try {
     const unirest = require("unirest");
     const request = require("request");
     const levenshtein = require("fast-levenshtein");
-    const htmlToText = require("html-to-text");
     const qs = require("querystring");
     const fs = require("fs");
     const Wiki = require("wikijs");
+    const feed = require("feed-read");
     const convert = require("convert-units");
     const imgur = require("imgur-node-api");
     var wolfram;
@@ -47,7 +47,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p21";
+var version = "3.3.6p22";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -255,9 +255,25 @@ var commands = {
 
                 if(user=="" || !user || isNaN(count)) {
                     user = suffix;
-                    count = 0;
+                    count = 5;
                 }
-                rssfeed(bot, msg, "http://twitrss.me/twitter_user_to_rss/?user=" + user, count, false);
+                getRSS(msg.channel.server.id, "http://twitrss.me/twitter_user_to_rss/?user=" + user, count, function(err, articles) {
+                    if(err) {
+                        logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "Twitter user " + user + " not found");
+                        bot.sendMessage(msg.channel, msg.author + " Twitter user `" + user + "` not found. Make sure not to include the `@`");
+                    } else {
+                        var info = "";
+                        for(var i=0; i<articles.length; i++) {
+                            var tmpinfo = "`" + prettyDate(articles[i].published) + "` " + articles[i].link + "\n";
+                            if((tmpinfo.length + info.length)>2000) {
+                                break;
+                            } else {
+                                info += tmpinfo;
+                            }
+                        }
+                        bot.sendMessage(msg.channel, info);
+                    }
+                });
             } else {
                 logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "Twitter parameters not provided");
                 bot.sendMessage(msg.channel, msg.author + " You confuse me.");
@@ -609,12 +625,14 @@ var commands = {
                             answer: "",
                             attempts: 0,
                             score: 0,
-                            possible: 0
+                            possible: 0,
+                            done: [],
                         };
                         if(tset) {
                             if(!configs.servers[msg.channel.server.id].triviasets[tset]) {
                                 logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "Provided trivia set does not exist");
                                 bot.sendMessage(msg.channel, msg.author + " The higher-ups haven't added that trivia set to my database. The list of available custom sets is available via my help command.");
+                                delete trivia[msg.channel.id];
                                 return;
                             }
                             trivia[msg.channel.id].set = tset;
@@ -648,8 +666,19 @@ var commands = {
                 case "next":
                     if(triviaOn) {
                         logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Trivia question skipped by " + msg.author.username);
-                        bot.sendMessage(msg.channel, "The answer was " + trivia[msg.channel.id].answer + "\n**Next Question:** " + triviaQ(msg.channel, trivia[msg.channel.id].set));
-                        trivia[msg.channel.id].possible++;
+                        var q = triviaQ(msg.channel, trivia[msg.channel.id].set);
+                        if(q) {
+                            bot.sendMessage(msg.channel, "The answer was " + trivia[msg.channel.id].answer + "\n**Next Question:** " + q);
+                            trivia[msg.channel.id].possible++;
+                        } else {
+                            var outof = trivia[msg.channel.id].possible-1;
+                            if(trivia[msg.channel.id].possible==1) {
+                                outof = 1;
+                            }
+                            logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Trivia game ended, score: " + trivia[msg.channel.id].score + " out of " + outof);
+                            bot.sendMessage(msg.channel, "No more questions. Thanks for playing! Y'all got " + trivia[msg.channel.id].score + " out of " + outof);
+                            delete trivia[msg.channel.id];
+                        }
                     } else {
                         logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "No ongoing trivia game in which to skip question");
                         bot.sendMessage(msg.channel, "There isn't a trivia game going on right now. Start one by typing `@" + bot.user.username + " trivia start`");
@@ -659,7 +688,6 @@ var commands = {
                     if(triviaOn) {
                         if(levenshtein.get(suffix.toLowerCase(), trivia[msg.channel.id].answer.toLowerCase())<5 && triviaOn) {
                             logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Correct trivia game answer by " + msg.author.username);
-                            bot.sendMessage(msg.channel, msg.author + " got it right! The answer is " + trivia[msg.channel.id].answer);
                             
                             // Award AwesomePoints to author
                             if(!profileData[msg.author.id]) {
@@ -680,8 +708,21 @@ var commands = {
                             }
                             trivia[msg.channel.id].attempts = 0;
 
-                            bot.sendMessage(msg.channel, "**Next Question:** " + triviaQ(msg.channel, trivia[msg.channel.id].set));
-                            trivia[msg.channel.id].possible++;
+                            var q = triviaQ(msg.channel, trivia[msg.channel.id].set);
+                            if(q) {
+                                bot.sendMessage(msg.channel, msg.author + " got it right! The answer is " + trivia[msg.channel.id].answer + "\n**Next Question:** " + q);
+                                trivia[msg.channel.id].possible++;
+                            } else {
+                                bot.sendMessage(msg.channel, msg.author + " got it right! The answer is " + trivia[msg.channel.id].answer);
+                                
+                                var outof = trivia[msg.channel.id].possible-1;
+                                if(trivia[msg.channel.id].possible==1) {
+                                    outof = 1;
+                                }
+                                logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Trivia game ended, score: " + trivia[msg.channel.id].score + " out of " + outof);
+                                bot.sendMessage(msg.channel, "No more questions. Thanks for playing! Y'all got " + trivia[msg.channel.id].score + " out of " + outof);
+                                delete trivia[msg.channel.id];
+                            }
                         } else if(triviaOn) {
                             bot.sendMessage(msg.channel, msg.author + " Nope :(");
                             trivia[msg.channel.id].attempts++;
@@ -797,14 +838,25 @@ var commands = {
 
                 if(site=="" || !site || isNaN(count)) {
                     site = suffix;
-                    count = 0;
+                    count = 5;
                 }
-                if(configs.servers[msg.channel.server.id].rss[2].indexOf(site.toLowerCase())>-1) {
-                    rssfeed(bot,msg,configs.servers[msg.channel.server.id].rss[1][configs.servers[msg.channel.server.id].rss[2].indexOf(site.toLowerCase())], count, false);
-                } else {
-                    logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "Feed " + site + " not found");
-                    bot.sendMessage(msg.channel, msg.author + " Feed not found.");
-                }
+                getRSS(msg.channel.server.id, site, count, function(err, articles) {
+                    if(err) {
+                        logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "Feed " + site + " not found");
+                        bot.sendMessage(msg.channel, msg.author + " Feed not found.");
+                    } else {
+                        var info = "";
+                        for(var i=0; i<articles.length; i++) {
+                            var tmpinfo = "`" + prettyDate(articles[i].published) + "` **"  + articles[i].title + "**\n" + articles[i].link + "\n";
+                            if((tmpinfo.length + info.length)>2000) {
+                                break;
+                            } else {
+                                info += tmpinfo;
+                            }
+                        }
+                        bot.sendMessage(msg.channel, info);
+                    }
+                });
             }
         }
     },
@@ -1626,9 +1678,10 @@ bot.on("ready", function() {
                 var name = bot.servers[i].name;
                 var owner = bot.servers[i].owner.username.replaceAll("\"", "'");
                 var ms = messages[bot.servers[i].id] || 0;
+                var total = bot.servers[i].members.length;
                 var online = bot.servers[i].members.getAll("status", "online").length;
                 var idle = bot.servers[i].members.getAll("status", "idle").length;
-                data.stream.push([icon, name, owner, ms, online + " online, " + idle + " idle"]);
+                data.stream.push([icon, name, owner, ms, total + " total, " + online + " online, " + idle + " idle"]);
             }
             data.stream.sort(function(a, b) {
                 a = a[1].toUpperCase();
@@ -1655,6 +1708,11 @@ bot.on("ready", function() {
                 for(var i=0; i<bot.servers.length; i++) {
                     servers.push([bot.servers[i].iconURL || "http://i.imgur.com/fU70HJK.png", bot.servers[i].name, bot.servers[i].id, "@" + bot.servers[i].owner.username]);
                 }
+                servers.sort(function(a, b) {
+                    a = a[1].toUpperCase();
+                    b = b[1].toUpperCase();
+                    return a < b ? -1 : a > b ? 1 : 0;
+                });
                 
                 var userList = [];
                 for(var i=0; i<bot.users.length; i++) {
@@ -1776,7 +1834,6 @@ bot.on("ready", function() {
                         }
                     }
                     
-                    // TODO: allow strikes to be added/removed from web interface
                     var strikeList = [];
                     for(var usrid in stats[svr.id].members) {
                         if(stats[svr.id].members[usrid].strikes>0) {
@@ -2293,6 +2350,7 @@ bot.on("message", function (msg, user) {
                             unirest: unirest,
                             imgur: imgur,
                             image: giSearch,
+                            rss: getRSS,
                             message: msg.content.substring((bot.user.mention() + " " + configs.servers[msg.channel.server.id].extensions[ext].key).length),
                             svrid: msg.channel.server.id,
                             author: msg.author.mention(),
@@ -2760,43 +2818,23 @@ function reconnect() {
     }, 5000);
 }
 
-// Fetches posts from RSS feeds listed in config.json
-function rssfeed(bot, msg, url, count, full) {
-    if(count > 5 || !count || isNaN(count)) {
-        count = 5;
+// Fetches posts from RSS feeds
+function getRSS(svrid, site, count, callback) {
+    var url = site;
+    if(configs.servers[svrid].rss[2].indexOf(site)>-1) {
+        url = configs.servers[svrid].rss[1][configs.servers[svrid].rss[2].indexOf(site)];
     }
-    var FeedParser = require("feedparser");
-    var feedparser = new FeedParser();
-    request(url).pipe(feedparser);
-    feedparser.on("error", function(error){
-        logMsg(new Date().getTime(), "ERROR", msg.channel.server.name, msg.channel.name, "Failed to read requested feed");
-        bot.sendMessage(msg.channel, "Failed to read feed. Sorry.");
-    });
-    var shown = 0;
-    feedparser.on("readable", function() {
-        var stream = this;
-        shown++;
-        if(shown > count){
-            return;
+    feed(url, function(err, articles) {
+        if(!err) {
+            articles = articles.slice(0, (count<1 || count>5) ? 5 : count);
         }
-        var item = stream.read();
-        bot.sendMessage(msg.channel, item.title + " - " + item.link, function() {
-            if(full===true){
-                var text = htmlToText.fromString(item.description, {
-                    wordwrap: false,
-                    ignoreHref: true
-                });
-                bot.sendMessage(msg.channel, text);
-            }
-        });
-        stream.alreadyRead = true;
+        callback(err, articles);
     });
 }
 
 // Returns a new trivia question from external questions/answers list
 function triviaQ(ch, tset) {
     var info = "";
-    logMsg(new Date().getTime(), "INFO", ch.server.name, ch.name, "New trivia question");
     
     if(!tset) {
         var r = 4;
@@ -2810,15 +2848,31 @@ function triviaQ(ch, tset) {
             info += line.substring(line.indexOf(":")+2) + "\n";
         });
         getLine("./trivia/trivia" + n + ".txt", (r * 4)-2, function(err, line) {
-            info += line.substring(line.indexOf(":")+2);
+            var q = line.substring(line.indexOf(":")+2);
+            if(trivia[ch.id].done.indexOf(q)==-1) {
+                info += q;
+                trivia[ch.id].done.push(q);
+                logMsg(new Date().getTime(), "INFO", ch.server.name, ch.name, "New trivia question");
+            } else if(trivia[ch.id].done.length==3041) {
+                return null;
+            } else {
+                triviaQ(ch, tset);
+            }
         });
         getLine("./trivia/trivia" + n + ".txt", (r * 4)-1, function(err, line) {
             trivia[ch.id].answer = line.substring(line.indexOf(":")+2).replace("#", "");
         });
     } else {
-        var q = configs.servers[ch.server.id].triviasets[tset][getRandomInt(0, configs.servers[ch.server.id].triviasets[tset].length-1)];
-        info = q.category + "\n" + q.question;
-        trivia[ch.id].answer = q.answer;
+        if(trivia[ch.id].done.indexOf(q)==-1) {
+            var q = configs.servers[ch.server.id].triviasets[tset][getRandomInt(0, configs.servers[ch.server.id].triviasets[tset].length-1)];
+            info = q.category + "\n" + q.question;
+            trivia[ch.id].answer = q.answer;
+            logMsg(new Date().getTime(), "INFO", ch.server.name, ch.name, "New trivia question");
+        } else if(trivia[ch.id].done.length==configs.servers[ch.server.id].triviasets[tset].length) {
+            return null;
+        } else {
+            triviaQ(ch, tset);
+        }
     }
     
     return info;
@@ -3149,6 +3203,7 @@ function runTimerExtension(svrid, extnm) {
             unirest: unirest,
             imgur: imgur,
             image: giSearch,
+            rss: getRSS,
             svrid: svrid,
             setTimeout: setTimeout,
             JSON: JSON,
@@ -3371,7 +3426,7 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                     }
                     logMsg(new Date().getTime(), "INFO", consoleid, null, "Applied config preset " + delta[key] + " for server " + svr.name);
                 } else if(delta[key]=="default") {
-                    defaultConfig(svr);
+                    defaultConfig(svr, true);
                     logMsg(new Date().getTime(), "INFO", consoleid, null, "Reset configs for server " + svr.name);
                 } else {
                     callback(true);
@@ -3391,7 +3446,7 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                             callback(true);
                             return;
                         }
-                        logMsg(new Date().getTime(), "INFO", consoleid, null, "Removed " + usr.username + " from" + key + " list in " + svr.name);
+                        logMsg(new Date().getTime(), "INFO", consoleid, null, "Removed " + usr.username + " from " + key + " list in " + svr.name);
                         configs.servers[svr.id][key].splice(configs.servers[svr.id][key].indexOf(usr.id), 1);
                     } else {
                         if(key=="blocked" && (usr.id==consoleid || usr.id==svr.owner.id || usr.id==configs.maintainer)) {
@@ -3615,6 +3670,7 @@ function addExtension(extension, svr, consoleid, callback) {
             unirest: unirest,
             imgur: imgur,
             image: giSearch,
+            rss: getRSS,
             message: bot.user.mention() + " " + extension.key + " test",
             svrid: svr.id,
             author: bot.user.mention(),
@@ -3664,8 +3720,8 @@ function addExtension(extension, svr, consoleid, callback) {
 }
 
 // Adds default settings for a server to config.json
-function defaultConfig(svr) {
-    if(!configs.servers[svr.id]) {
+function defaultConfig(svr, override) {
+    if(!configs.servers[svr.id] || override) {
         var adminList = [svr.owner.id];
         if(svr.members.get("id", configs.maintainer) && adminList.indexOf(configs.maintainer)==-1) {
             adminList.push(configs.maintainer);
