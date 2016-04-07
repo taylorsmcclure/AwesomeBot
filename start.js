@@ -47,7 +47,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p23";
+var version = "3.3.6p24";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1153,7 +1153,7 @@ var commands = {
                 bot.sendMessage(msg.channel, "Tag me then state one of the following commands:" + getHelp(msg.channel.server));
             } else {
                 if(suffix.indexOf(" ")>-1 && suffix.substring(suffix.indexOf(" ")+1).toLowerCase()=="public" && suffix.substring(0, suffix.indexOf(" "))) {
-                    bot.sendMessage(msg.channel, getCommandHelp(msg.channel.server, suffix.toLowerCase()));
+                    bot.sendMessage(msg.channel, getCommandHelp(msg.channel.server, suffix.substring(0, suffix.indexOf(" ")).toLowerCase()));
                 } else {
                     bot.sendMessage(msg.author, getCommandHelp(msg.channel.server, suffix.toLowerCase()));
                     bot.sendMessage(msg.channel, msg.author + " Check your PMs");

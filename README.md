@@ -139,6 +139,7 @@ Patch #20: Cleaned up some test code
 Patch #21: Fixes and tweaks  
 Patch #22: Even more fixes and tweaks!  
 Patch #23: Fixed web interface data crash  
+Patch #24: Fixed help PM/public bugs  
  
 Open an issue to report a bug or suggest a new feature!
 
