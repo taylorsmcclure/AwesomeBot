@@ -34,11 +34,7 @@ And finally, AwesomeBot can conduct **in-chat polls**, offers a fun **live trivi
 About
 -----
 
-This repository provides the source for the already-running `@AwesomeBot` instance. You are free to use this code as a base for your own bot, so long as you follow the following terms as well as the license:
-
-1. If you modify the promotional message when the bot starts, you *must* add `-UNOFFICIAL` to the verison number on line 4
-2. You may **not** remove the credit to @BitQuote in the help section. If you wish, you may rephrase this along the lines of: `based on AwesomeBot <version> by @BitQuote`
-3. Join our private server if you are modifying the code in any way: [Join BotMakers, Inc.](https://discord.gg/0pRFCTcG2aIY53Jk)
+This repository provides the source for the already-running `@AwesomeBot` instance. You are free to use this code as a base for your own bot, so long as you abide by the terms set in the license. Also, please join our [private Discord server](https://discord.gg/0pRFCTcG2aIY53Jk) if you are modifying the code in any way.
 
 If you want a stable bot, please use the [latest milestone release](https://github.com/BitQuote/AwesomeBot/releases/tag/v3.3.6p4).
 
@@ -142,6 +138,7 @@ Patch #19: More web interface performance fixes
 Patch #20: Cleaned up some test code  
 Patch #21: Fixes and tweaks  
 Patch #22: Even more fixes and tweaks!  
+Patch #23: Fixed web interface data crash  
  
 Open an issue to report a bug or suggest a new feature!
 

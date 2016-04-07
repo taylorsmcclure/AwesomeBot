@@ -47,7 +47,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p22";
+var version = "3.3.6p23";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1638,7 +1638,7 @@ bot.on("ready", function() {
                 if(svr) {
                     data.stream = [];
                     for(var i=0; i<svr.members.length; i++) {
-                        data.stream.push([svr.members[i].username.replaceAll("\"", "'"), svr.members[i].id]);
+                        data.stream.push([svr.members[i].username, svr.members[i].id]);
                     }
                     data.stream.sort(function(a, b) {
                         a = a[0].toUpperCase();
@@ -1717,7 +1717,7 @@ bot.on("ready", function() {
                 var userList = [];
                 for(var i=0; i<bot.users.length; i++) {
                     if([bot.user.id, configs.maintainer].indexOf(bot.users[i].id)==-1) {
-                        userList.push([bot.users[i].username, bot.users[i].id, bot.users[i].avatarURL || "http://i.imgur.com/fU70HJK.png"]);
+                        userList.push([bot.users[i].username, bot.users[i].id]);
                     }
                 }
                 userList.sort(function(a, b) {
