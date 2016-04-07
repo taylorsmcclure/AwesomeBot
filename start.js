@@ -47,7 +47,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p25";
+var version = "3.3.6p26";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -660,15 +660,16 @@ var commands = {
                         delete trivia[msg.channel.id];
                     } else {
                         logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "No ongoing trivia game to end");
-                        bot.sendMessage(msg.channel, "There isn't a trivia game going on right now. Start one by typing `@" + bot.user.username + " trivia start`");
+                        bot.sendMessage(msg.channel, "There isn't a trivia game going on right now. Start one by typing `@" + bot.user.username + " trivia start [<question set to use>]`");
                     }
                     break;
                 case "next":
                     if(triviaOn) {
                         logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Trivia question skipped by " + msg.author.username);
+                        var info = "The answer was " + trivia[msg.channel.id].answer;
                         var q = triviaQ(msg.channel, trivia[msg.channel.id].set);
                         if(q) {
-                            bot.sendMessage(msg.channel, "The answer was " + trivia[msg.channel.id].answer + "\n**Next Question:** " + q);
+                            info += "\n**Next Question:** " + q;
                             trivia[msg.channel.id].possible++;
                         } else {
                             var outof = trivia[msg.channel.id].possible-1;
@@ -676,9 +677,10 @@ var commands = {
                                 outof = 1;
                             }
                             logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Trivia game ended, score: " + trivia[msg.channel.id].score + " out of " + outof);
-                            bot.sendMessage(msg.channel, "No more questions. Thanks for playing! Y'all got " + trivia[msg.channel.id].score + " out of " + outof);
+                            info += "\nNo more questions. Thanks for playing! Y'all got " + trivia[msg.channel.id].score + " out of " + outof;
                             delete trivia[msg.channel.id];
                         }
+                        bot.sendMessage(msg.channel, info);
                     } else {
                         logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "No ongoing trivia game in which to skip question");
                         bot.sendMessage(msg.channel, "There isn't a trivia game going on right now. Start one by typing `@" + bot.user.username + " trivia start`");
@@ -708,21 +710,21 @@ var commands = {
                             }
                             trivia[msg.channel.id].attempts = 0;
 
+                            var info = msg.author + " got it right! The answer is " + trivia[msg.channel.id].answer;
                             var q = triviaQ(msg.channel, trivia[msg.channel.id].set);
                             if(q) {
-                                bot.sendMessage(msg.channel, msg.author + " got it right! The answer is " + trivia[msg.channel.id].answer + "\n**Next Question:** " + q);
+                                info += "\n**Next Question:** " + q;
                                 trivia[msg.channel.id].possible++;
                             } else {
-                                bot.sendMessage(msg.channel, msg.author + " got it right! The answer is " + trivia[msg.channel.id].answer);
-                                
                                 var outof = trivia[msg.channel.id].possible-1;
                                 if(trivia[msg.channel.id].possible==1) {
                                     outof = 1;
                                 }
                                 logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Trivia game ended, score: " + trivia[msg.channel.id].score + " out of " + outof);
-                                bot.sendMessage(msg.channel, "No more questions. Thanks for playing! Y'all got " + trivia[msg.channel.id].score + " out of " + outof);
+                                info += "\nNo more questions. Thanks for playing! Y'all got " + trivia[msg.channel.id].score + " out of " + outof;
                                 delete trivia[msg.channel.id];
                             }
+                            bot.sendMessage(msg.channel, info);
                         } else if(triviaOn) {
                             bot.sendMessage(msg.channel, msg.author + " Nope :(");
                             trivia[msg.channel.id].attempts++;
