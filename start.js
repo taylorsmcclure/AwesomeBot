@@ -47,7 +47,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p24";
+var version = "3.3.6p25";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -115,7 +115,7 @@ var commands = {
             var data = getStats(msg.channel.server);
             var info = "**" + msg.channel.server.name + " (this week)**"
             for(var cat in data) {
-                info += "\n" + cat + ":" + (cat=="Data since" ? (" " + data[cat]) : "");
+                info += "\n__" + cat + "__:" + (cat=="Data since" ? (" " + data[cat]) : "");
                 if(cat!="Data since") {
                     for(var i=0; i<data[cat].length; i++) {
                         info += "\n\t" + data[cat][i];
@@ -2558,20 +2558,10 @@ bot.on("message", function (msg, user) {
                 
                 var prompt = "", clever = true;
                 if(!msg.channel.isPrivate) {
-                    prompt = msg.content.substring(msg.content.indexOf(" ") + 1);
+                    prompt = msg.cleanContent.substring(msg.cleanContent.indexOf(" ") + 1);
                     clever = cleverOn[msg.channel.server.id]
                 } else {
-                    prompt = msg.content;
-                }
-                if(prompt.indexOf("<@")>-1) {
-                    var usrid = prompt.substring(prompt.indexOf("<@")+2);
-                    if(usrid.indexOf(" ")>-1) {
-                        usrid = usrid.substring(0, usrid.indexOf(" ")-1);
-                    } else {
-                        usrid = usrid.substring(0, usrid.indexOf(">"));
-                    }
-                    var usrnm = bot.users.get("id", usrid).username;
-                    prompt = prompt.substring(0, prompt.indexOf("<@")) + usrnm + prompt.substring(prompt.indexOf("<@")+21);
+                    prompt = msg.cleanContent;
                 }
                 
                 if(!clever) {
@@ -2583,7 +2573,7 @@ bot.on("message", function (msg, user) {
                         .then(function(response) {
                             var res = response.replace("Mitsuku", bot.user.username);
                             if(!msg.channel.isPrivate) {
-                                res = res.replace("Mousebreaker", bot.users.get("id", configs.servers[msg.channel.server.id].admins[0]).username);
+                                res = res.replace("Mousebreaker", bot.users.get("id", configs.maintainer) ? bot.users.get("id", configs.maintainer).username : bot.users.get("id", configs.servers[msg.channel.server.id].admins[0]).username);
                             }
                             res = res.replace("(mitsuku@square-bear.co.uk)", "");
                             if(res.indexOf("You have been banned from talking to the chat robot.")>-1) {
@@ -2637,8 +2627,10 @@ bot.on("serverCreated", function(svr) {
     spams[svr.id] = {};
     populateStats(svr);
     adminMsg(false, svr, {username: bot.user.username}, " (me) has been added to " + svr.name + ". You're one of my admins. You can manage me in this server by PMing me `config " + svr.name + "`. Check out https://git.io/vaa2F to learn more.");
+    bot.sendMessage(svr.defaultChannel, "Hi, I'm " + bot.user.username + "! Use `@" + bot.user.username + " help` to learn more or check out https://git.io/vaa2F");
 });
 
+// Turn bot on in a new channel
 bot.on("channelCreated", function(ch) {
     if(!ch.isPrivate) {
         stats[ch.server.id].botOn[ch.id] = true;
@@ -2976,7 +2968,7 @@ function getRandomInt(min, max) {
 
 // Checks if the values in an array are all the same
 Array.prototype.allValuesSame = function() {
-    for(var i = 1; i < this.length; i++) {
+    for(var i=1; i<this.length; i++) {
         if(this[i] !== this[0]) {
             return false;
         }
@@ -2998,10 +2990,10 @@ function countOccurrences(arr, ref) {
     var a = [];
 
     arr.sort();
-    for ( var i = 0; i < ref.length; i++) {
+    for(var i = 0; i<ref.length; i++) {
         a[i] = 0;
     }
-    for ( var i = 0; i < arr.length; i++ ) {
+    for(var i = 0; i<arr.length; i++) {
         a[arr[i]]++;
     }
 
@@ -3010,7 +3002,7 @@ function countOccurrences(arr, ref) {
 
 // Fast replacement in string prototype
 String.prototype.replaceAll = function(str1, str2, ignore) {
-    return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
+    return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g, "\\$&"), (ignore ? "gi" : "g")),(typeof(str2)=="string") ? str2.replace(/\$/g,"$$$$") : str2);
 } 
 
 // Determine if string contains substring in an array
@@ -3027,8 +3019,8 @@ function contains(arr, str, sens) {
 function maxIndex(arr) {
     var max = arr[0];
     var maxIndex = 0;
-    for(var i = 1; i < arr.length; i++) {
-        if (arr[i] > max) {
+    for(var i=1; i<arr.length; i++) {
+        if(arr[i]>max) {
             maxIndex = i;
             max = arr[i];
         }
