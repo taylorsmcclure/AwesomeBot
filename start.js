@@ -47,7 +47,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p26";
+var version = "3.3.6p27";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1599,11 +1599,11 @@ bot.on("ready", function() {
     if(configs.maintainer) {
         if(!profileData[configs.maintainer]) {
             profileData[configs.maintainer] = {
-                points: 50000
+                points: 100000
             };
         }
-        if(profileData[configs.maintainer].points<50000) {
-            profileData[configs.maintainer].points = 50000;
+        if(profileData[configs.maintainer].points<100000) {
+            profileData[configs.maintainer].points = 100000;
         }
         saveData("./data/profiles.json", function(err) {
             if(err) {
@@ -1718,7 +1718,7 @@ bot.on("ready", function() {
                 
                 var userList = [];
                 for(var i=0; i<bot.users.length; i++) {
-                    if([bot.user.id, configs.maintainer].indexOf(bot.users[i].id)==-1) {
+                    if([bot.user.id, configs.maintainer].indexOf(bot.users[i].id)==-1 && bot.users[i].username && bot.users[i].id) {
                         userList.push([bot.users[i].username, bot.users[i].id]);
                     }
                 }
@@ -1778,7 +1778,7 @@ bot.on("ready", function() {
                     
                     var members = [];
                     for(var i=0; i<svr.members.length; i++) {
-                        if(configs.botblocked.indexOf(svr.members[i].id)==-1 && svr.members[i].id!=bot.user.id) {
+                        if(configs.botblocked.indexOf(svr.members[i].id)==-1 && svr.members[i].id!=bot.user.id && svr.members[i].username && svr.members[i].id) {
                             members.push([svr.members[i].username, svr.members[i].id]);
                         }
                     }
@@ -3055,11 +3055,11 @@ function clearStatCounter() {
         if(configs.maintainer) {
             if(!profileData[configs.maintainer]) {
                 profileData[configs.maintainer] = {
-                    points: 50000
+                    points: 100000
                 };
             }
-            if(profileData[configs.maintainer].points<50000) {
-                profileData[configs.maintainer].points = 50000;
+            if(profileData[configs.maintainer].points<100000) {
+                profileData[configs.maintainer].points = 100000;
             }
         }
         logMsg(new Date().getTime(), "INFO", "General", null, "Cleared stats for this week");

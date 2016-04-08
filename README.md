@@ -142,6 +142,7 @@ Patch #23: Fixed web interface data crash
 Patch #24: Fixed help PM/public bugs  
 Patch #25: Tweaked/cleaned up a few things  
 Patch #26: Just for the lolz  
+Patch #27: Fixed web interface user list crash  
  
 Open an issue to report a bug or suggest a new feature!
 
