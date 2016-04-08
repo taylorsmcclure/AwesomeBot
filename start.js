@@ -47,7 +47,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p27";
+var version = "3.3.6p28";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1101,14 +1101,19 @@ var commands = {
                         points: 0,
                     }
                 }
-                profileData[msg.author.id].points -= 5;
-                logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, msg.author.username + " bought a lottery ticket");
-                bot.sendMessage(msg.channel, msg.author + " Thanks for buying a PointsBall ticket. That cost you 5 points. The lottery will end in " + secondsToString((lottery[msg.channel.server.id].timestamp + 3600000 - new Date().getTime())/1000));
-                saveData("./data/profiles.json", function(err) {
-                    if(err) {
-                        logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile data for " + msg.author.username);
-                    }
-                });
+                if(profileData[msg.author.id].points>=500) {
+                    profileData[msg.author.id].points -= 500;
+                    logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, msg.author.username + " bought a lottery ticket");
+                    bot.sendMessage(msg.channel, msg.author + " Thanks for buying a PointsBall ticket. That cost you 500 points. The lottery will end in " + secondsToString((lottery[msg.channel.server.id].timestamp + 3600000 - new Date().getTime())/1000));
+                    saveData("./data/profiles.json", function(err) {
+                        if(err) {
+                            logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile data for " + msg.author.username);
+                        }
+                    });
+                } else {
+                    logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, msg.author.username + " does not have enough points to buy a lottery ticket");
+                    bot.sendMessage(msg.channel, msg.author + " You're not rich enough to participate in the 1%-only lottery :P");
+                }
                 return;
             } else if(suffix=="lottery end") {
                 // End lottery and pick winner
