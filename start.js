@@ -48,7 +48,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.7p1";
+var version = "3.3.7p2";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -107,7 +107,7 @@ var commands = {
     "about": {
         extended: "Tells you all about the bot and where to get more info.",
         process: function(bot, msg) {
-            bot.sendMessage(msg.channel, "Hello! I'm **" + bot.user.username + "**, here to help everyone on this server. A full list of commands and features is available with `@" + bot.user.username + " help`. You can PM me an invite link to add me to another server. To learn more, check out my GitHub page (https://git.io/vaa2F) or join the Discord server (https://discord.gg/0pRFCTcG2aIY53Jk)\n\nv" + version + " by **@BitQuote**, made with NodeJS");
+            bot.sendMessage(msg.channel, "Hello! I'm **" + bot.user.username + "**, here to help everyone on this server. A full list of commands and features is available with `@" + bot.user.username + " help`. To learn more, check out my GitHub page (https://git.io/vaa2F) or join the Discord server (https://discord.gg/0pRFCTcG2aIY53Jk)\n\nv" + version + " by **@BitQuote**, made with NodeJS");
         }
     },
     // Shows top 5 games and active members
@@ -142,7 +142,7 @@ var commands = {
     },
     // Database of easily accessible responses
     "tag": {
-        usage: "<key>[|<value>]",
+        usage: "<key or \"clear\">[|<value>]",
         extended: "A quick snippet response system, inspired by the command in 42. The parameters to set a tag are the keyword you want to set a response for and the response itself, separated by a pipe (not a space as it usually is). For example, after setting `tag bob|the builder`, `tag bob` would make the bot respond with `the builder`. Bot admins on this server can clear tags with `tag clear`.",
         process: function(bot, msg, suffix) {
             if(suffix.indexOf("|")>-1) {
@@ -1311,7 +1311,7 @@ var pmcommands = {
                 } while(!svr && svrnm.length>0);
                 if(!svr) {
                     logMsg(new Date().getTime(), "WARN", msg.author.id, null, "User provided invalid server for discreet say");
-                    bot.sendMessage(msg.channel, "Huh, that's not a server I know of. To add me, reply with the invite link. *kthx*");
+                    bot.sendMessage(msg.channel, "Huh, that's not a server I know of.");
                     return;
                 }
                 if(configs.servers[svr.id].admins.indexOf(msg.author.id)==-1) {
@@ -1466,7 +1466,7 @@ var pmcommands = {
                 var svr = bot.servers.get("name", msg.content.substring(9));
                 if(!svr) {
                     logMsg(new Date().getTime(), "WARN", msg.author.id, null, "Invalid server provided for mentions");
-                    bot.sendMessage(msg.channel, "I'm not on that server. You can reply with an invite link to add me!");
+                    bot.sendMessage(msg.channel, "I'm not on that server. Use `@" + bot.user.username + " join` in the main chat to add me.");
                     return;
                 } else if(!svr.members.get("id", msg.author.id)) {
                     logMsg(new Date().getTime(), "WARN", msg.author.id, null, "User is not on " + svr.name + ", so mentions cannot be retreived");
@@ -1509,7 +1509,7 @@ var pmcommands = {
                 var svr = bot.servers.get("name", msg.content.substring(11));
                 if(!svr) {
                     logMsg(new Date().getTime(), "WARN", msg.author.id, null, "Invalid server provided for PM mentions");
-                    bot.sendMessage(msg.channel, "I'm not on that server. You can reply with an invite link to add me!");
+                    bot.sendMessage(msg.channel, "I'm not on that server...");
                     return;
                 } else if(!svr.members.get("id", msg.author.id)) {
                     logMsg(new Date().getTime(), "WARN", msg.author.id, null, "User is not on " + svr.name + ", so mentions cannot be retreived");
@@ -1999,7 +1999,7 @@ bot.on("message", function (msg, user) {
             }
             var cmd = pmcommands[cmdTxt];
             if(cmd) {
-                logMsg(new Date().getTime(), "INFO", msg.author.id, null, "Treating '" + msg.content + "' from as a PM command");
+                logMsg(new Date().getTime(), "INFO", msg.author.id, null, "Treating '" + msg.cleanContent + "' from as a PM command");
                 cmd.process(bot, msg, suffix);
                 return;
             }
@@ -2297,7 +2297,7 @@ bot.on("message", function (msg, user) {
                     
                     var keywordcontains = contains(extension.key, msg.content, extension.case);
                     if((extension.type.toLowerCase()=="keyword" && keywordcontains)>-1 || (extension.type.toLowerCase()=="command" && msg.content.indexOf(bot.user.mention() + " " + extension.key)==0)) {
-                        logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Treating '" + msg.content + "' from " + msg.author.username + " as an extension " + configs.servers[msg.channel.server.id].extensions[ext].type);
+                        logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Treating '" + msg.cleanContent + "' from " + msg.author.username + " as an extension " + configs.servers[msg.channel.server.id].extensions[ext].type);
                         bot.startTyping(msg.channel);
                         extensionApplied = true;
                         
@@ -2998,7 +2998,7 @@ function clearStatCounter() {
             for(var j=0; j<bot.servers[i].members.length; j++) {
                 // If member is playing game, add 0.1 (equal to five minutes) to game tally
                 var game = getGame(bot.servers[i].members[j]); 
-                if(game) {
+                if(game && bot.servers[i].members[j].id!=bot.user.id) {
                     if(!stats[bot.servers[i].id].games[game]) {
                         stats[bot.servers[i].id].games[game] = 0;
                     }

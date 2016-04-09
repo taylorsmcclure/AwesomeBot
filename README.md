@@ -53,6 +53,7 @@ Latest, version **3.3.7**:
  - Added avatar option in maintainer console  
  
 Patch #1: Moved number of servers/users to ping command  
+Patch #2: A few misc. bug fixes  
  
 Open an issue to report a bug or suggest a new feature!
 
