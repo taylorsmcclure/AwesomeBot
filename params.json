@@ -1,0 +1,6 @@
+{
+  "name": "AwesomeBot",
+  "tagline": "The best Discord bot!",
+  "body": "*Hello, I'm AwesomeBot. I add tons of cool stuff to any Discord server, providing external content, acting as a mod, and talking to members*\r\n\r\nThat's right! AwesomeBot is an all-in-one Discord bot packed with features, written in NodeJS and using the Discord.JS third-party API. Standout features include:\r\n\r\n - Media fetching: images, GIFs, YouTube videos\r\n - RSS articles and reddit posts\r\n - Google Play and App Store search\r\n - Discord user profiles\r\n - Full-feaured stats system\r\n - In-chat polls and trivia game\r\n - AwesomePoints: karma for Discord\r\n\r\nAll of this can be configured per-server via a functional online interface and easily extended for additional functionality. These features in concert make AwesomeBot truly the best bot for Discord!\r\n\r\n[Head to our wiki to learn more »](https://github.com/BitQuote/AwesomeBot/wiki)",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
