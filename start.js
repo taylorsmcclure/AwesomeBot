@@ -48,7 +48,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.7";
+var version = "3.3.7p1";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -88,7 +88,7 @@ var commands = {
     "ping": {
         extended: "A useful command to tell if the bot is alive. Also displays AwesomeBot version and status page URL if available.",
         process: function(bot, msg) {
-            var info = "Pong! " + bot.user.username + " v" + version + " by **@BitQuote** running for " + secondsToString(bot.uptime/1000);
+            var info = "Pong! " + bot.user.username + " v" + version + " by **@BitQuote** running for " + secondsToString(bot.uptime/1000) + ". Serving in " + bot.servers.length + " server" + (bot.servers.length==1 ? "" : "s") + " and " + bot.users.length + " user" + (bot.users.length==1 ? "" : "s");
             if(configs.hosting!="") {
                 info =  info.substring(0, info.length-1);
                 info += ". Status: " + configs.hosting;
@@ -1928,7 +1928,6 @@ bot.on("ready", function() {
     
     // Ready to go!
     logMsg(new Date().getTime(), "INFO", "General", null, "Started " + bot.user.username + " v" + version);
-	logMsg(new Date().getTime(), "INFO", "General", null, "Connected, serving in " + bot.servers.length + " server" + (bot.servers.length==1 ? "" : "s") + " and " + bot.users.length + " user" + (bot.users.length==1 ? "" : "s"));
 });
 
 bot.on("message", function (msg, user) {

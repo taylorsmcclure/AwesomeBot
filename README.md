@@ -115,6 +115,8 @@ Latest, version **3.3.7**:
  - Switched to bot accounts and token login  
  - Added avatar option in maintainer console  
  
+Patch #1: Moved number of servers/users to ping command  
+ 
 Open an issue to report a bug or suggest a new feature!
 
 Contribute
