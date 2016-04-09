@@ -29,6 +29,7 @@ try {
     const imgur = require("imgur-node-api");
     var wolfram;
     const urban = require("urban");
+    const base64 = require("node-base64-image");
     const weather = require("weather-js");
     const fx = require("money");
     const cheerio = require("cheerio");
@@ -47,7 +48,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.6p28";
+var version = "3.3.7";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -63,8 +64,9 @@ var bots = {};
 const Cleverbot = require("cleverbot-node");
 var cleverbot = new Cleverbot;
 
-// Spam detection stuff
+// Spam/NSFW detection stuff
 var spams = {};
+var nsfw = {};
 
 // Stuff for ongoing polls, trivia games, reminders, and admin console sessions
 var polls = {};
@@ -94,11 +96,18 @@ var commands = {
             bot.sendMessage(msg.channel, info);
         }
     },
+    // Provides OAuth URL for adding new server
+    "join": {
+        extended: "This command will return the Discord OAuth2 URL necessary for adding the bot to a server. Click on the link and accept the bot permissions to add.",
+        process: function(bot, msg) {
+            bot.sendMessage(msg.channel, "https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=0")
+        }
+    },
     // About AwesomeBot!
     "about": {
         extended: "Tells you all about the bot and where to get more info.",
         process: function(bot, msg) {
-            bot.sendMessage(msg.channel, "Hello! I'm **" + bot.user.username + "**, here to help everyone on this server. A full list of commands and features is available with `@" + bot.user.username + " help`. You can PM me an invite link to add me to another server. To learn more, check out my GitHub page (https://git.io/vaa2F) or join the Discord server (https://discord.gg/0pRFCTcG2aIY53Jk)\n\n*v" + version + " by **@BitQuote**, made with NodeJS*");
+            bot.sendMessage(msg.channel, "Hello! I'm **" + bot.user.username + "**, here to help everyone on this server. A full list of commands and features is available with `@" + bot.user.username + " help`. You can PM me an invite link to add me to another server. To learn more, check out my GitHub page (https://git.io/vaa2F) or join the Discord server (https://discord.gg/0pRFCTcG2aIY53Jk)\n\nv" + version + " by **@BitQuote**, made with NodeJS");
         }
     },
     // Shows top 5 games and active members
@@ -786,33 +795,7 @@ var commands = {
                             bot.sendMessage(msg.channel, "Surprisingly, I couldn't find anything in " + sub + " on reddit.");
                             return;
                         } else if(data[i].data.over_18 && configs.servers[msg.channel.server.id].admins.indexOf(msg.author.id)==-1 && configs.servers[msg.channel.server.id].nsfwfilter && configs.servers[msg.channel.server.id].servermod) {
-                            logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Handling filtered query from " + msg.author.username);
-                            kickUser(msg, "is abusing the bot", "attempting to fetch NSFW content");
-                            if(configs.servers[msg.channel.server.id].points) {
-                                if(!profileData[msg.author.id]) {
-                                    profileData[msg.author.id] = {
-                                        points: 0
-                                    }
-                                }
-                                profileData[msg.author.id].points -= 50;
-                                saveData("./data/profiles.json", function(err) {
-                                    if(err) {
-                                        logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile data for " + msg.author.username);
-                                    }
-                                });
-                                if(!stats[msg.channel.server.id].members[msg.author.id]) {
-                                    stats[msg.channel.server.id].members[msg.author.id] = {
-                                        messages: 0,
-                                        seen: new Date().getTime(),
-                                        mentions: {
-                                            pm: false,
-                                            stream: []
-                                        },
-                                        strikes: 0
-                                    };
-                                }
-                                stats[msg.channel.server.id].members[msg.author.id].strikes++;
-                            }
+                            handleNSFW(msg);
                             return;
                         } else if(!data[i].data.stickied) {
                             info += "`" + data[i].data.score + "` " + data[i].data.title + " **" + data[i].data.author + "** *" + data[i].data.num_comments + " comments*";
@@ -1496,8 +1479,8 @@ var pmcommands = {
                     info = "**Mentions on " + svr.name + " in the last week**";
                     for(var i=stats[svr.id].members[msg.author.id].mentions.stream.length-1; i>=0; i--) {
                         var time = prettyDate(new Date(stats[svr.id].members[msg.author.id].mentions.stream[i].timestamp))
-                        var tmpinfo = "\n__*@" + stats[svr.id].members[msg.author.id].mentions.stream[i].author + " at " + time + ":*__\n" + stats[svr.id].members[msg.author.id].mentions.stream[i].message;
-                        if((tmpinfo.length + info.length)>2000) {
+                        var tmpinfo = "\n__*@" + stats[svr.id].members[msg.author.id].mentions.stream[i].author + "* at " + time + ":__\n" + stats[svr.id].members[msg.author.id].mentions.stream[i].message + "\n";
+                        if((tmpinfo.length + info.length)>1900) {
                             break;
                         } else {
                             info += tmpinfo;
@@ -1558,29 +1541,21 @@ var pmcommands = {
 // Initializes bot and outputs to console
 var bot = new Discord.Client({forceFetchUsers: true});
 bot.on("ready", function() {
-    checkVersion();
+    //checkVersion();
     
-    // Clear stats and configs for old servers
-    pruneData();
-    
-    // Make sure servers are properly configured and set variables
-    for(var i=0; i<bot.servers.length; i++) {
-        bot.startTyping(bot.servers[i].defaultChannel);
-        // Populate stats file
-        populateStats(bot.servers[i]);
-        // Configure new servers
-        if(!configs.servers[bot.servers[i].id]) {
-            defaultConfig(bot.servers[i]);
-        }
-        // Make sure config.json is up-to-date
-        checkConfig(bot.servers[i]);
-        // Set runtime values
-        cleverOn[bot.servers[i].id] = true;
-        spams[bot.servers[i].id] = {};
-        // Run timer extensions
-        runTimerExtensions();
-        
-        bot.stopTyping(bot.servers[i].defaultChannel);
+    // Set avatar if necessary
+    if(AuthDetails.avatar_url) {
+        base64.base64encoder(AuthDetails.avatar_url, {filename: "avatar"}, function(error, image) {
+            if(!error) {
+                bot.setAvatar(image, function(err) {
+                    if(err) {
+                        logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to set bot avatar");
+                    }
+                });
+            } else {
+                logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to set bot avatar");
+            }
+        });
     }
     
     // Set existing reminders
@@ -1659,6 +1634,7 @@ bot.on("ready", function() {
                 data = {
                     username: bot.user.username,
                     id: bot.user.id,
+                    oauthurl: "https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=0",
                     uptime: secondsToString(bot.uptime/1000),
                     version: version,
                     disconnects: disconnects,
@@ -1751,6 +1727,7 @@ bot.on("ready", function() {
                     commandusage: totalCommandUsage(),
                     statsage: prettyDate(new Date(stats.timestamp)),
                     username: bot.user.username,
+                    oauthurl: "https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=0",
                     avatar: bot.user.avatarURL || "http://i.imgur.com/fU70HJK.png",
                     game: getGame(bot.user),
                     status: bot.user.status,
@@ -1963,8 +1940,8 @@ bot.on("message", function (msg, user) {
         
         // Stuff that only applies to PMs
         if(msg.channel.isPrivate && msg.author.id!=bot.user.id) {
-            // Ensure that message is not from another AwesomeBot and block if so
-            if(msg.content.indexOf("Take note, other bots: `8WvCtp7ZjmaOj60KoTRP`")>-1) {
+            // Ensure that message is not from another bot and block if so
+            if(msg.content.indexOf("Take note, other bots: `8WvCtp7ZjmaOj60KoTRP`")>-1 || msg.author.bot) {
                 if(configs.botblocked.indexOf(msg.author.id)==-1) {
                     configs.botblocked.push(msg.author.id);
                     logMsg(new Date().getTime(), "INFO", "General", null, "Blocked bot " + msg.author.username);
@@ -2011,27 +1988,6 @@ bot.on("message", function (msg, user) {
                 }
                 info += "\nYou can vote by typing `@" + bot.user.username + " vote <no. of choice>`. If you don't include a number, I'll just show results";
                 bot.sendMessage(ch, info);
-                return;
-            }
-            
-            // Join new servers via PM
-            if((msg.content.indexOf("https://discord.gg")>-1 || msg.content.indexOf("https://discordapp.com/invite/")>-1)) {
-                try {
-                    bot.startTyping(msg.channel);
-                    bot.joinServer(msg.content, function(error, server) {
-                        if(error) {
-                            logMsg(new Date().getTime(), "WARN", msg.author.id, null, "Could not join new server, most likely user error");
-                            bot.sendMessage(msg.channel, "Failed to join server. Please check your invite URL.");
-                        } else if(!bot.servers.get("id", server.id)) {
-                            bot.sendMessage(msg.channel, "Processing invite...Should be done soon!");
-                        }
-                        bot.stopTyping(msg.channel);
-                        return;
-                    });
-                } catch(err) {
-                    logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to join new server, invited by " + msg.author.username);
-                    bot.sendMessage(msg.channel, "Failed to join server. I might be terminally ill...");
-                }
                 return;
             }
             
@@ -2091,7 +2047,7 @@ bot.on("message", function (msg, user) {
             }
             
             // Check for spam
-            if(msg.author.id!=bot.user.id && configs.servers[msg.channel.server.id].spamfilter && configs.servers[msg.channel.server.id].servermod && msg.content.indexOf("<@120569499517714432> trivia")!=0) {
+            if(msg.author.id!=bot.user.id && configs.servers[msg.channel.server.id].spamfilter && configs.servers[msg.channel.server.id].servermod && msg.content.indexOf(bot.user.mention() + " trivia")!=0) {
                 if(configs.servers[msg.channel.server.id].admins.indexOf(msg.author.id)==-1) {
                     // Tracks spam for a user with each new message, expires after 45 seconds
                     if(!spams[msg.channel.server.id][msg.author.id]) {
@@ -2114,13 +2070,13 @@ bot.on("message", function (msg, user) {
                         var negative;
                         
                         // First-time spam warning 
-                        if(spams[msg.channel.server.id][msg.author.id].length == 5) {
+                        if(spams[msg.channel.server.id][msg.author.id].length==5) {
                             logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Handling first-time spam from " + msg.author.username);
-                            bot.sendMessage(msg.author, "Stop spamming. The chat mods have been notified about this.");
+                            bot.sendMessage(msg.author, "Stop spamming " + msg.channel.server.name + ". The chat mods have been notified about this.");
                             adminMsg(false, msg.channel.server, msg.author, " is spamming " + msg.channel.server.name);
                             negative = 20;
                         // Second-time spam warning, bans user from using bot
-                        } else if(spams[msg.channel.server.id][msg.author.id].length == 10) {
+                        } else if(spams[msg.channel.server.id][msg.author.id].length==10) {
                             logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Kicking/blocking " + msg.author.username + " after second-time spam");
                             kickUser(msg, "continues to spam " + msg.channel.server.name, "spamming");
                             negative = 50;
@@ -2133,19 +2089,19 @@ bot.on("message", function (msg, user) {
                                     logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile data for " + msg.author.username);
                                 }
                             });
-                            if(!stats[msg.channel.server.id].members[msg.author.id]) {
-                                stats[msg.channel.server.id].members[msg.author.id] = {
-                                    messages: 0,
-                                    seen: new Date().getTime(),
-                                    mentions: {
-                                        pm: false,
-                                        stream: []
-                                    },
-                                    strikes: 0
-                                };
-                            }
-                            stats[msg.channel.server.id].members[msg.author.id].strikes++;
                         }
+                        if(!stats[msg.channel.server.id].members[msg.author.id]) {
+                            stats[msg.channel.server.id].members[msg.author.id] = {
+                                messages: 0,
+                                seen: new Date().getTime(),
+                                mentions: {
+                                    pm: false,
+                                    stream: []
+                                },
+                                strikes: 0
+                            };
+                        }
+                        stats[msg.channel.server.id].members[msg.author.id].strikes++;
                     }
                 }
             }
@@ -2513,33 +2469,7 @@ bot.on("message", function (msg, user) {
                 }
                 bot.startTyping(msg.channel);
                 if(filter.indexOf(suffix)>-1 && configs.servers[msg.channel.server.id].admins.indexOf(msg.author.id)==-1 && configs.servers[msg.channel.server.id].nsfwfilter && configs.servers[msg.channel.server.id].servermod && cmdTxt!="reddit") {
-                    logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Handling filtered query '" + msg.content + "' from " + msg.author.username);
-                    kickUser(msg, "is abusing the bot", "attempting to fetch NSFW content");
-                    if(configs.servers[msg.channel.server.id].points) {
-                        if(!profileData[msg.author.id]) {
-                            profileData[msg.author.id] = {
-                                points: 0
-                            }
-                        }
-                        profileData[msg.author.id].points -= 50;
-                        saveData("./data/profiles.json", function(err) {
-                            if(err) {
-                                logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile data for " + msg.author.username);
-                            }
-                        });
-                        if(!stats[msg.channel.server.id].members[msg.author.id]) {
-                            stats[msg.channel.server.id].members[msg.author.id] = {
-                                messages: 0,
-                                seen: new Date().getTime(),
-                                mentions: {
-                                    pm: false,
-                                    stream: []
-                                },
-                                strikes: 0
-                            };
-                        }
-                        stats[msg.channel.server.id].members[msg.author.id].strikes++;
-                    }
+                    handleNSFW(msg);
                 } else if(stats[msg.channel.server.id].botOn[msg.channel.id]) {
                     logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Treating '" + msg.content + "' from " + msg.author.username + " as a command");
                     if(["quiet", "ping", "help", "stats", "trivia"].indexOf(cmdTxt)==-1) {
@@ -2626,15 +2556,34 @@ bot.on("message", function (msg, user) {
     }
 });
 
-// Add server if joined outisde of bot
+// Add server if joined outside of bot
 bot.on("serverCreated", function(svr) {
-    defaultConfig(svr);
-    messages[svr.id] = 0;
-    cleverOn[svr.id] = 0;
-    spams[svr.id] = {};
+    bot.startTyping(svr.defaultChannel);
+    
+    // Populate stats file
     populateStats(svr);
-    adminMsg(false, svr, {username: bot.user.username}, " (me) has been added to " + svr.name + ". You're one of my admins. You can manage me in this server by PMing me `config " + svr.name + "`. Check out https://git.io/vaa2F to learn more.");
-    bot.sendMessage(svr.defaultChannel, "Hi, I'm " + bot.user.username + "! Use `@" + bot.user.username + " help` to learn more or check out https://git.io/vaa2F");
+    
+    // Configure new server
+    if(!configs.servers[svr.id]) {
+        console.log("didn't find configs for " + svr.name);
+        defaultConfig(svr);
+        adminMsg(false, svr, {username: bot.user.username}, " (me) has been added to " + svr.name + ". You're one of my admins. You can manage me in this server by PMing me `config " + svr.name + "`. Check out https://git.io/vaa2F to learn more.");
+        bot.sendMessage(svr.defaultChannel, "Hi, I'm " + bot.user.username + "! Use `@" + bot.user.username + " help` to learn more or check out https://git.io/vaa2F");
+    }
+    
+    // Make sure config.json is up-to-date
+    checkConfig(svr);
+    
+    // Set runtime values
+    messages[svr.id] = 0;
+    cleverOn[svr.id] = true;
+    spams[svr.id] = {};
+    nsfw[svr.id] = {};
+    
+    // Run timer extensions
+    runTimerExtensions();
+    
+    bot.stopTyping(svr.defaultChannel);
 });
 
 // Turn bot on in a new channel
@@ -2809,7 +2758,7 @@ function reconnect() {
     logMsg(new Date().getTime(), "ERROR", "General", null, "Disconnected from Discord, will try again in 5s");
     setTimeout(function() {
         try {
-            bot.login(AuthDetails.email, AuthDetails.password);
+            bot.loginWithToken(AuthDetails.token);
         } catch(err) {
             logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to reconnect to Discord");
             reconnect();
@@ -2918,35 +2867,6 @@ function populateStats(svr) {
     }
 }
 
-// Clear old stats and configs
-function pruneData() {
-    var changed = false;
-    for(var svrid in configs.servers) {
-        var svr = bot.servers.get("id", svrid);
-        if(!svr) {
-            changed = true;
-            delete configs.servers[svrid];
-        }
-    }
-    if(changed) {
-        saveData("./data/config.json", function(err) {
-            if(err) {
-                logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to clean old server configs");
-            }
-        });
-    }
-    for(var svrid in stats) {
-        var svr = bot.servers.get("id", svrid);
-        if(!svr && svrid!="timestamp") {
-            changed = true;
-            delete stats[svrid];
-        } 
-    }
-    if(changed) {
-        logMsg(new Date().getTime(), "INFO", "General", null, "Pruned old server configs");
-    }
-}
-
 // Get a line in a non-JSON file
 function getLine(filename, line_no, callback) {
     var data = fs.readFileSync(filename, "utf8");
@@ -3039,7 +2959,10 @@ function maxIndex(arr) {
 // Tally number of messages every 24 hours
 function clearMessageCounter() {
     for(var svrid in configs.servers) {
-        messages[svrid] = 0;
+        var svr = bot.servers.get("id", svrid);
+        if(svr) {
+            messages[svrid] = 0;
+        }
     }
     setTimeout(function() {
         clearMessageCounter();
@@ -3055,7 +2978,10 @@ function clearStatCounter() {
             if(svrid=="timestamp") {
                 continue;
             }
-            clearServerStats(svrid);
+            var svr = bot.servers.get("id", svrid);
+            if(svr) {
+                clearServerStats(svrid);
+            }
         }
         if(configs.maintainer) {
             if(!profileData[configs.maintainer]) {
@@ -3185,9 +3111,12 @@ function clearServerStats(svrid) {
 // Start timer extensions on all servers
 function runTimerExtensions() {
     for(var svrid in configs.servers) {
-        for(var extnm in configs.servers[svrid].extensions) {
-            if(configs.servers[svrid].extensions[extnm].type=="timer") {
-                runTimerExtension(svrid, extnm);
+        var svr = bot.servers.get("id", svrid);
+        if(svr) {
+            for(var extnm in configs.servers[svrid].extensions) {
+                if(configs.servers[svrid].extensions[extnm].type=="timer") {
+                    runTimerExtension(svrid, extnm);
+                }
             }
         }
     }
@@ -3331,9 +3260,33 @@ function parseMaintainerConfig(delta, callback) {
                     if(err) {
                         logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to change username to '" + delta[key] + "'");
                     } else {
-                        logMsg(new Date().getTime(), "INFO", "General", null, "Changed bot username to " + delta[key] + "'");
+                        logMsg(new Date().getTime(), "INFO", "General", null, "Changed bot username to '" + delta[key] + "'");
                     }
                     callback(err);
+                });
+                break;
+            case "avatar":
+                base64.base64encoder(delta[key], {filename: "avatar"}, function(error, image) {
+                    if(!error) {
+                        bot.setAvatar(image, function(err) {
+                            if(err) {
+                                logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to set bot avatar");
+                                callback(err);
+                            } else {
+                                logMsg(new Date().getTime(), "INFO", "General", null, "Changed bot avatar to '" + delta[key] + "'");
+                                AuthDetails.avatar_url = delta[key];
+                                saveData("./auth.json", function(serr) {
+                                    if(serr) {
+                                        logMsg(new Date().getTime(), "ERROR", "General", null, "Could not save new AuthDetails");
+                                    }
+                                    callback(serr);
+                                });
+                            }
+                        });
+                    } else {
+                        logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to set bot avatar");
+                        callback(error);
+                    }
                 });
                 break;
             case "game":
@@ -3371,14 +3324,6 @@ function parseMaintainerConfig(delta, callback) {
                     callback(err);
                 });
                 break;
-            case "joinserver":
-                bot.joinServer(delta[key], function(err, svr) {
-                    if(err) {
-                        logMsg(new Date().getTime(), "WARN", "General", null, "Could not join new server, most likely user error");
-                    }
-                    callback(err);
-                });
-                break;
             case "clearstats":
                 try {
                     clearServerStats(delta[key]);
@@ -3396,11 +3341,6 @@ function parseMaintainerConfig(delta, callback) {
                         logMsg(new Date().getTime(), "INFO", "General", null, "Changed bot status to " + delta[key]);
                     }
                     callback(err);
-                });
-                break;
-            case "kill":
-                saveData("./data/stats.json", function(err) {
-                    process.exit(0);
                 });
                 break;
             case "logout":
@@ -3938,6 +3878,45 @@ function kickUser(msg, desc1, desc2) {
     });
 }
 
+// Handle an NSFW bot query
+function handleNSFW(msg) {
+    var action = nsfw[msg.channel.server.id][msg.author.id]!=null;
+    logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Handling " + (action ? "second-time" : "") +"filtered query '" + msg.content + "' from " + msg.author.username);
+    if(action) {
+        kickUser(msg, "is abusing the bot", "attempting to fetch NSFW content");
+        delete nsfw[msg.channel.server.id][msg.author.id];
+    } else {
+        nsfw[msg.channel.server.id][msg.author.id] = true;
+        bot.sendMessage(msg.author, "Stop attempting to fetch NSFW content in " + msg.channel.server.name + ". The chat mods have been notified about this.");
+        adminMsg(false, msg.channel.server, msg.author, " is attempting to fetch NSFW content in " + msg.channel.server.name);
+    }
+    if(configs.servers[msg.channel.server.id].points) {
+        if(!profileData[msg.author.id]) {
+            profileData[msg.author.id] = {
+                points: 0
+            }
+        }
+        profileData[msg.author.id].points -= action ? 200 : 100;
+        saveData("./data/profiles.json", function(err) {
+            if(err) {
+                logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile data for " + msg.author.username);
+            }
+        });
+    }
+    if(!stats[msg.channel.server.id].members[msg.author.id]) {
+        stats[msg.channel.server.id].members[msg.author.id] = {
+            messages: 0,
+            seen: new Date().getTime(),
+            mentions: {
+                pm: false,
+                stream: []
+            },
+            strikes: 0
+        };
+    }
+    stats[msg.channel.server.id].members[msg.author.id].strikes++;
+}
+
 // Searches Google Images for keyword(s)
 function giSearch(query, num, svrid, callback) {
 	var url = "https://www.googleapis.com/customsearch/v1?key=" + AuthDetails.google_api_key + "&cx=" + AuthDetails.custom_search_id + (configs.servers[svrid].nsfwfilter ? "&safe=high&q=" : "") + (query.replace(/\s/g, '+').replace(/&/g, '')) + "&alt=json&searchType=image" + (num ? ("&start=" + num) : "");
@@ -4135,11 +4114,14 @@ function totalCommandUsage() {
         if(svrid=="timestamp") {
             continue;
         }
-        for(var cmd in stats[svrid].commands) {
-            if(!usage[cmd]) {
-                usage[cmd] = 0;
+        var svr = bot.servers.get("id", svrid);
+        if(svr) {
+            for(var cmd in stats[svrid].commands) {
+                if(!usage[cmd]) {
+                    usage[cmd] = 0;
+                }
+                usage[cmd] += stats[svrid].commands[cmd];
             }
-            usage[cmd] += stats[svrid].commands[cmd];
         }
     }
     
@@ -4739,7 +4721,7 @@ function setup(i) {
             default:
                 rl.close();
                 // Login to the bot's Discord account
-                bot.login(AuthDetails.email, AuthDetails.password, function(loginError) {
+                bot.loginWithToken(AuthDetails.token, function(loginError) {
                     if(loginError) {
                         console.log("Could not connect to Discord");
                         process.exit(1);

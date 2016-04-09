@@ -14,7 +14,7 @@
         <span style="font-size: 28;">
             <b><span class="botheader" id="botname" onclick="javascript:configUsername();"></span></b> Config
         </span>
-        <img class="profilepic" id="profilepic" onclick="javascript:kill();" src="" />
+        <img class="profilepic" id="profilepic" onclick="javascript:configAvatar();" src="" />
         <br>
         <span class="botheader" id="botgame" onclick="javascript:configGame();"></span>
         <span class="removetool" id="botgameremove" onclick="javascript:config('game', '.', function(){configGame(true)});"></span>
@@ -50,7 +50,7 @@
                     <tbody id="servertablebody"></tbody>
                 </table>
             </div>
-            <input id="addserverinput" type="text" style="width: 300;" placeholder="Join Server: Invite Link" onkeydown="if(event.keyCode==13){addServer(this.value)}"></input>
+            <a id="addserverlink" target="_blank">Join A Server</a>
         </div>
         <br>
         

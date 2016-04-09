@@ -47,6 +47,7 @@ function writeInterface() {
         document.title = data.username + " Status";
         document.getElementById("botname").innerHTML = data.username;
         document.getElementById("profilepic").src = data.avatar;
+        document.getElementById("addserverlink").href = data.oauthurl;
         
         getJSON("/data?section=list&type=servers", function(data) {
             var statsselect = "";
@@ -104,9 +105,7 @@ function destroyLoader() {
 function colorLinks(hex) {
     var links = document.getElementsByTagName("a");
     for(var i=0; i<links.length; i++) {
-        if(links[i].href) {
-            links[i].style.color = hex;
-        }
+        links[i].style.color = hex;
     }
 }
 function switchColors(n) {
@@ -252,7 +251,7 @@ function switchProfile(n) {
                     html += "<b>" + sect + ":</b><br>";
                     for(var key in data[sect]) {
                         if(key=="Avatar") {
-                            html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + key + ": <a href='" + data[sect][key] + "'>Click Here</a><br>";
+                            html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + key + ": <a href='" + data[sect][key] + "' target='_blank'>Click Here</a><br>";
                         } else {
                             html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + key + ": " + data[sect][key] + "<br>";
                         }

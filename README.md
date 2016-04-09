@@ -43,16 +43,17 @@ Note that I am very busy with work, so this repository will only be updated for 
 Setup
 -----
 
-1. Create a new Discord account for the bot
-2. Make sure you have at least one mutual server with the bot's account
+1. Create a new Discord bot application [here](https://discordapp.com/developers/applications/me)
+2. Make sure you have at least one mutual server with the bot account
 3. Clone this repository or download ZIP
 4. Get [NodeJS](https://nodejs.org/en/) and NPM if you need to
 5. Run `npm install` in the bot's directory to install the dependencies and then `node start.js` to get started!
 
 You'll be prompted for authentication and configuration details, but here's a quick overview:  
  - **auth.json**:  
-    - `email`: Email address for the bot's Discord account  
-    - `password`: Password for the bot's Discord account  
+    - `token`: Authentication token for the bot account  
+    - `client_id`: The ID of your Discord bot application, found on the OAuth registration page  
+    - `avatar_url`: *(optional)* A link to the avatar icon for the bot  
     - `google_api_key`: Used for YouTube and Image Search queries, and can be found [here](https://console.developers.google.com/). Make sure to add the YouTube Data API to your account.  
     - `custom_search_id`: ID of an image-search Google CSE. Create a [custom search engine](https://cse.google.com/cse/create/new) that is configured to emulated Google Image Search  
     - `giphy_api_key`: [API key from Giphy](http://api.giphy.com/submit) for GIF search
@@ -108,42 +109,11 @@ Outside of this sandbox, the extension cannot use other Node modules or methods.
 Changelog
 ---------
 
-Latest, version **3.3.6**:
+Latest, version **3.3.7**:
 
- - Ability to quote yourself  
- - Strikes system for admin use  
- - Custom trivia sets per-server  
- - Removed PM config console entirely  
- - Many bug fixes  
-
-Patch #1: Fixed `forceFetchUsers` crash  
-Patch #2: A few bug fixes  
-Patch #3: Improved auto-join  
-Patch #4: Fixed previous patch  
-Patch #5: Bug fixes and cleanup  
-Patch #6: Fixed checkConfig bug  
-Patch #7: Added option to end lottery  
-Patch #8: Fixed newgreeting config and lottery bugs  
-Patch #9: Fixed poll creation and mentions bugs  
-Patch #10: Misc. tweaks  
-Patch #11: Fixed PM help  
-Patch #12: Added membermsg option and discreet strikes  
-Patch #13: A few improvements  
-Patch #14: Fixed membermsg crash  
-Patch #15: Linkme and disconnected improvements  
-Patch #16: Help and join tweaks  
-Patch #17: Fixed help extended help  
-Patch #18: Added config presets, web interface performances fixes  
-Patch #19: More web interface performance fixes  
-Patch #20: Cleaned up some test code  
-Patch #21: Fixes and tweaks  
-Patch #22: Even more fixes and tweaks!  
-Patch #23: Fixed web interface data crash  
-Patch #24: Fixed help PM/public bugs  
-Patch #25: Tweaked/cleaned up a few things  
-Patch #26: Just for the lolz  
-Patch #27: Fixed web interface user list crash  
-Patch #28: Tweaked points lottery  
+ - Reworked NSFW filter; now two steps  
+ - Switched to bot accounts and token login  
+ - Added avatar option in maintainer console  
  
 Open an issue to report a bug or suggest a new feature!
 

@@ -7,7 +7,7 @@ function doMaintainerSetup() {
         document.getElementById("botgameremove").innerHTML = "&nbsp<i>(remove)</i>";
     }
     setTimeout(function() {
-        document.getElementById("statusswitcher").value = botData.status;
+        document.getElementById("statusswitcher").value = botData.status=="offline" ? "online" : botData.status;
     }, 10);
     
     switchUsage();
@@ -52,6 +52,7 @@ function switchServers() {
         servertablebody += "<tr id=\"serverentry-" + botData.servers[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.servers[i][0] + "\" /></td><td>" + botData.servers[i][1] + "</td><td>" + botData.servers[i][2] + "</td><td>" + botData.servers[i][3] + "</td><td><span class=\"removetool\" onclick=\"javascript:removeServer(this.parentNode.parentNode.id)\"><i>(remove)</i></span>&nbsp;<span class=\"removetool\" onclick=\"javascript:config('clearstats', this.parentNode.parentNode.id.substring(12), function(err) {if(!err) {switchUsage()}});\"><i>(clear stats)</i></span></td></tr>";
     }
     document.getElementById("servertablebody").innerHTML = servertablebody;
+    document.getElementById("addserverlink").href = botData.oauthurl;
 }
 
 function removeServer(svrid) {
@@ -64,12 +65,6 @@ function removeServer(svrid) {
             }
         });
     }
-}
-
-function addServer(link) {
-    config("joinserver", link, function() {
-        switchServers();
-    });
 }
 
 function switchBotBlocked() {
@@ -124,16 +119,12 @@ function configGame(remove) {
     }
 }
 
-function kill() {
-    var u = confirm(botData.username + " will save data and shut down. Continue?");
+function configAvatar() {
+    var u = prompt("Enter the new URL for " + botData.username + "'s avatar");
     if(u) {
-        postJSON({kill: true}, function(response) {
-            if(response==200) {
-                document.body.innerHTML = "Bot has shut down.";
-            } else {
-                alert("Session timeout");
-                localStorage.removeItem("auth");
-                document.location.replace("/");
+        postJSON({avatar: u}, function(err) {
+            if(!err) {
+                location.reload();
             }
         });
     }
