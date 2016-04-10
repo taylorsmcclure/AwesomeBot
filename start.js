@@ -48,7 +48,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.7p5";
+var version = "3.3.7p6";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -192,6 +192,20 @@ var commands = {
                 bot.sendMessage(msg.channel, "( ͡° ͜ʖ ͡°)");
             } else if(suffix.toLowerCase()=="shrug") {
                 bot.sendMessage(msg.channel, "¯\\\_(ツ)\_/¯");
+            } else if(!suffix) {
+                var info = ""
+                for(var tag in configs.servers[msg.channel.server.id].tags) {
+                    var tmpinfo = "**" + tag + "**: " + configs.servers[msg.channel.server.id].tags[tag] + "\n";
+                    if((tmpinfo.length + info.length)>2000) {
+                        break;
+                    } else {
+                        info += tmpinfo;
+                    }
+                }
+                if(!info) {
+                    info = "No tags found for this server. Use `@" + bot.user.username + " tag <key>|<value>` to set one.";
+                }
+                bot.sendMessage(msg.channel, info);
             } else {
                 logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, msg.author.username + " requested nonexistent tag");
                 bot.sendMessage(msg.channel, msg.author + " That tag isn't registered in my database. Use `@" + bot.user.username + " tag " + suffix.toLowerCase() + "|<value>` to set it.");

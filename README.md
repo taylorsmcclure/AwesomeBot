@@ -57,6 +57,7 @@ Patch #2: A few misc. bug fixes
 Patch #3: Fixed ping display and RSS date crash  
 Patch #4: Fixed web interface members list crash  
 Patch #5: Switched to cleanContent in chatterbot log  
+Patch #6: Added tag list option  
  
 Open an issue to report a bug or suggest a new feature!
 
