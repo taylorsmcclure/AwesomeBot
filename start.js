@@ -48,7 +48,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.7p3";
+var version = "3.3.7p4";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1619,7 +1619,9 @@ bot.on("ready", function() {
                 if(svr) {
                     data.stream = [];
                     for(var i=0; i<svr.members.length; i++) {
-                        data.stream.push([svr.members[i].username, svr.members[i].id]);
+                        if(svr.members[i].username && svr.members[i].id) {
+                            data.stream.push([svr.members[i].username, svr.members[i].id]);
+                        }
                     }
                     data.stream.sort(function(a, b) {
                         a = a[0].toUpperCase();

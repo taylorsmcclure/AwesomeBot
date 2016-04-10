@@ -55,6 +55,7 @@ Latest, version **3.3.7**:
 Patch #1: Moved number of servers/users to ping command  
 Patch #2: A few misc. bug fixes  
 Patch #3: Fixed ping display and RSS date crash  
+Patch #4: Fixed web interface members list crash  
  
 Open an issue to report a bug or suggest a new feature!
 
