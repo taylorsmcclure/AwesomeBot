@@ -59,6 +59,7 @@ Patch #4: Fixed web interface members list crash
 Patch #5: Switched to cleanContent in chatterbot log  
 Patch #6: Added tag list option  
 Patch #7: Made banned/unbanned messages respect membermsg  
+Patch #8: Added links to wiki  
  
 Open an issue to report a bug or suggest a new feature!
 

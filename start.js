@@ -48,7 +48,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.7p7";
+var version = "3.3.7p8";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -4469,7 +4469,7 @@ function getHelp(svr) {
     if(configs.servers[svr.id].points) {
         info += "\n\nFinally: *AwesomePoints*, a karma system for Discord. You can upvote someone with `@user <\"^\", \"+1\", or \"up\">`, and give 10 of your own points with `@user gild`. You'll lose points for doing bad things, and get a reward for being the most active user at the end of the week.";
     }
-    info += "\n\nOn top of all this, you can talk to me about anything privately or in the main chat (by tagging me). Have fun! ;)\n\nVersion " + version + " by **@BitQuote**, https://git.io/vaa2F";
+    info += "\n\nOn top of all this, you can talk to me about anything privately or in the main chat (by tagging me). Learn more on my wiki: https://git.io/vVHvQ \n\nVersion " + version + " by **@BitQuote**, https://git.io/vaa2F";
     return info;
 }
 
