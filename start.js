@@ -48,7 +48,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.7p6";
+var version = "3.3.7p7";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -2718,7 +2718,7 @@ bot.on("messageDeleted", function(msg) {
 
 // Message on user banned
 bot.on("userBanned", function(usr, svr) {
-    if(configs.servers[svr.id].servermod && stats[svr.id].botOn[svr.defaultChannel.id]) {
+    if(configs.servers[svr.id].servermod && configs.servers[svr.id].membermsg && stats[svr.id].botOn[svr.defaultChannel.id]) {
         logMsg(new Date().getTime(), "INFO", svr.name, null, "User " + usr.username + " has been banned");
         bot.sendMessage(svr.defaultChannel, usr.username + " has been banned.");
     }
@@ -2726,7 +2726,7 @@ bot.on("userBanned", function(usr, svr) {
 
 // Message on user unbanned
 bot.on("userUnbanned", function(usr, svr) {
-    if(configs.servers[svr.id].servermod && stats[svr.id].botOn[svr.defaultChannel.id]) {
+    if(configs.servers[svr.id].servermod && configs.servers[svr.id].membermsg && stats[svr.id].botOn[svr.defaultChannel.id]) {
         logMsg(new Date().getTime(), "INFO", svr.name, null, "User " + usr.username + " has been unbanned");
         bot.sendMessage(svr.defaultChannel, usr.username + " is no longer banned.");
     }

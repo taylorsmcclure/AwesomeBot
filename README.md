@@ -58,6 +58,7 @@ Patch #3: Fixed ping display and RSS date crash
 Patch #4: Fixed web interface members list crash  
 Patch #5: Switched to cleanContent in chatterbot log  
 Patch #6: Added tag list option  
+Patch #7: Made banned/unbanned messages respect membermsg  
  
 Open an issue to report a bug or suggest a new feature!
 
