@@ -48,7 +48,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.7p4";
+var version = "3.3.7p5";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -2487,7 +2487,7 @@ bot.on("message", function (msg, user) {
                     if(!configs.servers[msg.channel.server.id].chatterbot || !stats[msg.channel.server.id].botOn[msg.channel.id]) {
                         return;
                     }
-                    logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Treating '" + msg.content + "' from " + msg.author.username + " as chatterbot prompt"); 
+                    logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Treating '" + msg.cleanContent + "' from " + msg.author.username + " as a chatterbot prompt"); 
                 } else {
                     logMsg(new Date().getTime(), "INFO", msg.author.id, null, "Treating '" + msg.content + "' as chatterbot prompt"); 
                 }
