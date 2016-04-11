@@ -80,7 +80,7 @@ h1 {
 }
 
 h2 {
-  line-height:1.4;
+  line-height:1.5;
   color:#393939;
 }
 
@@ -159,7 +159,15 @@ img {
 }
 
 i {
-  vertical-align:bottom;
+  vertical-align:top;
+  font-size:32px;
+  -webkit-transition: color 250ms;
+  transition: color 250ms;
+}
+
+i:hover {
+  cursor: default;
+  color: #009688;
 }
 
 header {
