@@ -82,6 +82,12 @@ h1 {
 h2 {
   line-height:1.5;
   color:#393939;
+  -webkit-transition:color 250ms;
+  transition:color 250ms;
+}
+
+h2:hover {
+  color:#009688;
 }
 
 h3, h4, h5, h6 {
@@ -160,13 +166,10 @@ img {
 
 i {
   vertical-align:top;
-  -webkit-transition:color 250ms;
-  transition:color 250ms;
 }
 
 i:hover {
   cursor:default;
-  color:#009688;
 }
 
 .material-icons {
