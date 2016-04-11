@@ -178,14 +178,6 @@ img {
   max-width:100%;
 }
 
-i {
-  vertical-align:top;
-}
-
-i:hover {
-  cursor:default;
-}
-
 @font-face {
   font-family: 'Material Icons';
   font-style: normal;
@@ -207,6 +199,7 @@ i:hover {
   direction: ltr;
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
+  vertical-align:top;
 }
 
 header {
