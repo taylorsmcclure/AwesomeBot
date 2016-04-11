@@ -160,14 +160,17 @@ img {
 
 i {
   vertical-align:top;
-  font-size:32px;
-  -webkit-transition: color 250ms;
-  transition: color 250ms;
+  -webkit-transition:color 250ms;
+  transition:color 250ms;
 }
 
 i:hover {
-  cursor: default;
-  color: #009688;
+  cursor:default;
+  color:#009688;
+}
+
+.material-icons {
+  font-size:2px;
 }
 
 header {
