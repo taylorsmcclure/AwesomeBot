@@ -157,6 +157,10 @@ img {
   max-width:100%;
 }
 
+i {
+  height:100%;
+}
+
 header {
   width:270px;
   float:left;
