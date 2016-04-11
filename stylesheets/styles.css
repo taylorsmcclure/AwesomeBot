@@ -77,8 +77,8 @@ h1, h3 {
 
 h1 {
   font-size:28px;
-  -webkit-transition:color 250ms;
-  transition:color 250ms;
+  -webkit-transition:color 500ms;
+  transition:color 500ms;
 }
 
 h1:hover {
@@ -88,12 +88,20 @@ h1:hover {
 h2 {
   line-height:1.5;
   color:#393939;
-  -webkit-transition:color 250ms;
-  transition:color 250ms;
+  -webkit-transition:color 500ms;
+  transition:color 500ms;
 }
 
 h2:hover {
   color:#009688;
+  cursor:help;
+}
+
+.textbox {
+    max-height:0;
+    overflow:hidden;
+    -webkit-transition:max-height 500ms;
+    transition:max-height 500ms;
 }
 
 h3, h4, h5, h6 {
@@ -235,8 +243,8 @@ header li {
 }
 
 li {
-  -webkit-transition:background-color 250ms;
-  transition:background-color 250ms;
+  -webkit-transition:background-color 500ms;
+  transition:background-color 500ms;
 }
 
 li:hover {
