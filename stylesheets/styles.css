@@ -77,6 +77,12 @@ h1, h3 {
 
 h1 {
   font-size:28px;
+  -webkit-transition:color 250ms;
+  transition:color 250ms;
+}
+
+h1:hover {
+  color:#009688;
 }
 
 h2 {
