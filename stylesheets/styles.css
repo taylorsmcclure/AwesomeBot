@@ -225,6 +225,14 @@ header li {
   height:40px;
 }
 
+#addtoserver {
+  background:#009688;
+}
+
+#addtoserver:hover {
+  background:#7289DA;
+}
+
 li {
   -webkit-transition:background-color 250ms;
   transition:background-color 250ms;
@@ -274,6 +282,14 @@ header ul a strong {
   font-size:14px;
   display:block;
   color:#222;
+}
+
+#addtoserver a {
+  color:#eee;
+}
+
+#addtoserver a strong {
+  color:fff;
 }
 
 section {
