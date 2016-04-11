@@ -94,7 +94,7 @@ h2 {
 
 h2:hover {
   color:#009688;
-  cursor:help;
+  cursor:pointer;
 }
 
 .textbox {
