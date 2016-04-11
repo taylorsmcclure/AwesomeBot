@@ -227,6 +227,7 @@ header li {
 
 #addtoserver {
   background:#009688;
+  border-radius:5px 0 0 5px;
 }
 
 #addtoserver:hover {
@@ -286,7 +287,6 @@ header ul a strong {
 
 #addtoserver a {
   color:#eee;
-  border-radius:5px 0 0 5px;
 }
 
 #addtoserver a strong {
