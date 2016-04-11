@@ -219,6 +219,16 @@ header li {
   height:40px;
 }
 
+li {
+  -webkit-transition:color 250ms;
+  transition:color 250ms;
+}
+
+li:hover {
+  background-color:#009688;
+  color:#fafafa;
+}
+
 header li:first-child a {
   border-radius:5px 0 0 5px;
 }
