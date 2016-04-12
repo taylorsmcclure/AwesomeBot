@@ -6,6 +6,20 @@ body {
   font-weight:400;
 }
 
+#logo, #headings {
+  -webkit-transition:opacity 250ms;
+  transition:opacity 250ms;
+}
+
+#logo {
+  opacity:0;
+  display:none;
+}
+
+::-webkit-scrollbar { 
+    display: none; 
+}
+
 h1, h2, h3, h4, h5, h6 {
   color:#222;
   margin:0 0 20px;
@@ -27,6 +41,7 @@ h1 {
 
 h1:hover {
   color:#009688;
+  cursor:pointer;
 }
 
 h2 {
@@ -42,10 +57,11 @@ h2:hover {
 }
 
 .textbox {
-    max-height:0;
-    overflow:hidden;
-    -webkit-transition:max-height 500ms;
-    transition:max-height 500ms;
+  max-height:0;
+  overflow:hidden;
+  -webkit-transition:max-height 500ms;
+  transition:max-height 500ms;
+  text-align:justify;
 }
 
 h3, h4, h5, h6 {

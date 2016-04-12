@@ -20,12 +20,51 @@
             document.getElementById(sect + "-text").style.maxHeight = "300px";
         }
     }
+    function ceAll(e) {
+        console.log(e.keyCode);
+        if([32, 43, 45, 13, 61].indexOf(e.keyCode)>-1) {
+            var h2s = document.getElementsByTagName("h2");
+            iterateAll(h2s, 0);
+        }
+    }
+    function iterateAll(h2s, i) {
+        if(i<h2s.length) {
+            showTextbox(h2s[i].id);
+            setTimeout(function() {
+                iterateAll(h2s, i+1);
+            }, 100);
+        }
+    }
+    function showLogo() {
+        if(document.getElementById("logo").style.display=="block") {
+            document.getElementById("logo").style.opacity = 0;
+            setTimeout(function() {
+                document.getElementById("logo").style.display = "none";
+                document.getElementById("headings").style.display = "block";
+                setTimeout(function() {
+                    document.getElementById("headings").style.opacity = 1;
+                }, 150);
+            }, 250);
+        } else {
+            var imgs = ["http://i.imgur.com/cCDyBv8.png", "http://i.imgur.com/9TX0Y6N.png", "http://i.imgur.com/HUr5kDj.png", "http://i.imgur.com/OZFme5u.png", "http://i.imgur.com/rqHjr6a.png"];
+            document.getElementById("logoimg").src = imgs[getRandomInt(0, imgs.length-1)];
+            document.getElementById("logo").style.display = "block";
+            document.getElementById("headings").style.opacity = 0;
+            setTimeout(function() {
+                document.getElementById("headings").style.display = "none";
+                document.getElementById("logo").style.opacity = 1;
+            }, 250);
+        }
+    }
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
     </script>
   </head>
-  <body>
+  <body onload="javascript:window.addEventListener('keypress', ceAll, false);">
     <div class="wrapper">
       <header>
-        <h1>AwesomeBot</h1>
+        <h1 onclick="javascript:showLogo();">AwesomeBot</h1>
         <h3>The best Discord bot!</h3>
 
         <ul>
@@ -35,27 +74,36 @@
         </ul>
       </header>
       <section>
-        <h2 id="media" onclick="javascript:showTextbox(this.id);"><span class="material-icons">image</span>&nbsp;Media Fetching: YouTube, Images, GIFs</h2>
-        <div class="textbox" id="media-text">AwesomeBot provides useful commands for Google Image Search, Giphy access, and full YouTube search. In addition, you can fetch data from Wikipedia, Wolfram|Alpha, MSN Weather, and even links to apps on the Play Store and App Store.<br><br></div> 
-        <h2 id="rssr" onclick="javascript:showTextbox(this.id);"><span class="material-icons">refresh</span>&nbsp;RSS Articles and Reddit posts</h2>
-        <div class="textbox" id="rssr-text">Reddit and RSS can become integral to the Discord experience with AwesomeBot. We allow server mods to set custom RSS feeds, and our Reddit viewer includes data beyond just the link. Fetching is fast and simple with our streamlined command processing.<br><br></div>
-        <h2 id="profiles" onclick="javascript:showTextbox(this.id);"><span class="material-icons">person</span>&nbsp;Discord User Profiles</h2>
-        <div class="textbox" id="profiles-text">Often, you want everyone to know something about you. With AwesomeBot, you can add information to your user profile across Discord to express yourself. Even if you don't use this, the capable profile command shows information about each user's account and activity on the server.<br><br></div>
-        <h2 id="stats" onclick="javascript:showTextbox(this.id);"><span class="material-icons">poll</span>&nbsp;Full-Featured Per-Server Stats</h2>
-        <div class="textbox" id="stats-text">One of the best features of AwesomeBot is our full-featured, per-server stats system that logs every message sent and game played. You can view up-to-date information about the most popular members and games. This even includes viewing messages you've been mentioned in over the past week and having AwesomeBot PM you if you're mentioned and you're offline.<br><br></div>
-        <h2 id="pollt" onclick="javascript:showTextbox(this.id);"><span class="material-icons">play_circle_filled</span>&nbsp;In-Chat Polls and Trivia Game</h2>
-        <div class="textbox" id="pollt-text">Have you ever wanted to easily ask the server a question? AwesomeBot provides live, in-chat polls that can be rapidly created and tallied. In addition, there's a fun group trivia game that even allows for custom question sets per-server. 
-        <br><br></div>
-        <h2 id="awesome" onclick="javascript:showTextbox(this.id);"><span class="material-icons">card_giftcard</span>&nbsp;AwesomePoints: Karma for Discord</h2>
-        <div class="textbox" id="awesome-text">Sometimes, you just want to show your agreement without having to send a long message. AwesomePoints allow you to quickly upvote users, accepting a wide range of syntaxes. This system is integrated throughout the bot: you'll lose points for breaking the rules, get rewards for being the most active on the server, and you can even buy lottery tickets!<br><br></div>
-        <h2 id="config" onclick="javascript:showTextbox(this.id);"><span class="material-icons">settings</span>&nbsp;Configurable Per-Server with Mod Tools</h2>
-        <div class="textbox" id="config-text">Don't like a feature in AwesomeBot? Disable it. Our powerful admin console allows server mods to control every aspect of the bot per-server, as well as gain access to our comprehensive mod tools. This includes a spam filter, NSFW content filter, blocklist, and strikes system to keep track of when users break the rules.<br><br></div>
-        <h2 id="extensions" onclick="javascript:showTextbox(this.id);"><span class="material-icons">extension</span>&nbsp;Easily Extensible with JavaScript</h2>
-        <div class="textbox" id="extensions-text">The possibilities with AwesomeBot are endless. Maybe you want to add a live score tracker. Or a Spotify search command. Our robust extension system allows you to write a little JavaScript code to enrich the bot's functionality without worrying about breaking it.<br><br></div>
-        <h2 id="free" onclick="javascript:showTextbox(this.id);"><span class="material-icons">favorite</span>&nbsp;Free, Open-Source, Reliable</h2>
-        <div class="textbox" id="free-text">AwesomeBot is made with love by BitQuote and our entire team of committed volunteers. It'll always be open-source and free to use. It's hosted reliably in the cloud with frequest and tested updates. For tinkers, we provide exhaustive documentation on setting up and modifying the AwesomeBot base.<br><br></div>
-
-        <p><a href="https://github.com/BitQuote/AwesomeBot/wiki">Head to our wiki to learn more »</a></p>
+        <div id="headings">
+            <h2 id="media" onclick="javascript:showTextbox(this.id);"><span class="material-icons">image</span>&nbsp;Media Fetching: YouTube, Images, GIFs</h2>
+            <div class="textbox" id="media-text">Find memes or random images with Google Image Search. Get your daily dose of glorious GIFs on Giphy. View channels, playlists, and videos on YouTube. Brought to you by AwesomeBot.<br><br></div> 
+            <h2 id="rssr" onclick="javascript:showTextbox(this.id);"><span class="material-icons">refresh</span>&nbsp;RSS Articles and Reddit posts</h2>
+            <div class="textbox" id="rssr-text">Reddit and RSS can become integral to the Discord experience with AwesomeBot. We allow server mods to set custom RSS feeds, and our Reddit viewer includes data beyond just the link. Fetching is fast and simple with our streamlined command processing.<br><br></div>
+            <h2 id="profiles" onclick="javascript:showTextbox(this.id);"><span class="material-icons">person</span>&nbsp;Discord User Profiles</h2>
+            <div class="textbox" id="profiles-text">Often, you want everyone to know something about you. With AwesomeBot, you can add information to your user profile across Discord to express yourself. Even if you don't use this, the capable profile command shows information about each user's account and activity on the server.<br><br></div>
+            <h2 id="stats" onclick="javascript:showTextbox(this.id);"><span class="material-icons">poll</span>&nbsp;Full-Featured Per-Server Stats</h2>
+            <div class="textbox" id="stats-text">One of the best features of AwesomeBot is our full-featured, per-server stats system that logs every message sent and game played. You can view up-to-date information about the most popular members and games.<br><br></div>
+            <h2 id="messages" onclick="javascript:showTextbox(this.id);"><span class="material-icons">chat</span>&nbsp;Mention Logging and PM Option</h2>
+            <div class="textbox" id="messages-text">Discord provides some great notification options, but when you're mentioned, there's no way to quickly scroll to the messages in which you were tagged. AwesomeBot solves this problem by allowing you to view all of your mentions on each server in the past week. There's also the option to be private messaged by the bot when you're mentioned in the main chat.<br><br></div>
+            <h2 id="pollt" onclick="javascript:showTextbox(this.id);"><span class="material-icons">play_circle_filled</span>&nbsp;In-Chat Polls and Trivia Game</h2>
+            <div class="textbox" id="pollt-text">Have you ever wanted to easily ask the server a question? AwesomeBot provides live, in-chat polls that can be rapidly created and tallied. In addition, there's a fun group trivia game that even allows for custom question sets per-server. 
+            <br><br></div>
+            <h2 id="awesome" onclick="javascript:showTextbox(this.id);"><span class="material-icons">card_giftcard</span>&nbsp;AwesomePoints: Karma for Discord</h2>
+            <div class="textbox" id="awesome-text">Sometimes, you just want to show your agreement without having to send a long message. AwesomePoints allow you to quickly upvote users, accepting a wide range of syntaxes. This system is integrated throughout the bot: you'll lose points for breaking the rules, get rewards for being the most active on the server, and you can even buy lottery tickets!<br><br></div>
+            <h2 id="searchd" onclick="javascript:showTextbox(this.id);"><span class="material-icons">import_contacts</span>&nbsp;Utility Commands Galore</h2>
+            <div class="textbox" id="searchd-text">Urban Dictionary? Wikipedia? Google Search? Reminders? Unit and currency conversions? Full Wolfram|Alpha data? Random number generator? Tag database? Weather info? Quote generation? Say command? Year countdown? Games list? Stock market data? Yep, it's all here - AwesomeBot is packed with commands for everything you could possibly want.<br><br></div>
+            <h2 id="config" onclick="javascript:showTextbox(this.id);"><span class="material-icons">settings</span>&nbsp;Configurable Per-Server with Mod Tools</h2>
+            <div class="textbox" id="config-text">Don't like a feature in AwesomeBot? Disable it. Our powerful admin console allows server mods to control every aspect of the bot per-server, as well as gain access to our comprehensive mod tools. This includes a spam filter, NSFW content filter, blocklist, and strikes system to keep track of when users break the rules.<br><br></div>
+            <h2 id="extensions" onclick="javascript:showTextbox(this.id);"><span class="material-icons">extension</span>&nbsp;Easily Extensible with JavaScript</h2>
+            <div class="textbox" id="extensions-text">The possibilities with AwesomeBot are endless. Maybe you want to add a live score tracker. Or a Spotify search command. Our robust extension system allows you to write a little JavaScript code to enrich the bot's functionality without worrying about breaking it.<br><br></div>
+            <h2 id="free" onclick="javascript:showTextbox(this.id);"><span class="material-icons">favorite</span>&nbsp;Free, Open-Source, Reliable</h2>
+            <div class="textbox" id="free-text">AwesomeBot is made with love by BitQuote and our entire team of committed volunteers. It'll always be open-source and free to use. It's hosted reliably in the cloud with frequest and tested updates. For tinkers, we provide exhaustive documentation on setting up and modifying the AwesomeBot base.<br><br></div>
+            
+            <p><a href="https://github.com/BitQuote/AwesomeBot/wiki">Head to our wiki to learn more »</a></p>
+        </div>
+        <div id="logo" onclick="javascript:showLogo();">
+            <img id="logoimg" src="http://i.imgur.com/cCDyBv8.png" />
+        </div>
       </section>
       <footer>
         <p>AwesomeBot is maintained by <a href="https://github.com/BitQuote">BitQuote</a></p>
