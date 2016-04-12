@@ -4,6 +4,8 @@ body {
   font: 14px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
   color:#727272;
   font-weight:400;
+  -webkit-transition:background-color 500ms;
+  transition:background-color 500ms;
 }
 
 #logo, #headings {
@@ -23,6 +25,8 @@ body {
 h1, h2, h3, h4, h5, h6 {
   color:#222;
   margin:0 0 20px;
+  -webkit-transition:color 500ms;
+  transition:color 500ms;
 }
 
 p, ul, ol, table, pre, dl {
@@ -35,24 +39,18 @@ h1, h3 {
 
 h1 {
   font-size:28px;
-  -webkit-transition:color 500ms;
-  transition:color 500ms;
 }
 
 h1:hover {
-  color:#009688;
   cursor:pointer;
 }
 
 h2 {
   line-height:1.5;
   color:#393939;
-  -webkit-transition:color 500ms;
-  transition:color 500ms;
 }
 
 h2:hover {
-  color:#009688;
   cursor:pointer;
 }
 
