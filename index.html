@@ -18,10 +18,10 @@
     var h3c = "#494949";
     function setup() {
         window.addEventListener('keypress', keypress, false);
-        if(localStorage.getItem("theme")=="dark") {
-            colorDark();
-        } else {
+        if(localStorage.getItem("theme")=="light") {
             colorLight();
+        } else {
+            colorDark();
         }
     }
     function showTextbox(sect) {
