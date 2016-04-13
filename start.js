@@ -3,11 +3,12 @@ try {
     const Discord = require("discord.js");
     var configs = require("./data/config.json");
     var configDefaults = require("./defaults.json");
-    const AuthDetails = require("./auth.json");
+    var AuthDetails = require("./auth.json");
     var profileData = require("./data/profiles.json");
     var stats = require("./data/stats.json");
     var filter = require("./filter.json");
     var reminders = require("./data/reminders.json");
+    var logs = require("./data/logs.json");
 
     // Hijack spawn for auto-update to work properly
     (function() {
@@ -48,10 +49,16 @@ try {
 }
 
 // Bot setup
-var version = "3.3.8";
+var version = "3.3.9-ALPHA";
+// TODO: nsfw/spam filter per-channel options
+// TODO: make channel id available to extensions
+// TODO: provide bot info embed for use on landing page
+// TODO: add servers/users count to status page
+// TODO: default game option with rotating bot info
+// TODO: option to toggle pmmentions for all servers
+// TODO: list of polls/trivia games to close in admin console
 var outOfDate = 0;
 var readyToGo = false;
-var logs = [];
 var disconnects = 0;
 
 // Set up message counter
@@ -106,7 +113,7 @@ var commands = {
     "about": {
         extended: "Tells you all about the bot and where to get more info.",
         process: function(bot, msg) {
-            bot.sendMessage(msg.channel, "Hello! I'm **" + bot.user.username + "**, here to help everyone on this server. A full list of commands and features is available with `@" + bot.user.username + " help`. To learn more, check out my GitHub page (https://git.io/vaa2F) or join the Discord server (https://discord.gg/0pRFCTcG2aIY53Jk)\n\nv" + version + " by **@BitQuote**, made with NodeJS");
+            bot.sendMessage(msg.channel, "Use `@" + bot.user.username + " help` to list commands. Created by **@BitQuote**. Go to https://git.io/vaa2F to learn more.");
         }
     },
     // Shows top 5 games and active members
@@ -1554,7 +1561,8 @@ var pmcommands = {
 // Initializes bot and outputs to console
 var bot = new Discord.Client({forceFetchUsers: true});
 bot.on("ready", function() {
-    checkVersion();
+    // TODO: re-enable checkVersion after testing
+    //checkVersion();
     
     // Set avatar if necessary
     if(AuthDetails.avatar_url) {
@@ -1581,6 +1589,7 @@ bot.on("ready", function() {
         stats.timestamp = new Date().getTime();
     }
     clearMessageCounter();
+    clearLogCounter();
     clearStatCounter();
     
     // Set playing game if applicable
@@ -2692,7 +2701,7 @@ bot.on("messageDeleted", function(msg) {
 // Message on user banned
 bot.on("userBanned", function(usr, svr) {
     if(configs.servers[svr.id].servermod && configs.servers[svr.id].membermsg && stats[svr.id].botOn[svr.defaultChannel.id]) {
-        logMsg(new Date().getTime(), "INFO", svr.name, null, "User " + usr.username + " has been banned");
+        logMsg(new Date().getTime(), "INFO", svr.name, null, "User **@" + usr.username + "** has been banned");
         bot.sendMessage(svr.defaultChannel, usr.username + " has been banned.");
     }
 });
@@ -2700,7 +2709,7 @@ bot.on("userBanned", function(usr, svr) {
 // Message on user unbanned
 bot.on("userUnbanned", function(usr, svr) {
     if(configs.servers[svr.id].servermod && configs.servers[svr.id].membermsg && stats[svr.id].botOn[svr.defaultChannel.id]) {
-        logMsg(new Date().getTime(), "INFO", svr.name, null, "User " + usr.username + " has been unbanned");
+        logMsg(new Date().getTime(), "INFO", svr.name, null, "User @**" + usr.username + "** has been unbanned");
         bot.sendMessage(svr.defaultChannel, usr.username + " is no longer banned.");
     }
 });
@@ -2954,6 +2963,25 @@ function clearMessageCounter() {
     setTimeout(function() {
         clearMessageCounter();
     }, 86400000);
+}
+
+// Save logs periodically or clear every week
+function clearLogCounter() {
+    if(!logs.timestamp) {
+        logs.timestamp = new Date().getTime();
+    }
+    if(dayDiff(new Date(logs.timestamp), new Date())>=7) {
+        logs.stream = [];
+        logMsg(new Date().getTime(), "INFO", "General", null, "Cleared logs for this week");
+    }
+    saveData("./data/logs.json", function(err) {
+        if(err) {
+            logMsg(new Date().getTime(), "ERROR", "General", null, "Could not save updated logs");
+        }
+    });
+    setTimeout(function() {
+        clearMessageCounter();
+    }, 600000);
 }
 
 // Maintain stats file freshness
@@ -3788,6 +3816,9 @@ function saveData(file, callback) {
         case "./data/reminders.json":
             object = reminders;
             break;
+        case "./data/logs.json":
+            object = logs;
+            break;
     }
     writeFileAtomic(file, JSON.stringify(object, null, 4), function(error) {
         if(error) {
@@ -4493,14 +4524,14 @@ function getCommandHelp(svr, cmd) {
 
 // Log to database and console
 function logMsg(timestamp, level, id, ch, msg) {
-    logs.push({
+    logs.stream.push({
         timestamp: timestamp,
         level: level,
         id: id,
         ch: ch,
         msg: msg.replaceAll("\"", "'")
     });
-    console.log(printLog(logs[logs.length-1]));
+    console.log(printLog(logs.stream[logs.stream.length-1]));
 }
 
 // Get printable log message
@@ -4515,7 +4546,7 @@ function printLog(log) {
 
 // Filter and print logs by parameter
 function getLog(idFilter, levelFilter) {
-    var results = logs.filter(function(obj) {
+    var results = logs.stream.filter(function(obj) {
         if(idFilter && levelFilter) {
             return obj.id==idFilter && obj.level==levelFilter;
         } else if(idFilter && !levelFilter) {
@@ -4537,15 +4568,15 @@ function getLog(idFilter, levelFilter) {
 function getLogIDs() {
     var ids = [];
     var secs = [];
-    for(var i=0; i<logs.length; i++) {
+    for(var i=0; i<logs.stream.length; i++) {
         var cand;
         var secc;
-        if(!isNaN(logs[i].id)) {
-            secc = logs[i].id;
-            cand = bot.users.get("id", logs[i].id).username.replaceAll("\"", "'");
+        if(!isNaN(logs.stream[i].id)) {
+            secc = logs.stream[i].id;
+            cand = bot.users.get("id", logs.stream[i].id).username.replaceAll("\"", "'");
         } else {
             secc = ".";
-            cand = logs[i].id.replaceAll("\"", "'");
+            cand = logs.stream[i].id.replaceAll("\"", "'");
         }
         if(ids.indexOf(cand)==-1) {
             secs.push(secc);
