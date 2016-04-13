@@ -73,7 +73,7 @@
         "games": false,
         "profile": false,
         "tagreaction": false,
-        "poll": false,
+        "poll": true,
         "trivia": false
     },
     "sense": {

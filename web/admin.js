@@ -75,7 +75,7 @@ function switchStrikes() {
     var strikestablebody = "";
     for(var i=botData.strikes.length-1; i>=0; i--) {
         blacklist.push(botData.strikes[i][0]);
-        strikestablebody += "<tr id=\"strikesentry-" + botData.strikes[i][0] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.strikes[i][1] + "\" /></td><td>" + botData.strikes[i][2] + "</td><td>" + botData.strikes[i][3] + "</td><td><span class=\"removetool\" onclick=\"javascript:config('strikes', [this.parentNode.parentNode.id.substring(13), '+1'], function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(+1)</i></span></td><td><span class=\"removetool\" onclick=\"javascript:config('strikes', [this.parentNode.parentNode.id.substring(13), '-1'], function() {switchAdmins();switchBlocked();switchStrikes();});\"><i>(-1)</i></span></td></tr>";
+        strikestablebody += "<tr id=\"strikesentry-" + botData.strikes[i][0] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.strikes[i][1] + "\" /></td><td>" + botData.strikes[i][2] + "</td><td>" + botData.strikes[i][3].length + "</td><td><span class=\"removetool\" onclick=\"javascript:alert(getStrikes(this.parentNode.parentNode.id.substring(13)));\"><i>(view all)</i></span>&nbsp;<span class=\"removetool\" onclick=\"javascript:newStrike(this.parentNode.parentNode.id.substring(13));\"><i>(+1)</i></span>&nbsp;<span class=\"removetool\" onclick=\"javascript:removeStrike(this.parentNode.parentNode.id.substring(13));\"><i>(-1)</i></span></td></tr>";
     }
     document.getElementById("strikestablebody").innerHTML = strikestablebody;
     if(botData.strikes.length==0) {
@@ -92,6 +92,48 @@ function switchStrikes() {
         }
         document.getElementById("strikesselector").innerHTML = strikesselector;
     });
+}
+
+function newStrike(usrid) {
+    var u = prompt("Enter reason for strike");
+    if(u) {
+        config("strikes", [usrid, u], function() {
+            switchAdmins();
+            switchBlocked();
+            switchStrikes();
+        });
+    }
+}
+
+function getStrikes(usrid) {
+    for(var i=0; i<botData.strikes.length; i++) {
+        if(botData.strikes[i][0]==usrid) {
+            var info = "Strikes for @" + botData.strikes[i][2];
+            for(var j=0; j<botData.strikes[i][3].length; j++) {
+                info += "\n   " + j + ": " + botData.strikes[i][3][j][1] + " from @" + botData.strikes[i][3][j][0];
+            }
+            return info;
+        }
+    }
+    return;
+}
+
+function removeStrike(usrid) {
+    var info = getStrikes(usrid);
+    if(info) {
+        var u = prompt(info + "\nEnter strike number to remove"); 
+        if(!isNaN(u)) {
+            config("strikes", [usrid, u], function() {
+                switchAdmins();
+                switchBlocked();
+                switchStrikes();
+            });
+        } else {
+            alert("Must be a number");
+        }
+    } else {
+        alert("An error occurred");
+    }
 }
 
 function switchRss() {

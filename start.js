@@ -48,7 +48,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.7p8";
+var version = "3.3.8";
 var outOfDate = 0;
 var readyToGo = false;
 var logs = [];
@@ -1554,7 +1554,7 @@ var pmcommands = {
 // Initializes bot and outputs to console
 var bot = new Discord.Client({forceFetchUsers: true});
 bot.on("ready", function() {
-    //checkVersion();
+    checkVersion();
     
     // Set avatar if necessary
     if(AuthDetails.avatar_url) {
@@ -1835,15 +1835,20 @@ bot.on("ready", function() {
                     
                     var strikeList = [];
                     for(var usrid in stats[svr.id].members) {
-                        if(stats[svr.id].members[usrid].strikes>0) {
+                        if(stats[svr.id].members[usrid].strikes.length>0) {
                             var usr = bot.users.get("id", usrid);
                             if(usr) {
-                                strikeList.push([usr.id, usr.avatarURL || "http://i.imgur.com/fU70HJK.png", usr.username, stats[svr.id].members[usr.id].strikes]);
+                                var s = [];
+                                for(var i=0; i<stats[svr.id].members[usrid].strikes.length; i++) {
+                                    var m = svr.members.get("id", stats[svr.id].members[usrid].strikes[i][0]);
+                                    s.push([(m && stats[svr.id].members[usrid].strikes[i][0]!="Automatic") ? m.username : "Unknown", stats[svr.id].members[usrid].strikes[i][1]]);
+                                }
+                                strikeList.push([usr.id, usr.avatarURL || "http://i.imgur.com/fU70HJK.png", usr.username, s]);
                             }
                         }
                     }
                     strikeList.sort(function(a, b) {
-                        return a[3] - b[3];
+                        return a[3].length - b[3].length;
                     });
                     
                     data = {
@@ -2033,7 +2038,7 @@ bot.on("message", function (msg, user) {
                         pm: false,
                         stream: []
                     },
-                    strikes: 0
+                    strikes: []
                 };
             }
             stats[msg.channel.server.id].members[msg.author.id].messages++;
@@ -2096,26 +2101,28 @@ bot.on("message", function (msg, user) {
                             negative = 50;
                         }
                         
-                        if(negative && configs.servers[msg.channel.server.id].points) {
-                            profileData[msg.author.id].points -= negative;
-                            saveData("./data/profiles.json", function(err) {
-                                if(err) {
-                                    logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile data for " + msg.author.username);
-                                }
-                            });
+                        if(negative!=null) {
+                            if(configs.servers[msg.channel.server.id].points) {
+                                profileData[msg.author.id].points -= negative;
+                                saveData("./data/profiles.json", function(err) {
+                                    if(err) {
+                                        logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile data for " + msg.author.username);
+                                    }
+                                });
+                            }
+                            if(!stats[msg.channel.server.id].members[msg.author.id]) {
+                                stats[msg.channel.server.id].members[msg.author.id] = {
+                                    messages: 0,
+                                    seen: new Date().getTime(),
+                                    mentions: {
+                                        pm: false,
+                                        stream: []
+                                    },
+                                    strikes: []
+                                };
+                            }
+                            stats[msg.channel.server.id].members[msg.author.id].strikes.push(["Automatic", (negative>20 ? "Second" : "First") + "-time spam violation"]);
                         }
-                        if(!stats[msg.channel.server.id].members[msg.author.id]) {
-                            stats[msg.channel.server.id].members[msg.author.id] = {
-                                messages: 0,
-                                seen: new Date().getTime(),
-                                mentions: {
-                                    pm: false,
-                                    stream: []
-                                },
-                                strikes: 0
-                            };
-                        }
-                        stats[msg.channel.server.id].members[msg.author.id].strikes++;
                     }
                 }
             }
@@ -2159,40 +2166,6 @@ bot.on("message", function (msg, user) {
                     
                     if([msg.author.id, bot.user.id].indexOf(usr.id)==-1 && configs.servers[msg.channel.server.id].points && !novoting[msg.author.id]) {
                         var beyondtag = msg.content.substring(msg.content.lastIndexOf(usrid || usrnm) + offset);
-                        
-                        var strikestrings = ["strike+", "strike-"];
-                        for(var i=0; i<strikestrings.length; i++) {
-                            if(beyondtag.indexOf(strikestrings[i])==0) {
-                                if(configs.servers[msg.channel.server.id].admins.indexOf(msg.author.id)>-1) {
-                                    if(configs.servers[msg.channel.server.id].admins.indexOf(usr.id)==-1) {
-                                        if(strikestrings[i]=="strike+") {
-                                            if(!stats[msg.channel.server.id].members[usr.id]) {
-                                                stats[msg.channel.server.id].members[usr.id] = {
-                                                    messages: 0,
-                                                    seen: new Date().getTime(),
-                                                    mentions: {
-                                                        pm: false,
-                                                        stream: []
-                                                    },
-                                                    strikes: 0
-                                                };
-                                            }
-                                            stats[msg.channel.server.id].members[usr.id].strikes++;
-                                            logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Strike for " + usr.username + " from admin");
-                                        } else if(strikestrings[i]=="strike-") {
-                                            if(stats[msg.channel.server.id].members[usr.id]) {
-                                                stats[msg.channel.server.id].members[usr.id].strikes--;
-                                                logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Admin removed strike for " + usr.username);
-                                            }
-                                        }
-                                        return;
-                                    }
-                                } else {
-                                    logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, msg.author.username + " is not a bot admin and cannot change strikes for " + usr.username);
-                                    bot.sendMessage(msg.channel, msg.author + " I see you, trying to give people strikes even though you're not an admin :P");
-                                }
-                            }
-                        }
                         
                         var votestrings = ["+!", "+1", "up", "^"];
                         var voted;
@@ -2664,7 +2637,7 @@ bot.on("serverNewMember", function(svr, usr) {
             pm: false,
             stream: []
         },
-        strikes: 0
+        strikes: []
     };
     if(usr.id==configs.maintainer) {
         configs.servers[svr.id].admins.push(configs.maintainer);
@@ -2745,7 +2718,7 @@ bot.on("presence", function(oldusr, newusr) {
                             pm: false,
                             stream: []
                         },
-                        strikes: 0
+                        strikes: []
                     };
                 }
                 if(oldusr.status=="online" && newusr.status!="online") {
@@ -2867,7 +2840,7 @@ function populateStats(svr) {
                 pm: false,
                 stream: []
             },
-            strikes: 0
+            strikes: []
         };
         if(!stats[svr.id].members[svr.members[i].id]) {
             stats[svr.id].members[svr.members[i].id] = JSON.parse(JSON.stringify(defaultMemberStats));
@@ -3028,7 +3001,7 @@ function clearStatCounter() {
                             pm: false,
                             stream: []
                         },
-                        strikes: 0
+                        strikes: []
                     };
                 }
                 // If member's mention data is 7 days old, clear it
@@ -3406,7 +3379,7 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                             callback(true);
                             return;
                         } else if(key=="admins" && stats[svr.id].members[usr.id]) {
-                            stats[svr.id].members[usr.id].strikes = 0;
+                            stats[svr.id].members[usr.id].strikes = [];
                         }
                         logMsg(new Date().getTime(), "INFO", consoleid, null, "Added " + usr.username + " to " + key + " list in " + svr.name);
                         configs.servers[svr.id][key].push(usr.id);
@@ -3420,7 +3393,20 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                 if(Array.isArray(delta[key]) && delta[key].length==2) {
                     var usr = svr.members.get("id", delta[key][0]);
                     if(usr) {
-                        if(delta[key][1]=="+1") {
+                        if(!isNaN(delta[key][1])) {
+                            if(stats[svr.id].members[usr.id]) {
+                                if(delta[key][1]<stats[svr.id].members[usr.id].strikes.length) {
+                                    stats[svr.id].members[usr.id].strikes.splice(delta[key][1], 1);
+                                    logMsg(new Date().getTime(), "INFO", consoleid, null, "Removed strike for " + usr.username + " in " + svr.name);
+                                } else {
+                                    callback(true);
+                                    return;
+                                }
+                            } else {
+                                callback(true);
+                                return;
+                            }
+                        } else {
                             if(!stats[svr.id].members[usr.id]) {
                                 stats[svr.id].members[usr.id] = {
                                     messages: 0,
@@ -3429,19 +3415,11 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                                         pm: false,
                                         stream: []
                                     },
-                                    strikes: 0
+                                    strikes: []
                                 };
                             }
-                            stats[svr.id].members[usr.id].strikes++;
+                            stats[svr.id].members[usr.id].strikes.push([consoleid, delta[key][1]]);
                             logMsg(new Date().getTime(), "INFO", consoleid, null, "Strike for " + usr.username + " in " + svr.name);
-                        } else if(delta[key][1]=="-1") {
-                            if(stats[svr.id].members[usr.id]) {
-                                stats[svr.id].members[usr.id].strikes--;
-                                logMsg(new Date().getTime(), "INFO", consoleid, null, "Removed strike for " + usr.username + " in " + svr.name);
-                            } else {
-                                callback(true);
-                                return;
-                            }
                         }
                     } else {
                         callback(true);
@@ -3925,10 +3903,10 @@ function handleNSFW(msg) {
                 pm: false,
                 stream: []
             },
-            strikes: 0
+            strikes: []
         };
     }
-    stats[msg.channel.server.id].members[msg.author.id].strikes++;
+    stats[msg.channel.server.id].members[msg.author.id].strikes.push(["Automatic", (action ? "Second" : "First") + "-time NSFW filter violation"]);
 }
 
 // Searches Google Images for keyword(s)
@@ -4200,7 +4178,7 @@ function getProfile(usr, svr) {
                 pm: false,
                 stream: []
             },
-            strikes: 0
+            strikes: []
         };
     }
     svrinfo["Messages"] = stats[svr.id].members[usr.id].messages + " this week";
@@ -4208,7 +4186,7 @@ function getProfile(usr, svr) {
         var seen = prettyDate(new Date(stats[svr.id].members[usr.id].seen));
         svrinfo["Last seen"] = secondsToString((new Date().getTime() - stats[svr.id].members[usr.id].seen)/1000) + "ago";
     }
-    svrinfo["Strikes"] = stats[svr.id].members[usr.id].strikes + " so far";
+    svrinfo["Strikes"] = stats[svr.id].members[usr.id].strikes.length + " so far";
     var info = {};
     info["User profile: @" + usr.username] = usrinfo;
     info["On " + svr.name] = svrinfo;

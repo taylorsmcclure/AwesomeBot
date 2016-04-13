@@ -76,7 +76,7 @@
             <br>
         </span>
         <div class="container" id="strikes">
-            <i>Strikes are a way of marking when a user has violated the rules of the server. You can add a strike with "@user strike+" and remove it with "@user strike-". This gives admins a way to know who needs to be warned/kicked/banned. Strikes are automatically added for spamming or fetching NSFW content (if enabled).</i><br>
+            <i>Strikes are a way of marking when a user has violated the rules of the server. This gives admins a way to know who needs to be warned/kicked/banned. Strikes are automatically added for spamming or fetching NSFW content (if enabled).</i><br>
             <div style="max-height: 50%;overflow: scroll;overflow-x: hidden;">
                 <table class="tablelist contrastable" id="strikestable">
                     <thead>
@@ -92,7 +92,7 @@
             </div>
             <span id="strikesadd">
                 Add Strike: 
-                <select id="strikesselector" onChange="javascript:config('strikes', [this.value, '+1'], function() {switchAdmins();switchBlocked();switchStrikes();});"></select>
+                <select id="strikesselector" onChange="javascript:newStrike(this.value);"></select>
             </span>
         </div>
         <br>
