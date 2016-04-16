@@ -131,14 +131,18 @@
             <u>Management</u>
         </span>
         <div class="container" id="management">
-            <label><input style="height: auto;" id="manageentry-servermod" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, switchManage);">Act as a server moderator</label>
+            <label><input style="height: auto;" id="manageentry-servermod" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Act as a server moderator</label>
             <br>
-            <label><input style="height: auto;" id="manageentry-membermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, switchManage);">Member joined/left messages</label>
-            <br>
-            <label><input style="height: auto;" id="manageentry-spamfilter" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, switchManage);">Spam filter</label>
-            <br>
-            <label><input style="height: auto;" id="manageentry-nsfwfilter" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, switchManage);">NSFW filter</label>
-            <br>
+            <span id="manageentry-servermod-block">
+                <label><input style="height: auto;" id="manageentry-membermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Member joined/left/banned/unbanned messages</label>
+                <br>
+                <label><input style="height: auto;" id="manageentry-spamfilter" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Spam filter</label>
+                <span id="manageentry-spamfilter-block"></span>
+                <br>
+                <label><input style="height: auto;" id="manageentry-nsfwfilter" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">NSFW filter (blocks NSFW fetching through bot)</label>
+                <span id="manageentry-nsfwfilter-block"></span>
+                <br>
+            </span>
             <span id="manageentry-newgreeting">
                 <textarea id="newgreetinginput" style="float: left; height: 40; width: 400;" placeholder="Message shown to new members, in markdown"></textarea>
                 &nbsp;
@@ -149,15 +153,15 @@
             </span>
             <br><br>
             
-            <button id="closeall" onclick="javascript:config('close', true, switchManage);"></button>
+            <button id="closeall" onclick="javascript:config('close', true, function() {});"></button>
             <span id="closeallspace" style="font-size: 6;"><br><br></span>
             Clean: 
             <select id="cleanselector"></select>
-            <input id="cleaninput" type="number" style="width: 25;" placeholder="#" onkeydown="if(event.keyCode==13){configCA('clean')}"></input>
+            <input id="cleaninput" type="number" style="width: 50;" placeholder="#" onkeydown="if(event.keyCode==13){configCA('clean')}"></input>
             <span style="font-size: 6;"><br><br></span>
             Archive: 
             <select id="archiveselector"></select>
-            <input id="archiveinput" type="number" style="width: 25;" placeholder="#" onkeydown="if(event.keyCode==13){configCA('archive')}"></input>
+            <input id="archiveinput" type="number" style="width: 50;" placeholder="#" onkeydown="if(event.keyCode==13){configCA('archive')}"></input>
         </div>
         <br>
         
@@ -219,6 +223,8 @@
             <option id="theme-red" value="red">Red</option>
             <option id="theme-deep" value="deep">Deep</option>
         </select>
+        
+        <button id="help" onclick="javascript:getHelp();">Help</button>
         
         <button id="logout" onclick="javascript:doLogout();">Logout</button>
         <br><br>

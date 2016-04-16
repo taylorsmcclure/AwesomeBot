@@ -2,6 +2,15 @@ var authtoken;
 var authtype;
 var botData;
 
+function getHelp() {
+    var u = window.open("https://github.com/BitQuote/AwesomeBot/wiki/Configuration#" + authtype + "-console");
+    if(u) {
+        u.focus();
+    } else {
+        window.location.href = "https://github.com/BitQuote/AwesomeBot/wiki/Configuration#" + authtype + "-console";
+    }
+}
+
 function doAuth() {
     switchColors(localStorage.getItem("theme") || "contrast");
     showLoader();
@@ -72,6 +81,10 @@ function config(key, value, callback) {
                     document.location.replace("/");
                 }
             });
+        } else if(response==401) {
+            alert("Session timeout");
+            localStorage.removeItem("auth");
+            document.location.replace("/");
         } else {
             alert("Error saving changes");
             callback(true);
