@@ -177,6 +177,38 @@ header ul {
   width:270px;
 }
 
+#awesomestatus {
+  height:40px;
+  padding:0;
+  background-color: #f4f4f4;
+  border-radius:5px;
+  border:1px solid #e0e0e0;
+  width:270px;
+  -webkit-transition:background-color 500ms;
+  transition:background-color 500ms;
+}
+
+#awesomestatus:hover {
+    background-color:#fafafa;
+    cursor:pointer;
+}
+
+#awesomepic {
+  border-radius:100%;
+  float:left;
+  -webkit-transition:border-radius 500ms;
+  transition:border-radius 500ms;
+}
+
+#awesomepic {
+    border-radius:0%;
+}
+
+.awesomeimp {
+  color:#222;
+  font-weight:700;
+}
+
 header li {
   width:89px;
   float:left;

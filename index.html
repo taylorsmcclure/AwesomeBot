@@ -23,7 +23,33 @@
         } else {
             colorDark();
         }
+        getJSON("http://awesomebot-botmakersinc.rhcloud.com/data?section=list&type=bot", function(data) {
+            document.getElementById("addtoserverlink").href = data.oauthurl;
+            document.getElementById("awesomepic").src = data.avatar;
+            document.getElementById("awesomename").innerHTML = data.username;
+            document.getElementById("awesomeversion").innerHTML = data.version;
+            document.getElementById("awesomeservers").innerHTML = data.servers;
+            document.getElementById("awesomeusers").innerHTML = data.users;
+        });
     }
+    function getJSON(url, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("get", url, true);
+        xhr.responseType = "json";
+        xhr.onload = function() {
+        var status = xhr.status;
+            if(status==200) {
+                callback(xhr.response);
+            }
+        };
+        try {
+            xhr.send();
+        } catch(err) {
+            setTimeout(function() {
+                getJSON(url, callback);
+            }, 500);
+        }
+    };
     function showTextbox(sect) {
         if(document.getElementById(sect + "-text").style.maxHeight=="300px") {
             document.getElementById(sect + "-text").style.maxHeight = "0px";
@@ -123,6 +149,14 @@
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
+    function awesomestatus() {
+        var u = window.open("http://awesomebot-botmakersinc.rhcloud.com/");
+        if(u) {
+            u.focus();
+        } else {
+            window.location.href = "http://awesomebot-botmakersinc.rhcloud.com/";
+        }
+    }
     </script>
   </head>
   <body onload="javascript:setup();">
@@ -132,10 +166,17 @@
         <h3>The best Discord bot!</h3>
 
         <ul>
-          <li id="addtoserver"><a href="https://discordapp.com/oauth2/authorize?&client_id=168130366450827264&scope=bot&permissions=0" target="_blank">Add To <strong>Server</strong></a></li>
+          <li id="addtoserver"><a id="addtoserverlink" href="https://discordapp.com/oauth2/authorize?&client_id=168130366450827264&scope=bot&permissions=0" target="_blank">Add To <strong>Server</strong></a></li>
           <li><a href="https://discord.gg/0pRFCTcG2aIY53Jk" target="_blank">Join Server <strong>BotMakers</strong></a></li>
           <li><a href="https://github.com/BitQuote/AwesomeBot">View On <strong>GitHub</strong></a></li>
         </ul>
+        
+        <div id="awesomestatus" onclick="javascript:awesomestatus();">
+            <img id="awesomepic" src="" />
+            <span class="awesomeimp" id="awesomename"></span> v<span id="awesomeversion"></span>
+            <br>
+            <span class="awesomeimp" id="awesomeservers"></span> servers, <span class="awesomeimp" id="awesomeusers"></span> users
+        </div>
       </header>
       <section>
         <div id="headings">
@@ -161,7 +202,7 @@
             <h2 id="extensions" onclick="javascript:showTextbox(this.id);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);"><span class="material-icons">extension</span>&nbsp;Easily Extensible with JavaScript</h2>
             <div class="textbox" id="extensions-text">The possibilities with AwesomeBot are endless. Maybe you want to add a live score tracker. Or a Spotify search command. Our robust extension system allows you to write a little JavaScript code to enrich the bot's functionality without worrying about breaking it.<br><br></div>
             <h2 id="free" onclick="javascript:showTextbox(this.id);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);"><span class="material-icons">favorite</span>&nbsp;Free, Open-Source, Reliable</h2>
-            <div class="textbox" id="free-text">AwesomeBot is made with love by BitQuote and our entire team of committed volunteers. It'll always be open-source and free to use. It's hosted reliably in the cloud with frequest and tested updates. For tinkers, we provide exhaustive documentation on setting up and modifying the AwesomeBot base.<br><br></div>
+            <div class="textbox" id="free-text">AwesomeBot is made with love by BitQuote and our entire team of committed volunteers. It'll always be open-source and free to use. It's hosted reliably in the cloud with frequest and tested updates. For tinkerers, we provide exhaustive documentation on setting up and modifying the AwesomeBot base.<br><br></div>
             
             <p><a href="https://github.com/BitQuote/AwesomeBot/wiki">Head to our wiki to learn more »</a></p>
         </div>
