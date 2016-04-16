@@ -187,22 +187,32 @@ function resetConfigs() {
 }
 
 function switchManage() {
-    if(document.getElementById("manageentry-servermod").checked!=botData.configs.servermod) {
-        document.getElementById("manageentry-servermod").checked = botData.configs.servermod;
-    }
-    document.getElementById("manageentry-membermsg").disabled = !botData.configs.servermod;
-    document.getElementById("manageentry-spamfilter").disabled = !botData.configs.servermod;
-    document.getElementById("manageentry-nsfwfilter").disabled = !botData.configs.servermod;
-    if(document.getElementById("manageentry-membermsg").checked!=botData.configs.membermsg) {
-        document.getElementById("manageentry-membermsg").checked = botData.configs.membermsg;
-    }
-    if(document.getElementById("manageentry-spamfilter").checked!=botData.configs.spamfilter) {
-        document.getElementById("manageentry-spamfilter").checked = botData.configs.spamfilter;
-    }
-    if(document.getElementById("manageentry-nsfwfilter").checked!=botData.configs.nsfwfilter) {
-        document.getElementById("manageentry-nsfwfilter").checked = botData.configs.nsfwfilter;
+    document.getElementById("manageentry-servermod").checked = botData.configs.servermod;
+    document.getElementById("manageentry-membermsg").checked = botData.configs.membermsg;
+    
+    document.getElementById("manageentry-spamfilter").checked = botData.configs.spamfilter[0];
+    if(botData.configs.spamfilter[0]) {
+        var spamfilter_block = "";
+        for(var i=0; i<botData.channels.length; i++) {
+            spamfilter_block += "<br>&nbsp;&nbsp;&nbsp;<label><input style=\"height: auto;\" id=\"manageentry-spamfilter-" + botData.channels[i][1] + "\" type=\"checkbox\" onclick=\"javascript:config('spamfilter', this.id.substring(23), function() {});\"" + (botData.configs.spamfilter[1].indexOf(botData.channels[i][1])==-1 ? " checked" : "") + ">#" + botData.channels[i][0] + "</label>"
+        }
+        document.getElementById("manageentry-spamfilter-block").innerHTML = spamfilter_block;
+    } else {
+        document.getElementById("manageentry-spamfilter-block").innerHTML = "";
     }
     
+    document.getElementById("manageentry-nsfwfilter").checked = botData.configs.nsfwfilter[0];
+    if(botData.configs.nsfwfilter[0]) {
+        var nsfwfilter_block = "";
+        for(var i=0; i<botData.channels.length; i++) {
+            nsfwfilter_block += "<br>&nbsp;&nbsp;&nbsp;<label><input style=\"height: auto;\" id=\"manageentry-nsfwfilter-" + botData.channels[i][1] + "\" type=\"checkbox\" onclick=\"javascript:config('nsfwfilter', this.id.substring(23), function() {});\"" + (botData.configs.nsfwfilter[1].indexOf(botData.channels[i][1])==-1 ? " checked" : "") + ">#" + botData.channels[i][0] + "</label>"
+        }
+        document.getElementById("manageentry-nsfwfilter-block").innerHTML = nsfwfilter_block;
+    } else {
+        document.getElementById("manageentry-nsfwfilter-block").innerHTML = "";
+    }
+    
+    disableBlock("servermod", !botData.configs.servermod);
     
     if(botData.configs.newgreeting && botData.configs.servermod) {
         document.getElementById("manageentry-newgreeting").innerHTML = "<textarea id=\"newgreetinginput\" style=\"float:left; height: 40; width: 400;\" placeholder=\"Message shown to new members, in markdown\">" + botData.configs.newgreeting + "</textarea>&nbsp;<span class=\"removetool\" id=\"newgreetingsubmit\" onclick=\"javascript:newNewgreeting();\"><i>(submit)</i></span><br>&nbsp;<span class=\"removetool\" id=\"newgreetingremove\" onclick=\"javascript:configNewgreeting();\"><i>(remove)</i></span>";
@@ -212,13 +222,26 @@ function switchManage() {
         document.getElementById("manageentry-newgreeting").innerHTML = "<span class=\"removetool\" onclick=\"javascript:configNewgreeting();\"><i>Custom greeting for new members not set.</i></span>";
     }
     
-    document.getElementById("closeall").innerHTML = "Close " + botData.closenum + " ongoing trivia game" + (botData.closenum==1 ? "" : "s") + " and/or poll" + (botData.closenum==1 ? "" : "s");
-    if(botData.closenum==0) {
-        document.getElementById("closeall").style.display = "none";
-        document.getElementById("closeallspace").style.display = "none";
+    if(botData.polls.length>0) {
+        document.getElementById("manageentry-polls").style.display = "";
+        var info = "";
+        for(var i=0; i<botData.polls.length; i++) {
+            info += "<li>" + botData.polls[i][1] + " <span class=\"removetool\" id=\"manageentry-polls-" + botData.polls[i][0] + "\" onclick=\"javascript:config('closepoll', this.id.substring(18), function() {});\"><i>(close)</i></span></li>";
+        }
+        document.getElementById("manageentry-polls-block").innerHTML = info;
     } else {
-        document.getElementById("closeall").style.display = "";
-        document.getElementById("closeallspace").style.display = "";
+        document.getElementById("manageentry-polls").style.display = "none";
+    }
+    
+    if(botData.trivia.length>0) {
+        document.getElementById("manageentry-trivia").style.display = "";
+        var info = "";
+        for(var i=0; i<botData.trivia.length; i++) {
+            info += "<li>" + botData.trivia[i][1] + " <span class=\"removetool\" id=\"manageentry-trivia-" + botData.trivia[i][0] + "\" onclick=\"javascript:config('endtrivia', this.id.substring(19), function() {});\"><i>(end)</i></span></li>";
+        }
+        document.getElementById("manageentry-trivia-block").innerHTML = info;
+    } else {
+        document.getElementById("manageentry-trivia").style.display = "none";
     }
     
     document.getElementById("cleanselector").innerHTML = "<option value=\"\">Select Channel</option>";
@@ -226,6 +249,17 @@ function switchManage() {
     for(var i=0; i<botData.channels.length; i++) {
         document.getElementById("cleanselector").innerHTML += "<option id=\"cleanentry-" + botData.channels[i][1] + "\" value=\"cleanentry-" + botData.channels[i][1] + "\">#" + botData.channels[i][0] + "</option>";
         document.getElementById("archiveselector").innerHTML += "<option id=\"cleanentry-" + botData.channels[i][1] + "\" value=\"archiveentry-" + botData.channels[i][1] + "\">#" + botData.channels[i][0] + "</option>";
+    }
+}
+
+function disableBlock(blockname, disable) {
+    var inputs = document.getElementById("manageentry-" + blockname + "-block").getElementsByTagName("input");
+    for(var i=0; i<inputs.length; i++) {
+        if(disable) {
+            inputs[i].setAttribute("disabled", "disable");
+        } else {
+            inputs[i].removeAttribute("disabled");
+        }
     }
 }
 

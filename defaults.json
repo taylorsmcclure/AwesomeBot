@@ -3,7 +3,15 @@
         "admins": [],
         "blocked": [],
         "newgreeting": "",
-        "rss": [true, ["http://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=h&num=3&output=rss"], ["gnews"]],
+        "rss": [
+            true,
+            [
+                "https://news.google.com/news?ned=us&topic=h&output=rss"
+            ],
+            [
+                "gnews"
+            ]
+        ],
         "tags": {},
         "triviasets": {},
         "extensions": {}
@@ -11,8 +19,14 @@
     "full": {
         "servermod": true,
         "membermsg": true,
-        "spamfilter": true,
-        "nsfwfilter": true,
+        "spamfilter": [
+            true,
+            []
+        ],
+        "nsfwfilter": [
+            true,
+            []
+        ],
         "customroles": true,
         "customcolors": true,
         "tag": true,
@@ -45,8 +59,14 @@
     "lite": {
         "servermod": true,
         "membermsg": false,
-        "spamfilter": false,
-        "nsfwfilter": true,
+        "spamfilter": [
+            false,
+            []
+        ],
+        "nsfwfilter": [
+            true,
+            []
+        ],
         "customroles": false,
         "customcolors": false,
         "tag": false,
@@ -79,8 +99,14 @@
     "sense": {
         "servermod": true,
         "membermsg": false,
-        "spamfilter": true,
-        "nsfwfilter": true,
+        "spamfilter": [
+            false,
+            []
+        ],
+        "nsfwfilter": [
+            false,
+            []
+        ],
         "customroles": false,
         "customcolors": false,
         "tag": true,

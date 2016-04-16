@@ -1,7 +1,7 @@
 {
     "hosting": "",
     "maintainer": "",
-    "game": "",
+    "game": "default",
     "botblocked": [],
     "setup": false,
     "servers": {}
