@@ -178,8 +178,9 @@ header ul {
 }
 
 #awesomestatus {
-  height:40px;
+  height:45px;
   padding:0;
+  padding-top:3px;
   background-color: #f4f4f4;
   border-radius:5px;
   border:1px solid #e0e0e0;
@@ -193,15 +194,26 @@ header ul {
     cursor:pointer;
 }
 
-#awesomepic {
+#awesomedown {
+    text-align:center;
+    vertical-align: center;
+    padding:10px;
+    padding-top:11px;
+}
+
+#awesomestatus img {
+  margin-left: 5px;
+  margin-top:4px;
   border-radius:100%;
   float:left;
+  margin-right:10px;
+  height: 35px;
   -webkit-transition:border-radius 500ms;
   transition:border-radius 500ms;
 }
 
-#awesomepic {
-    border-radius:0%;
+#awesomepic:hover {
+    border-radius:0;
 }
 
 .awesomeimp {
@@ -342,6 +354,12 @@ footer {
     right:50px;
     top:52px;
   }
+  
+  #awesomestatus {
+    position:absolute;
+    right:50px;
+    top:102px;
+  }
 }
 
 @media print, screen and (max-width: 720px) {
@@ -353,7 +371,7 @@ footer {
     padding:0;
   }
 
-  header ul, header p.view {
+  header ul, header p.view, #awesomestatus {
     position:static;
   }
 
@@ -367,7 +385,7 @@ footer {
     padding:15px;
   }
 
-  header ul {
+  header ul, #awesomestatus {
     width:99%;
   }
 

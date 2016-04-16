@@ -24,12 +24,15 @@
             colorDark();
         }
         getJSON("http://awesomebot-botmakersinc.rhcloud.com/data?section=list&type=bot", function(data) {
-            document.getElementById("addtoserverlink").href = data.oauthurl;
-            document.getElementById("awesomepic").src = data.avatar;
-            document.getElementById("awesomename").innerHTML = data.username;
-            document.getElementById("awesomeversion").innerHTML = data.version;
-            document.getElementById("awesomeservers").innerHTML = data.servers;
-            document.getElementById("awesomeusers").innerHTML = data.users;
+            if(data) {
+                document.getElementById("addtoserverlink").href = data.oauthurl;
+                document.getElementById("awesomestatus").innerHTML = '<img id="awesomepic" src="" /><span class="awesomeimp" id="awesomename"></span> v<span id="awesomeversion"></span><br><span class="awesomeimp" id="awesomeservers"></span> servers, <span class="awesomeimp" id="awesomeusers"></span> users';
+                document.getElementById("awesomepic").src = data.avatar;
+                document.getElementById("awesomename").innerHTML = data.username;
+                document.getElementById("awesomeversion").innerHTML = data.version;
+                document.getElementById("awesomeservers").innerHTML = data.servers;
+                document.getElementById("awesomeusers").innerHTML = data.users;
+            }
         });
     }
     function getJSON(url, callback) {
@@ -37,18 +40,10 @@
         xhr.open("get", url, true);
         xhr.responseType = "json";
         xhr.onload = function() {
-        var status = xhr.status;
-            if(status==200) {
-                callback(xhr.response);
-            }
+            var status = xhr.status;
+            callback(xhr.response);
         };
-        try {
-            xhr.send();
-        } catch(err) {
-            setTimeout(function() {
-                getJSON(url, callback);
-            }, 500);
-        }
+        xhr.send();
     };
     function showTextbox(sect) {
         if(document.getElementById(sect + "-text").style.maxHeight=="300px") {
@@ -172,11 +167,9 @@
         </ul>
         
         <div id="awesomestatus" onclick="javascript:awesomestatus();">
-            <img id="awesomepic" src="" />
-            <span class="awesomeimp" id="awesomename"></span> v<span id="awesomeversion"></span>
-            <br>
-            <span class="awesomeimp" id="awesomeservers"></span> servers, <span class="awesomeimp" id="awesomeusers"></span> users
+            <div id="awesomedown">AwesomeBot is currently down :(</div>
         </div>
+        <br>
       </header>
       <section>
         <div id="headings">
