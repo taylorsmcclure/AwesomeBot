@@ -50,7 +50,6 @@ try {
 
 // Bot setup
 var version = "3.3.9-ALPHA";
-// TODO: add servers/users count to status page
 // TODO: list of polls/trivia games to close in admin console
 var outOfDate = 0;
 var readyToGo = false;
