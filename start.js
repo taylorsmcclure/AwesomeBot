@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.9-RC";
+var version = "3.3.9";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -1534,8 +1534,7 @@ var pmcommands = {
 // Initializes bot and outputs to console
 var bot = new Discord.Client({forceFetchUsers: true});
 bot.on("ready", function() {
-    // TODO: re-enable checkVersion after testing
-    //checkVersion();
+    checkVersion();
     
     // Set avatar if necessary
     if(AuthDetails.avatar_url) {
@@ -1957,8 +1956,7 @@ bot.on("ready", function() {
 });
 
 bot.on("message", function (msg, user) {
-    // TODO: re-enable massive try/catch after testing
-    //try {
+    try {
         // Stop responding if the sender is another bot
         if(configs.botblocked.indexOf(msg.author.id)>-1) {
             return;
@@ -2548,14 +2546,14 @@ bot.on("message", function (msg, user) {
                 bot.sendMessage(msg.channel,msg.author + ", you called?");
             }
         }
-    /*} catch(mainError) {
+    } catch(mainError) {
         bot.stopTyping(msg.channel);
         if(msg.channel.isPrivate) {
             logMsg(new Date().getTime(), "ERROR", msg.author.id, null, "Failed to process new message: " + mainError);
         } else {
             logMsg(new Date().getTime(), "ERROR", msg.channel.server.name, msg.channel.name, "Failed to process new message: " + mainError);
         }
-    }*/
+    }
 });
 
 // Add server if joined outside of bot
