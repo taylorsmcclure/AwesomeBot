@@ -2,13 +2,7 @@ function doMaintainerSetup() {
     document.title = botData.username + " Maintainer Console";
     document.getElementById("botname").innerHTML = botData.username;
     document.getElementById("profilepic").src = botData.avatar;
-    document.getElementById("botgame").innerHTML = botData.game ? ("<b>Playing</b> " + botData.game) : "<i>Not playing a game</i>";
-    if(botData.game) {
-        document.getElementById("botgameremove").innerHTML = "&nbsp<i>(remove)</i>";
-    }
-    setTimeout(function() {
-        document.getElementById("statusswitcher").value = botData.status=="offline" ? "online" : botData.status;
-    }, 10);
+    configGame(true);
     
     switchUsage();
     switchServers();
@@ -115,6 +109,11 @@ function configGame(remove) {
             document.getElementById("botgameremove").innerHTML = "&nbsp<i>(remove)</i>";
         } else {
             document.getElementById("botgameremove").innerHTML = "";
+        }
+        if(botData.defaultgame) {
+            document.getElementById("botgamedefault").innerHTML = "";
+        } else {
+            document.getElementById("botgamedefault").innerHTML = "&nbsp<i>(default)</i>";
         }
     }
 }

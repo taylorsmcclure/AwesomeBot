@@ -17,6 +17,7 @@
         <img class="profilepic" id="profilepic" onclick="javascript:configAvatar();" src="" />
         <br>
         <span class="botheader" id="botgame" onclick="javascript:configGame();"></span>
+        <span class="removetool" id="botgamedefault" onclick="javascript:config('game', 'default', function(){configGame(true)});"></span>
         <span class="removetool" id="botgameremove" onclick="javascript:config('game', '.', function(){configGame(true)});"></span>
         &nbsp;
         <select id="statusswitcher" onChange="javascript:configStatus(this.value);">

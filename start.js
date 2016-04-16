@@ -50,9 +50,7 @@ try {
 
 // Bot setup
 var version = "3.3.9-ALPHA";
-// TODO: provide bot info embed for use on landing page
 // TODO: add servers/users count to status page
-// TODO: default game option with rotating bot info
 // TODO: list of polls/trivia games to close in admin console
 var outOfDate = 0;
 var readyToGo = false;
@@ -392,7 +390,7 @@ var commands = {
                     num = getRandomInt(0, 19);
                 }
             }
-            giSearch(suffix, num, msg.channel.server.id, function(img) {
+            giSearch(suffix, num, msg.channel.server.id, msg.channel.id, function(img) {
                 if(!img) {
                     bot.sendMessage(msg.channel, "Couldn't find anything, sorry");
                     logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "Image results not found for " + suffix)
@@ -1611,6 +1609,7 @@ bot.on("ready", function() {
     if(configs.game && configs.game!="") {
         bot.setStatus("online", configs.game);
     }
+    defaultGame(0);
     
     // Give 50,000 maintainer points :P
     if(configs.maintainer) {
@@ -1769,6 +1768,7 @@ bot.on("ready", function() {
                     oauthurl: "https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=0",
                     avatar: bot.user.avatarURL || "http://i.imgur.com/fU70HJK.png",
                     game: getGame(bot.user),
+                    defaultgame: configs.game=="default",
                     status: bot.user.status,
                     members: userList,
                     botblocked: blockedUsers,
@@ -2041,12 +2041,14 @@ bot.on("message", function (msg, user) {
             var cmdTxt = msg.content;
             var suffix;
             if(msg.content.indexOf(" ")>-1) {
-                cmdTxt = msg.content.substring(0, msg.content.indexOf(" "));
+                cmdTxt = msg.content.substring(0, msg.content.indexOf(" ")).toLowerCase();
                 suffix = msg.content.substring(msg.content.indexOf(" ")+1);
             }
             var cmd = pmcommands[cmdTxt];
             if(cmd) {
-                logMsg(new Date().getTime(), "INFO", msg.author.id, null, "Treating '" + msg.cleanContent + "' from as a PM command");
+                if(cmdTxt!="config" || suffix) {
+                    logMsg(new Date().getTime(), "INFO", msg.author.id, null, "Treating '" + msg.cleanContent + "' from as a PM command");
+                }
                 cmd.process(bot, msg, suffix);
                 return;
             }
@@ -3349,6 +3351,8 @@ function parseMaintainerConfig(delta, callback) {
                 if(delta[key]==".") {
                     delta[key] = "";
                     bot.setStatus("online", null);
+                } else if(delta[key]=="default") {
+                    defaultGame(0, true);
                 }
                 logMsg(new Date().getTime(), "INFO", "General", null, "Set bot game to '" + delta[key] + "'");
                 configs.game = delta[key];
@@ -3740,6 +3744,20 @@ function addExtension(extension, svr, consoleid, callback) {
                 callback();
             }
         });
+    }
+}
+
+// Default game: rotates between stats
+function defaultGame(i, force) {
+    var games = [bot.servers.length + " server" + (bot.servers.length==1 ? "" : "s") + " connected", "Serving " + bot.users.length + " users", "git.io/vaa2F", "v" + version, "@" + bot.user.username + " help", "by @BitQuote", configs.hosting || "Limited mode", "the best Discord bot!"];
+    if(configs.game=="default" || force) {
+        if(i>=games.length) {
+            i = 0;
+        }
+        bot.setStatus("online", games[i]);
+        setTimeout(function() {
+            defaultGame(i+1);
+        }, 15000);
     }
 }
 
