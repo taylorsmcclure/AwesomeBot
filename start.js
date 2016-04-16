@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.9-ALPHA";
+var version = "3.3.9-RC";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -86,7 +86,6 @@ var lottery = {};
 var commands = {
     // Checks if bot is alive and shows version and uptime
     "ping": {
-        extended: "A useful command to tell if the bot is alive. Also displays AwesomeBot version and status page URL if available.",
         process: function(bot, msg) {
             var info = "Pong! " + bot.user.username + " v" + version + " by **@BitQuote** running for " + secondsToString(bot.uptime/1000).slice(0, -1) + ". Serving in " + bot.servers.length + " server" + (bot.servers.length==1 ? "" : "s") + " and " + bot.users.length + " user" + (bot.users.length==1 ? "" : "s");
             if(configs.hosting!="") {
@@ -97,14 +96,12 @@ var commands = {
     },
     // Provides OAuth URL for adding new server
     "join": {
-        extended: "This command will return the Discord OAuth2 URL necessary for adding the bot to a server. Click on the link and accept the bot permissions to add.",
         process: function(bot, msg) {
             bot.sendMessage(msg.channel, "https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=0")
         }
     },
     // About AwesomeBot!
     "about": {
-        extended: "Tells you all about the bot and where to get more info.",
         process: function(bot, msg) {
             bot.sendMessage(msg.channel, "Use `@" + bot.user.username + " help` to list commands. Created by **@BitQuote**. Go to https://git.io/vaa2F to learn more.");
         }
@@ -112,7 +109,6 @@ var commands = {
     // Shows top 5 games and active members
     "stats": {
         usage: "[clear]",
-        extended: "Shows the most active members, most played games, and most used commands on this server for this week. If you are an admin in this server, you can use the `clear` option to reset stats for this week.",
         process: function(bot, msg, suffix) {
             if(!stats[msg.channel.server.id]) {
                 logMsg(new Date().getTime(), "ERROR", msg.channel.server.name, msg.channel.name, "Failed to read stats");
@@ -142,7 +138,6 @@ var commands = {
     // Database of easily accessible responses
     "tag": {
         usage: "<key or \"clear\">[|<value>]",
-        extended: "A quick snippet response system, inspired by the command in 42. The parameters to set a tag are the keyword you want to set a response for and the response itself, separated by a pipe (not a space as it usually is). For example, after setting `tag bob|the builder`, `tag bob` would make the bot respond with `the builder`. Bot admins on this server can clear tags with `tag clear`.",
         process: function(bot, msg, suffix) {
             if(suffix.indexOf("|")>-1) {
                 var key = suffix.substring(0, suffix.indexOf("|")).toLowerCase();
@@ -214,7 +209,6 @@ var commands = {
     },
     // Gets Forbes Quote of the Day or creates author quote
     "quote": {
-        extended: "Get the Forbes Quote of the Day as well as the author and URL, or creates a quote from yourself.",
         process: function(bot, msg, suffix) {
             if(suffix) {
                 bot.sendMessage(msg.channel, "`" + suffix + "`\n\t- " + msg.author.username);
@@ -228,7 +222,6 @@ var commands = {
     // Searches Google for a given query
     "search": {
         usage: "<query> [<count>]",
-        extended: "Searches Google for a given query. You can use the optional count parameter to specify the number of results to get (1-5).",
         process: function(bot, msg, suffix) {
             if(suffix) {
                 var query = suffix.substring(0, suffix.lastIndexOf(" "));
@@ -269,7 +262,6 @@ var commands = {
     // Fetches Twitter user timelines
     "twitter": {
         usage: "<username> [<count>]",
-        extended: "Fetches the Twitter timeline for a given user. Do not include `@` in the username and use the optional count parameter to specify the number of tweets to get (1-5).",
         process: function(bot, msg, suffix) {
             if(suffix) {
                 var user = suffix.substring(0, suffix.indexOf(" "));
@@ -305,7 +297,6 @@ var commands = {
     // Gets YouTube link with given keywords
     "youtube": {
         usage: "<video tags>",
-        extended: "Gets a YouTube link with the given search terms. This includes channels, videos, and playlists.",
         process: function(bot, msg, suffix) {
             if(!suffix) {
                 logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "User did not provide search term(s)");
@@ -319,7 +310,6 @@ var commands = {
     },
     // New Year Countdown
     "year": {
-        extended: "The exact amount of time until next year!",
         process: function(bot, msg) {
             var a = new Date();
             var e = new Date(a.getFullYear()+1, 0, 1, 0, 0, 0, 0);
@@ -330,7 +320,6 @@ var commands = {
     // Emulates /me command
     "me": {
         usage: "<something>",
-        extended: "This commands emulates the /me command in other bots. For example, `me is going to bed` would produce `@you is going to bed`.",
         process: function(bot, msg, suffix) {
             if(!suffix) {
                 bot.sendMessage(msg.channel, msg.author + " is doing nothing");
@@ -353,7 +342,6 @@ var commands = {
     // Allows approved users (essentially bot admins) to change chatterbot engine
     "chatterbot": {
         usage: "[switch]",
-        extended: "Displays the chatterbot currently in use, either Cleverbot or Mitsuku. Bot admins can use the `switch` option to toggle between these.",
         process: function(bot, msg, suffix) {
             if(configs.servers[msg.channel.server.id].admins.indexOf(msg.author.id)>-1) {
                 var isSwitch = suffix.toLowerCase() === "switch";
@@ -375,7 +363,6 @@ var commands = {
     // Searches Google Images with keyword(s)
     "image": {
         usage: "<image tags> [random]",
-        extended: "Searches Google Images with a given query and returns the first result. Use the `random` option to get a random result instead.",
         process: function(bot, msg, suffix) {
             var num = "";
             if(!suffix) {
@@ -401,7 +388,6 @@ var commands = {
     // Get GIF from Giphy
     "gif": {
 		usage: "<GIF tags>",
-        extended: "Gets a ~~meme~~ GIF fom Giphy with the given tags.",
 		process: function(bot, msg, suffix) {
             if(!suffix) {
                 logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "User did not provide GIF search term(s)");
@@ -426,7 +412,6 @@ var commands = {
     // Defines word from Urban Dictionary
     "urban": {
         usage: "<term>",
-        extended: "Defines the given word. Source: Urban Dictionary",
         process: function(bot, msg, suffix) {
             var def = urban(suffix);
             def.first(function(data) {
@@ -442,7 +427,6 @@ var commands = {
     // Queries Wolfram Alpha
     "wolfram" : {
         usage: "<Wolfram|Alpha query>",
-        extended: "Displays an entire Wolfram|Alpha knowledge page about a given topic or person. This includes formulas, graphs, and more. May take some time to process.",
         process(bot, msg, suffix) {
             if(!suffix) {
                 logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "User did not provide Wolfram|Alpha query");
@@ -472,7 +456,6 @@ var commands = {
     // Gets Wikipedia article with given title
     "wiki": {
         usage: "<search terms>",
-        extended: "Shows the first three paragraphs of the Wikipedia article matching the given search terms. Make your query specific.",
         process: function(bot, msg, suffix) {
             if(!suffix) {
                 logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "User did not provide Wikipedia search term(s)");
@@ -513,7 +496,6 @@ var commands = {
     // Converts between units
     "convert": {
         usage: "<no.> <unit> to <unit>",
-        extended: "Converts between units of measurement and currencies. Specify the quantity, starting unit, and end unit. The last two should be separated with ` to `",
         process: function(bot, msg, suffix) {
             var toi = suffix.lastIndexOf(" to ");
             if(toi==-1) {
@@ -552,7 +534,6 @@ var commands = {
     // Fetches stock symbol from Yahoo Finance
     "stock": {
         usage: "<stock symbol>",
-        extended: "Fetches basic information about a stock *symbol* from Yahoo! Finance.",
         process: function(bot, msg, suffix) {
             if(!suffix) {
                 logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "User did not provide stock symbol");
@@ -577,7 +558,6 @@ var commands = {
     // Displays the weather for an area
     "weather": {
         usage: "<location> [<\"F\" or \"C\">]",
-        extended: "Gets the current weather and forecast for a given location from MSN Weather. Use the optional unit parameter (`F` or `C`) to change the unit (Fahrenheit is the default).",
         process: function(bot, msg, suffix) {
             var unit = "F";
             var location = suffix;
@@ -599,7 +579,6 @@ var commands = {
     // Silences the bot until the start statement is issued
     "quiet": {
         usage: "[<\"all\" or time in seconds>]",
-        extended: "Turns off the bot in this channel, or the whole server if you use the `all` option. You must be a bot admin in this server to use this command.",
         process: function(bot, msg, suffix) {
             var timestr = "";
             if(configs.servers[msg.channel.server.id].admins.indexOf(msg.author.id)>-1 && suffix.toLowerCase()=="all") {
@@ -632,7 +611,6 @@ var commands = {
     // Starts, ends, and answers live trivia game
     "trivia": {
         usage: "<start, end, next, or answer choice> [<question set to use>]",
-        extended: "AwesomeTrivia! *A fun group trivia game with really hard questions and a weird answer acceptance system.* Use `start` to begin playing (add another parameter for a custom set to use), `next` to skip, and `end` to see your score.",
         process: function(bot, msg, suffix) {
             var triviaOn = trivia[msg.channel.id]!=null;
             
@@ -761,7 +739,6 @@ var commands = {
     // Sends reminders in given time for given note
     "remindme": {
         usage: "<no.> <\"d\", \"h\", \"m\", or \"s\"> <note>",
-        extended: "Set a reminder for yourself in a given number of days, hours, minutes, or seconds. You will be reminded via PM. You can also use a natural language command, for example: `remindme to do the dishes in 5 h`.",
         process: function(bot, msg, suffix) {
             parseReminder(suffix, msg.author, msg.channel);
         }
@@ -769,7 +746,6 @@ var commands = {
     // Gets top (max 5) posts in given subreddit, sorting hot
     "reddit": {
         usage: "<subreddit> [<count>]",
-        extended: "Gets the top 5 HOT posts in a given sub on Reddit. Use the optional `count` parameter to specify the number of posts to get (1-5).",
         process: function(bot, msg, suffix) {
             var path = "/.json"
             var count = 5;
@@ -828,7 +804,6 @@ var commands = {
     // Gets top (max 5) posts in given RSS feed name 
     "rss": {
         usage: "<site> [<count>]",
-        extended: "Gets entries in the given RSS feed. There are only certain feeds available; check the ones you can see in this server with the `help` command. Use the optional `count` parameter to specify the number of posts to get (1-5).",
         process: function(bot, msg, suffix) {
             if(configs.servers[msg.channel.server.id].rss[0]) {
                 var site = suffix.substring(0, suffix.indexOf(" "));
@@ -861,7 +836,6 @@ var commands = {
     // Generates a random number
     "roll": {
         usage: "[<min inclusive>] [<max inclusive>]",
-        extended: "Generate a random number. Without any parameters, this will roll a 6-sided die. You can also provide a minimum (inclusive) *and* maximum (inclusive).",
         process: function(bot, msg, suffix) {
             if(suffix.indexOf(" ")>-1) {
                 var min = suffix.substring(0, suffix.indexOf(" "));
@@ -884,7 +858,6 @@ var commands = {
     },
     // Show list of games being played
     "games": {
-        extended: "Lists the games being played on this server in descending order, along with the members playing them and the time played this week.",
         process: function(bot, msg) {
             var rawGames = {};
             for(var i=0; i<msg.channel.server.members.length; i++) {
@@ -928,7 +901,6 @@ var commands = {
     // Get a user's full profile
     "profile": {
         usage: "<username, \"color\", or \"role\"> [<hex code to set or role to create>]",
-        extended: "The all-in-one command to view and set information about users. Providing no parameters will show your personal user profile on this server, including AwesomePoints, date joined, roles, and more. You can also provide a username as the parameter to view the profile of another member. You can also use `color` as the first parameter and a hex code (preceded by `#`) to set a color for yourself. Using `role` as the first parameter and a name as the second allows you to set a role for yourself.",
         process: function(bot, msg, suffix) {
             var usr = msg.channel.server.members.get("username", suffix);
             if(!suffix) {
@@ -1050,7 +1022,6 @@ var commands = {
     // Quickly gets a user's points
     "points": {
         usage: "<username or \"lottery\">",
-        extended: "A quick way to get the number of points for a user. Use `me` if you want to see your own AwesomePoints, or use `lottery` to buy a PointsBall ticket!",
         process: function(bot, msg, suffix) {
             // Show points for user
             var usr = msg.channel.server.members.get("username", suffix);
@@ -1147,7 +1118,6 @@ var commands = {
     // Displays list of options and RSS feeds
     "help": {
         usage: "[<command name>] [\"public\"]",
-        extended: "Shows the complete list of bot commands and features, specific to this server via PM. You can include a command name as the parameter to get more information about it. Include the `public` option to get the information in the main chat.",
         process: function(bot, msg, suffix) {
             if(!suffix) {
                 bot.sendMessage(msg.author, "Tag me in the main chat then state one of the following commands:" + getHelp(msg.channel.server));
@@ -1170,7 +1140,6 @@ var pmcommands = {
     // Configuration options in wizard or online for maintainer and admins
     "config": {
         usage: "[<server>]",
-        extended: configs.hosting ? "Provides options to configure the bot overall or in a server. You must have privileges as the bot maintainer and/or admin in this server. Once you are authenticated, you will be given a link to the online interface for configuration." : "Ordinarily, this command would allow you to configure the bot on a server or in general. However, the maintainer has not provided a web interface hosting URL, so `config` is not available.",
         process: function(bot, msg, suffix) {
             // Maintainer control panel for overall bot things
             if(msg.author.id==configs.maintainer && !suffix && !maintainerconsole) {
@@ -1249,7 +1218,6 @@ var pmcommands = {
     // Set a reminder with natural language
     "remindme": {
         usage: commands.remindme.usage,
-        extended: commands.remindme.extended,
         process: function(bot, msg, suffix) {
             if(suffix) {
                 parseReminder(msg.content.substring(msg.content.indexOf(" ")+1), msg.author, null);
@@ -1262,7 +1230,6 @@ var pmcommands = {
     // Modify the value for a key in a user's profile
     "profile": {
         usage: "<key>,<value or \".\">",
-        extended: "Sets or removes the value for a section in your profile. The key is the section name (for example: \"number of cats\") and should be somewhat short. The value is the information that goes with the key (continuing the example: \"4\"). Separate the key and value with only a comma. If you've already set the value for a given key, you can erase it with `<key>,.`",
         process: function(bot, msg, suffix) {
             if(suffix) {
                 if(msg.content.indexOf(",")==-1) {
@@ -1313,7 +1280,6 @@ var pmcommands = {
     // Discreet say command
     "say": {
         usage: "<server> <channel> <something to say>",
-        extended: "Says something in the main chat, seemingly spontaneously (you must be a bot admin in this server to use this command). Provide the server name, channel name, and something to say, separated by spaces and in that order.",
         process: function(bot, msg, suffix) {
             if(suffix) {
                 var svrnm = msg.content.substring(msg.content.indexOf(" ")+1);
@@ -1358,7 +1324,6 @@ var pmcommands = {
     // Strawpoll-like poll creation
     "poll": {
         usage: "<server> <channel>",
-        extended: "Starts a public poll in a channel. After providing the server and channel, you will be prompted for a question as well as answer options. Make the answer options logical and concise, separated only by commas. If the poll is yes/no, answer the prompt for options with just a period. You can reply `poll close` at any time during setup to abort, or to close the poll when people are done voting.",
         process: function(bot, msg, suffix) {
             // End poll if it has been initialized previously
             if(polls[msg.author.id] && msg.content.toLowerCase().indexOf("poll close")==0) {
@@ -1420,7 +1385,6 @@ var pmcommands = {
     // Discreetly vote on an active poll
     "vote": {
         usage: "<server> <channel> <no. of choice>",
-        extended: "Use this to vote on a poll privately (especially useful when your response is sensitive). Choose an answer option in the poll and remember its corresponding number (option numbers start at 0). Via PM, provide the server name, channel name, and the number of your choice. By the same token, if you vote either publicly or privately and decide you want to revoke your vote, use `.` instead of an option number.",
         process: function(bot, msg, suffix) {
             try {
                 var vt = suffix.substring(suffix.lastIndexOf(" ")+1);
@@ -1473,7 +1437,6 @@ var pmcommands = {
     // View recent mentions/tags in a server
     "mentions": {
         usage: "<server>",
-        extended: "Shows a list of messages in which you were mentioned in the past week. You can view the sender, time, and content of the message. Once you use this command, the mentions are cleared until you are mentioned in a new message.",
         process: function(bot, msg, suffix) {
             if(suffix) {
                 var svr = bot.servers.get("name", msg.content.substring(9));
@@ -1516,7 +1479,6 @@ var pmcommands = {
     // Toggles PM mentions in a server
     "pmmentions": {
         usage: "[<server>]",
-        extended: "Toggles PM mention notifications in a server. If this is turned on, I'll PM you if you get mentioned in the main chat and you're offline. This command turns on and off that setting. Use this command without any parameters to toggle for all servers and view your current settings.",
         process: function(bot, msg, suffix) {
             if(suffix) {
                 var svr = bot.servers.get("name", msg.content.substring(11));
@@ -1674,7 +1636,9 @@ bot.on("ready", function() {
                     uptime: secondsToString(bot.uptime/1000),
                     version: version,
                     disconnects: disconnects,
-                    avatar: bot.user.avatarURL || "http://i.imgur.com/fU70HJK.png"
+                    avatar: bot.user.avatarURL || "http://i.imgur.com/fU70HJK.png",
+                    servers: bot.servers.length,
+                    users: bot.users.length
                 };
             }
         } else if(req.query.section=="stats" && req.query.type && req.query.svrid) {
@@ -3720,7 +3684,7 @@ function addExtension(extension, svr, consoleid, callback) {
             imgur: imgur,
             image: giSearch,
             rss: getRSS,
-            message: bot.user.mention() + " " + extension.key + " test",
+            message: bot.user.mention() + " " + (extension.type=="command" ? extension.key : extension.key[0]) + " test",
             svrid: svr.id,
             chid: svr.defaultChannel.id,
             author: bot.user.mention(),
@@ -4607,12 +4571,12 @@ function getCommandHelp(svr, cmd) {
     if(commands[cmd] && !pubdisabled) {
         if(commands[cmd].extended) {
             filled = true;
-            info += "**Help for public command `" + cmd + "`:**\n" + commands[cmd].extended;
+            info += "**Help for public command `" + cmd + "`:**\nhttps://github.com/BitQuote/AwesomeBot/wiki/Commands#" + cmd;
         }
     }
     if(pmcommands[cmd] && cmd!="remindme") {
         if(pmcommands[cmd].extended) {
-            info += (filled ? "\n\n" : "") + "**Help for private command `" + cmd + "`:**\n" + pmcommands[cmd].extended;
+            info += (filled ? "\n\n" : "") + "**Help for private command `" + cmd + "`:**\nhttps://github.com/BitQuote/AwesomeBot/wiki/Commands#" + cmd + "-pm";
             filled = true;
         }
     }
