@@ -46,10 +46,14 @@ If you want a stable bot, please use the [latest milestone release](https://gith
 Changelog
 ---------
 
-Latest, version **3.3.8**:
+Latest, version **3.3.9**:
 
- - Added reasons for strikes  
- - Strike add bug fix  
+ - Per-channel spam/NSFW filter options
+ - Added extension data store
+ - Ability to close individual polls/trivia games in admin console
+ - Misc. improvements
+
+Patch #1: Enabled CORS for status page  
  
 Open an issue to report a bug or suggest a new feature!
 

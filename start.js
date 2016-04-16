@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.9";
+var version = "3.3.9p1";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -1595,6 +1595,12 @@ bot.on("ready", function() {
     app.use(bodyParser.json());
     var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
     var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+    
+    app.use(function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        next();
+    });
     
     app.get("/data", function(req, res) {
         var data = {};
