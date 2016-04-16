@@ -153,8 +153,16 @@
             </span>
             <br><br>
             
-            <button id="closeall" onclick="javascript:config('close', true, function() {});"></button>
-            <span id="closeallspace" style="font-size: 6;"><br><br></span>
+            <span id="manageentry-polls">
+                Ongoing polls:
+                <ul id="manageentry-polls-block"></ul>
+            </span>
+            <span id="manageentry-trivia">
+                Ongoing trivia games:
+                <ul id="manageentry-trivia-block"></ul>
+            </span>
+            
+            <span id="manageentry-space" style="font-size: 6;"><br><br></span>
             Clean: 
             <select id="cleanselector"></select>
             <input id="cleaninput" type="number" style="width: 50;" placeholder="#" onkeydown="if(event.keyCode==13){configCA('clean')}"></input>

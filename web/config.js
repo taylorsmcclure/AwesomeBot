@@ -87,6 +87,9 @@ function config(key, value, callback) {
             document.location.replace("/");
         } else {
             alert("Error saving changes");
+            if(authtype=="admin") {
+                switchManage();
+            }
             callback(true);
             destroyLoader();
         }

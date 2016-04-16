@@ -187,13 +187,8 @@ function resetConfigs() {
 }
 
 function switchManage() {
-    if(document.getElementById("manageentry-servermod").checked!=botData.configs.servermod) {
-        document.getElementById("manageentry-servermod").checked = botData.configs.servermod;
-    }
-    
-    if(document.getElementById("manageentry-membermsg").checked!=botData.configs.membermsg) {
-        document.getElementById("manageentry-membermsg").checked = botData.configs.membermsg;
-    }
+    document.getElementById("manageentry-servermod").checked = botData.configs.servermod;
+    document.getElementById("manageentry-membermsg").checked = botData.configs.membermsg;
     
     document.getElementById("manageentry-spamfilter").checked = botData.configs.spamfilter[0];
     if(botData.configs.spamfilter[0]) {
@@ -227,13 +222,26 @@ function switchManage() {
         document.getElementById("manageentry-newgreeting").innerHTML = "<span class=\"removetool\" onclick=\"javascript:configNewgreeting();\"><i>Custom greeting for new members not set.</i></span>";
     }
     
-    document.getElementById("closeall").innerHTML = "Close " + botData.closenum + " ongoing trivia game" + (botData.closenum==1 ? "" : "s") + " and/or poll" + (botData.closenum==1 ? "" : "s");
-    if(botData.closenum==0) {
-        document.getElementById("closeall").style.display = "none";
-        document.getElementById("closeallspace").style.display = "none";
+    if(botData.polls.length>0) {
+        document.getElementById("manageentry-polls").style.display = "";
+        var info = "";
+        for(var i=0; i<botData.polls.length; i++) {
+            info += "<li>" + botData.polls[i][1] + " <span class=\"removetool\" id=\"manageentry-polls-" + botData.polls[i][0] + "\" onclick=\"javascript:config('closepoll', this.id.substring(18), function() {});\"><i>(close)</i></span></li>";
+        }
+        document.getElementById("manageentry-polls-block").innerHTML = info;
     } else {
-        document.getElementById("closeall").style.display = "";
-        document.getElementById("closeallspace").style.display = "";
+        document.getElementById("manageentry-polls").style.display = "none";
+    }
+    
+    if(botData.trivia.length>0) {
+        document.getElementById("manageentry-trivia").style.display = "";
+        var info = "";
+        for(var i=0; i<botData.trivia.length; i++) {
+            info += "<li>" + botData.trivia[i][1] + " <span class=\"removetool\" id=\"manageentry-trivia-" + botData.trivia[i][0] + "\" onclick=\"javascript:config('endtrivia', this.id.substring(19), function() {});\"><i>(end)</i></span></li>";
+        }
+        document.getElementById("manageentry-trivia-block").innerHTML = info;
+    } else {
+        document.getElementById("manageentry-trivia").style.display = "none";
     }
     
     document.getElementById("cleanselector").innerHTML = "<option value=\"\">Select Channel</option>";

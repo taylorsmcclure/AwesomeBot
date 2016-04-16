@@ -50,7 +50,6 @@ try {
 
 // Bot setup
 var version = "3.3.9-ALPHA";
-// TODO: list of polls/trivia games to close in admin console
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -1874,6 +1873,23 @@ bot.on("ready", function() {
                         return a[3].length - b[3].length;
                     });
                     
+                    var closepolls = [];
+                    for(var usrid in polls) {
+                        var usr = svr.members.get("id", usrid);
+                        var ch = svr.channels.get("id", polls[usrid].channel);
+                        if(polls[usrid].open && usr && ch) {
+                            closepolls.push([usrid, "\"" + polls[usrid].title + "\" in #" + ch.name + " by @" + usr.username + " with " + polls[usrid].responses.length + " response" + (polls[usrid].responses.length==1 ? "" : "s") + ", started " + secondsToString((new Date().getTime() - polls[usrid].timestamp)/1000) + "ago"]);
+                        }
+                    }
+                    
+                    var endtrivia = [];
+                    for(var chid in trivia) {
+                        ch = svr.channels.get("id", chid);
+                        if(ch) {
+                            endtrivia.push([chid, "Game in #" + ch.name + " with " + (trivia[chid].tset || "default") + " set and current score " + trivia[chid].score + " out of " + (trivia[chid].possible==1 ? trivia[chid].possible : (trivia[chid].possible-1))]);
+                        }
+                    }
+                    
                     data = {
                         botnm: bot.user.username,
                         usrid: consoleid,
@@ -1885,7 +1901,8 @@ bot.on("ready", function() {
                         members: members,
                         configs: currentConfig,
                         strikes: strikeList,
-                        closenum: Object.keys(trivia).length + Object.keys(polls).length
+                        polls: closepolls,
+                        trivia: endtrivia
                     };
                 } else {
                     data = {};
@@ -3544,21 +3561,28 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                     } 
                 }
                 break;
-            case "close":
-                for(var i=0; i<svr.channels.length; i++) {
-                    if(trivia[svr.channels[i].id]) {
-                        bot.sendMessage(svr.channels[i], "Sorry to interrupt your game, but an admin has closed this trivia session.");
-                        commands["trivia"].process(bot, {"channel": svr.channels[i]}, "end");
-                        logMsg(new Date().getTime(), "INFO", consoleid, null, "Closed trivia game in " + svr.channels[i].name + ", " + svr.name);
-                        delete trivia[svr.channels[i].id];
-                    }
-                    var act = activePolls(svr.channels[i].id);
-                    if(act) {
-                        bot.sendMessage(svr.channels[i], "The ongoing poll in this channel has been closed by an admin.");
-                        bot.sendMessage(svr.channels[i], pollResults(act, "The results are in", "and the winner is"));
-                        logMsg(new Date().getTime(), "INFO", consoleid, null, "Closed active poll in " + svr.channels[i].name + ", " + svr.name);
-                        delete polls[act];
-                    }
+            case "closepoll":
+                try {
+                    var ch = svr.channels.get("id", polls[delta[key]].channel);
+                    bot.sendMessage(ch, "The ongoing poll in this channel has been closed by an admin.");
+                    bot.sendMessage(ch, pollResults(delta[key], "The results are in", "and the winner is"));
+                    logMsg(new Date().getTime(), "INFO", consoleid, null, "Closed active poll in " + ch.name + ", " + svr.name);
+                    delete polls[delta[key]];
+                    callback();
+                } catch(err) {
+                    callback(err);
+                }
+                return;
+            case "endtrivia":
+                try {
+                    var ch = svr.channels.get("id", delta[key]);
+                    bot.sendMessage(ch, "Sorry to interrupt your game, but an admin has closed this trivia session.");
+                    commands["trivia"].process(bot, {"channel": ch}, "end");
+                    logMsg(new Date().getTime(), "INFO", consoleid, null, "Closed trivia game in " + ch.name + ", " + svr.name);
+                    delete trivia[ch.id];
+                    callback();
+                } catch(err) {
+                    callback(true);
                 }
                 return;
             case "clean":
