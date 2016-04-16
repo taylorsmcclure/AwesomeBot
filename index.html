@@ -23,7 +23,7 @@
         } else {
             colorDark();
         }
-        getJSON("http://awesomebot-botmakersinc.rhcloud.com/data?section=list&type=bot", function(data) {
+        getJSON("https://awesomebot-botmakersinc.rhcloud.com/data?section=list&type=bot", function(data) {
             if(data) {
                 document.getElementById("addtoserverlink").href = data.oauthurl;
                 document.getElementById("awesomestatus").innerHTML = '<img id="awesomepic" src="" /><span class="awesomeimp" id="awesomename"></span> v<span id="awesomeversion"></span><br><span class="awesomeimp" id="awesomeservers"></span> servers, <span class="awesomeimp" id="awesomeusers"></span> users';
