@@ -53,8 +53,6 @@ var version = "3.3.9-ALPHA";
 // TODO: provide bot info embed for use on landing page
 // TODO: add servers/users count to status page
 // TODO: default game option with rotating bot info
-// TODO: option to toggle pmmentions for all servers
-// TODO: containers for extensions to store data
 // TODO: list of polls/trivia games to close in admin console
 var outOfDate = 0;
 var readyToGo = false;
@@ -1521,8 +1519,8 @@ var pmcommands = {
     },
     // Toggles PM mentions in a server
     "pmmentions": {
-        usage: "<server>",
-        extended: "Toggles PM mention notifications in a server. If this is turned on, I'll PM you if you get mentioned in the main chat and you're offline. This command turns on and off that setting.",
+        usage: "[<server>]",
+        extended: "Toggles PM mention notifications in a server. If this is turned on, I'll PM you if you get mentioned in the main chat and you're offline. This command turns on and off that setting. Use this command without any parameters to toggle for all servers and view your current settings.",
         process: function(bot, msg, suffix) {
             if(suffix) {
                 var svr = bot.servers.get("name", msg.content.substring(11));
@@ -1542,17 +1540,35 @@ var pmcommands = {
                 } else {
                     bot.sendMessage(msg.channel, "Turned off PMs for mentions in " + svr.name + ". Enable them again by replying with `pmmentions " + svr.name + "`");
                 }
-                saveData("./data/stats.json", function(err) {
-                    if(err) {
-                        logMsg(new Date().getTime(), "ERROR", "General", null, "Could not save updated PM preferences for " + msg.author.username);
-                    } else {
-                        logMsg(new Date().getTime(), "INFO", msg.author.id, null, "Turned " + (stats[svr.id].members[msg.author.id].mentions.pm ? "on" : "off") + " mention PMs in " + svr.name);
-                    }
-                });
+                logMsg(new Date().getTime(), "INFO", msg.author.id, null, "Turned " + (stats[svr.id].members[msg.author.id].mentions.pm ? "on" : "off") + " mention PMs in " + svr.name);
             } else {
-                logMsg(new Date().getTime(), "WARN", msg.author.id, null, "User did provide a server for pmmentions command");
-                bot.sendMessage(msg.channel, "Server name please...`pmmentions <server>`");
+                var info = "Toggled option to receive PMs for mentions in all servers. Here's your current configuration:";
+                for(var i=0; i<bot.servers.length; i++) {
+                    if(bot.servers[i].members.get("id", msg.author.id)) {
+                        if(!stats[bot.servers[i].id].members[msg.author.id]) {
+                            stats[bot.servers[i].id].members[msg.author.id] = {
+                                messages: 0,
+                                seen: new Date().getTime(),
+                                mentions: {
+                                    pm: false,
+                                    stream: []
+                                },
+                                strikes: []
+                            };
+                        }
+                        stats[bot.servers[i].id].members[msg.author.id].mentions.pm = !stats[bot.servers[i].id].members[msg.author.id].mentions.pm;
+                        info += "\n\t**" + bot.servers[i].name + ":** " + (stats[bot.servers[i].id].members[msg.author.id].mentions.pm ? "on" : "off");
+                    }
+                }
+                info += "\nReply with `pmmentions` to toggle again.";
+                bot.sendMessage(msg.author, info);
+                logMsg(new Date().getTime(), "INFO", msg.author.id, null, "Toggled mention PMs in all servers");
             }
+            saveData("./data/stats.json", function(err) {
+                if(err) {
+                    logMsg(new Date().getTime(), "ERROR", "General", null, "Could not save updated PM preferences for " + msg.author.username);
+                } 
+            });
         }
     }
 }
@@ -1961,7 +1977,8 @@ bot.on("ready", function() {
 });
 
 bot.on("message", function (msg, user) {
-    try {
+    // TODO: re-enable massive try/catch after testing
+    //try {
         // Stop responding if the sender is another bot
         if(configs.botblocked.indexOf(msg.author.id)>-1) {
             return;
@@ -2305,6 +2322,7 @@ bot.on("message", function (msg, user) {
                         }
                         
                         var params = {
+                            store: configs.servers[msg.channel.server.id].extensions[ext].store,
                             unirest: unirest,
                             imgur: imgur,
                             image: giSearch,
@@ -2335,9 +2353,15 @@ bot.on("message", function (msg, user) {
                                         wait(count);
                                     }, 100);
                                 } else if(count>30) {
-                                    logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "Extension " + configs.servers[msg.channel.server.id].extensions[ext].type + " produced no output");
+                                    logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, "Extension " + configs.servers[msg.channel.server.id].extensions[ext].name + " produced no output");
                                 } else {
                                     bot.sendMessage(msg.channel, params.send);
+                                    configs.servers[msg.channel.server.id].extensions[ext].store = params.store;
+                                    saveData("./data/config.json", function(err) {
+                                        if(err) {
+                                            logMsg(new Date().getTime(), "ERROR", msg.channel.server.name, msg.channel.name, "Could not save updated store for extension " + configs.servers[msg.channel.server.id].extensions[ext].name);
+                                        }
+                                    });
                                 }
                             };
                             wait(0);
@@ -2542,14 +2566,14 @@ bot.on("message", function (msg, user) {
                 bot.sendMessage(msg.channel,msg.author + ", you called?");
             }
         }
-    } catch(mainError) {
+    /*} catch(mainError) {
         bot.stopTyping(msg.channel);
         if(msg.channel.isPrivate) {
             logMsg(new Date().getTime(), "ERROR", msg.author.id, null, "Failed to process new message: " + mainError);
         } else {
             logMsg(new Date().getTime(), "ERROR", msg.channel.server.name, msg.channel.name, "Failed to process new message: " + mainError);
         }
-    }
+    }*/
 });
 
 // Add server if joined outside of bot
@@ -3151,6 +3175,7 @@ function runTimerExtension(svrid, extnm) {
     if(extension) {
         var svr = bot.servers.get("id", svrid);
         var params = {
+            store: extension.store,
             unirest: unirest,
             imgur: imgur,
             image: giSearch,
@@ -3185,6 +3210,12 @@ function runTimerExtension(svrid, extnm) {
                             logMsg(new Date().getTime(), "INFO", svr.name, ch.name, "Timer extension " + extension.type + " executed successfully");
                         }
                     }
+                    extension.store = params.store;
+                    saveData("./data/config.json", function(err) {
+                        if(err) {
+                            logMsg(new Date().getTime(), "ERROR", svr.name, null, "Could not save updated store for extension " + extension.name);
+                        }
+                    });
                 }
             };
             wait(0);
@@ -3657,6 +3688,7 @@ function addExtension(extension, svr, consoleid, callback) {
         validity = "extension already exists";
     } else {
         var params = {
+            store: [],
             unirest: unirest,
             imgur: imgur,
             image: giSearch,
@@ -3694,11 +3726,12 @@ function addExtension(extension, svr, consoleid, callback) {
         callback(validity);
     } else {
         configs.servers[svr.id].extensions[extension.name] = extension;
+        delete configs.servers[svr.id].extensions[extension.name].name;
+        configs.servers[svr.id].extensions[extension.name].store = [];
         if(extension.type=="timer") {
             runTimerExtension(svr.id, extension.name);
         }
         logMsg(new Date().getTime(), "INFO", consoleid, null, "Extension " + extension.name + " added to server " + svr.name);
-        delete configs.servers[svr.id].extensions[extension.name].name;
         saveData("./data/config.json", function(err) {
             if(err) {
                 logMsg(new Date().getTime(), "ERROR", consoleid, null, "Could not save new config for " + svr.name);
