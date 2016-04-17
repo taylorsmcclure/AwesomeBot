@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.9p8";
+var version = "3.3.9p9";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -3728,13 +3728,13 @@ function addExtension(extension, svr, consoleid, callback) {
         logMsg(new Date().getTime(), "WARN", consoleid, null, "Extension uploaded is invalid: " +  validity);
         callback(validity);
     } else {
+        extension.store = [];
         configs.servers[svr.id].extensions[extension.name] = extension;
-        delete configs.servers[svr.id].extensions[extension.name].name;
-        configs.servers[svr.id].extensions[extension.name].store = [];
         if(extension.type=="timer") {
             runTimerExtension(svr.id, extension.name);
         }
         logMsg(new Date().getTime(), "INFO", consoleid, null, "Extension " + extension.name + " added to server " + svr.name);
+        delete configs.servers[svr.id].extensions[extension.name].name;
         saveData("./data/config.json", function(err) {
             if(err) {
                 logMsg(new Date().getTime(), "ERROR", consoleid, null, "Could not save new config for " + svr.name);
