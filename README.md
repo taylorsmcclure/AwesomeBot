@@ -61,7 +61,8 @@ Patch #5: Fixed for switchProfile too
 Patch #6: Oops, one last fix  
 Patch #7: Last one, I promise  
 Patch #8: Fixed giSearch crashing  
-Patch #8: Fixed addExtension crash  
+Patch #9: Fixed addExtension crash  
+Patch #10: Fixed extended help and extension channel filtering  
  
 Open an issue to report a bug or suggest a new feature!
 

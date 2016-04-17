@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.9p9";
+var version = "3.3.9p10";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2297,7 +2297,7 @@ bot.on("message", function (msg, user) {
                 for(var ext in configs.servers[msg.channel.server.id].extensions) {
                     var extension = configs.servers[msg.channel.server.id].extensions[ext];
                     if(extension.channels) {
-                        if(extension.channels.indexOf(msg.channel.name)==-1 || extension.type=="timer") {
+                        if((extension.channels.length>0 && extension.channels.indexOf(msg.channel.name)==-1) || extension.type=="timer") {
                             continue;
                         }
                     }
@@ -2341,6 +2341,7 @@ bot.on("message", function (msg, user) {
                             var context = new vm.createContext(params);
                             var script = new vm.Script(configs.servers[msg.channel.server.id].extensions[ext].process);
                             script.runInContext(context);
+                            console.log(configs.servers[msg.channel.server.id].extensions[ext].name);
                             var wait = function(count) {
                                 if(params.send=="" || !params.send) {
                                     setTimeout(function() {
@@ -4585,16 +4586,12 @@ function getCommandHelp(svr, cmd) {
     var info = "";
     var filled = false;
     if(commands[cmd] && !pubdisabled) {
-        if(commands[cmd].extended) {
-            filled = true;
-            info += "**Help for public command `" + cmd + "`:**\nhttps://github.com/BitQuote/AwesomeBot/wiki/Commands#" + cmd;
-        }
+        filled = true;
+        info += "**Help for public command `" + cmd + "`:**\nhttps://github.com/BitQuote/AwesomeBot/wiki/Commands#" + cmd;
     }
     if(pmcommands[cmd] && cmd!="remindme") {
-        if(pmcommands[cmd].extended) {
-            info += (filled ? "\n\n" : "") + "**Help for private command `" + cmd + "`:**\nhttps://github.com/BitQuote/AwesomeBot/wiki/Commands#" + cmd + "-pm";
-            filled = true;
-        }
+        info += (filled ? "\n\n" : "") + "**Help for private command `" + cmd + "`:**\nhttps://github.com/BitQuote/AwesomeBot/wiki/Commands#" + cmd + "-pm";
+        filled = true;
     }
     for(var ext in configs.servers[svr.id].extensions) {
         if(configs.servers[svr.id].extensions[ext].type.toLowerCase()=="command" && configs.servers[svr.id].extensions[ext].extended) {
