@@ -267,11 +267,9 @@ function switchProfile(n) {
                     switchColors(localStorage.getItem("theme") || "contrast");
                     document.getElementById("stats").innerHTML = html || "<i>Nothing here</i>";
                     document.getElementById("stats").style.opacity = 1;
-                    if(!nodestroy) {
-                        setTimeout(function() {
-                            destroyLoader();
-                        }, 250);
-                    }
+                    setTimeout(function() {
+                        destroyLoader();
+                    }, 250);
                 }, 250);
             });
         }
