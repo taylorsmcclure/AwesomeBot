@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.9p10";
+var version = "3.3.9p11";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2341,7 +2341,6 @@ bot.on("message", function (msg, user) {
                             var context = new vm.createContext(params);
                             var script = new vm.Script(configs.servers[msg.channel.server.id].extensions[ext].process);
                             script.runInContext(context);
-                            console.log(configs.servers[msg.channel.server.id].extensions[ext].name);
                             var wait = function(count) {
                                 if(params.send=="" || !params.send) {
                                     setTimeout(function() {

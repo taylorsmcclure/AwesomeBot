@@ -63,6 +63,7 @@ Patch #7: Last one, I promise
 Patch #8: Fixed giSearch crashing  
 Patch #9: Fixed addExtension crash  
 Patch #10: Fixed extended help and extension channel filtering  
+Patch #11: Removed test output for extensions  
  
 Open an issue to report a bug or suggest a new feature!
 
