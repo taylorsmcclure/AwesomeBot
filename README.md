@@ -65,6 +65,7 @@ Patch #9: Fixed addExtension crash
 Patch #10: Fixed extended help and extension channel filtering  
 Patch #11: Removed test output for extensions  
 Patch #12: Fixed bot appearing in stats  
+Patch #13: Fixed last commit  
  
 Open an issue to report a bug or suggest a new feature!
 

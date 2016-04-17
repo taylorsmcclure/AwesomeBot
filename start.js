@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.9p12";
+var version = "3.3.9p13";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -3040,31 +3040,33 @@ function clearStatCounter() {
                 };
             }
             for(var j=0; j<bot.servers[i].members.length; j++) {
-                // If member is playing game, add 0.1 (equal to five minutes) to game tally
-                var game = getGame(bot.servers[i].members[j]); 
-                if(game && bot.servers[i].members[j].id!=bot.user.id) {
-                    if(!stats[bot.servers[i].id].games[game]) {
-                        stats[bot.servers[i].id].games[game] = 0;
+                if(bot.servers[i].members[j].id!=bot.user.id) {
+                    // If member is playing game, add 0.1 (equal to five minutes) to game tally
+                    var game = getGame(bot.servers[i].members[j]); 
+                    if(game && bot.servers[i].members[j].id) {
+                        if(!stats[bot.servers[i].id].games[game]) {
+                            stats[bot.servers[i].id].games[game] = 0;
+                        }
+                        stats[bot.servers[i].id].games[game] += 0.1;
                     }
-                    stats[bot.servers[i].id].games[game] += 0.1;
-                }
-                // Create member stats if necessary
-                if(!stats[bot.servers[i].id].members[bot.servers[i].members[j].id] && bot.servers[i].members[j].id!=bot.user.id) {
-                    stats[bot.servers[i].id].members[bot.servers[i].members[j].id] = {
-                        messages: 0,
-                        seen: new Date().getTime(),
-                        mentions: {
-                            pm: false,
-                            stream: []
-                        },
-                        strikes: []
-                    };
-                }
-                // If member's mention data is 7 days old, clear it
-                if(stats[bot.servers[i].id].members[bot.servers[i].members[j].id].mentions.stream.length>0) {
-                    if(dayDiff(new Date(stats[bot.servers[i].id].members[bot.servers[i].members[j].id].mentions.stream[0].timestamp), new Date())>=7) {
-                        stats[bot.servers[i].id].members[bot.servers[i].members[j].id].mentions.timestamp = 0;
-                        stats[bot.servers[i].id].members[bot.servers[i].members[j].id].mentions.stream = [];
+                    // Create member stats if necessary
+                    if(!stats[bot.servers[i].id].members[bot.servers[i].members[j].id] && bot.servers[i].members[j].id) {
+                        stats[bot.servers[i].id].members[bot.servers[i].members[j].id] = {
+                            messages: 0,
+                            seen: new Date().getTime(),
+                            mentions: {
+                                pm: false,
+                                stream: []
+                            },
+                            strikes: []
+                        };
+                    }
+                    // If member's mention data is 7 days old, clear it
+                    if(stats[bot.servers[i].id].members[bot.servers[i].members[j].id].mentions.stream.length>0) {
+                        if(dayDiff(new Date(stats[bot.servers[i].id].members[bot.servers[i].members[j].id].mentions.stream[0].timestamp), new Date())>=7) {
+                            stats[bot.servers[i].id].members[bot.servers[i].members[j].id].mentions.timestamp = 0;
+                            stats[bot.servers[i].id].members[bot.servers[i].members[j].id].mentions.stream = [];
+                        }
                     }
                 }
             }
