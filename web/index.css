@@ -130,11 +130,11 @@ td {
 #stats, .container {
     margin-top: 0.5%;
     padding-top: 0px;
-    -webkit-transition: opacity .125s, height .25s;
-    -moz-transition: opacity .125s, height .25s;
-    -ms-transition: opacity .125s, height .25s;
-    -o-transition: opacity .125s, height .25s;
-    transition: opacity .125s, height .25s;
+    -webkit-transition: opacity .25s;
+    -moz-transition: opacity .25s;
+    -ms-transition: opacity .25s;
+    -o-transition: opacity .25s;
+    transition: opacity .25s;
 }
 
 #servers {

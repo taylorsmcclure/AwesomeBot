@@ -56,6 +56,7 @@ Latest, version **3.3.9**:
 Patch #1: Enabled CORS for status page  
 Patch #2: Fixed exposed data directory  
 Patch #3: Fixed maintainer console files display  
+Patch #4: Fixed glitchy status page animations  
  
 Open an issue to report a bug or suggest a new feature!
 

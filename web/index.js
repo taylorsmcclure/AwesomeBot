@@ -167,8 +167,6 @@ function switchColors(n) {
 }
 
 function switchStats(n, nodestroy) {
-    document.getElementById("stats").style.opacity = 0;
-    document.getElementById("stats").style.height = 0;
     showLoader();
     
     statsSelect = n;
@@ -183,14 +181,16 @@ function switchStats(n, nodestroy) {
             getJSON("/data?section=list&type=bot", function(data) {
                 html = "<b>Status:</b> Online<br><b>Bot ID:</b> " + data.id + "<br><b>Version:</b> v" + data.version + "<br><b>Uptime:</b> " + (data.uptime || "<i>None, how are you viewing this?</i>") + "<br><b>Disconnections:</b> " + data.disconnects + " so far";
                 
-                document.getElementById("stats").innerHTML = html || "<i>Nothing here</i>";
-                document.getElementById("stats").style.height = (document.getElementById("stats").innerHTML.match(/<br>/ig).length + 1) * 18;
-                document.getElementById("stats").style.opacity = 1;
-                if(!nodestroy) {
-                    setTimeout(function() {
-                        destroyLoader();
-                    }, 250);
-                }
+                document.getElementById("stats").style.opacity = 0;
+                setTimeout(function() {
+                    document.getElementById("stats").innerHTML = html || "<i>Nothing here</i>";
+                    document.getElementById("stats").style.opacity = 1;
+                    if(!nodestroy) {
+                        setTimeout(function() {
+                            destroyLoader();
+                        }, 250);
+                    }
+                }, 250);
             });
         } else {
             document.getElementById("profileselect").style.visibility = "visible";
@@ -218,11 +218,15 @@ function switchStats(n, nodestroy) {
                     }
                     document.getElementById("profileselect").innerHTML = profileselect;
                     
-                    document.getElementById("stats").innerHTML = html || "<i>Nothing here</i>";
-                    document.getElementById("stats").style.height = (document.getElementById("stats").innerHTML.match(/<br>/ig).length + 1) * 18;
-                    document.getElementById("stats").style.opacity = 1;
+                    document.getElementById("stats").style.opacity = 0;
                     setTimeout(function() {
-                        destroyLoader();
+                        document.getElementById("stats").innerHTML = html || "<i>Nothing here</i>";
+                        document.getElementById("stats").style.opacity = 1;
+                        if(!nodestroy) {
+                            setTimeout(function() {
+                                destroyLoader();
+                            }, 250);
+                        }
                     }, 250);
                 });
             });

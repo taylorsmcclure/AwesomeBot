@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.9p3";
+var version = "3.3.9p4";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
