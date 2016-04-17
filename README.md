@@ -54,6 +54,7 @@ Latest, version **3.3.9**:
  - Misc. improvements
 
 Patch #1: Enabled CORS for status page  
+Patch #2: Fixed exposed data directory  
  
 Open an issue to report a bug or suggest a new feature!
 

@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.9p1";
+var version = "3.3.9p2";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -1900,7 +1900,6 @@ bot.on("ready", function() {
         res.end(html);
     });
     app.use(express.static("web"));
-    app.use(express.static("data"));
     
     app.post("/config", function(req, res) {
         if(getOnlineConsole(req.query.auth)) {
@@ -1943,6 +1942,15 @@ bot.on("ready", function() {
                 } else {
                     res.json({});
                 }
+            }
+        }
+    });
+    
+    app.get("/file", function(req, res) {
+        var c = getOnlineConsole(req.query.auth);
+        if(c && req.query.type) {
+            if(c.type=="maintainer" && ["stats", "logs", "reminders", "profiles", "config"].indexOf(req.query.type.toLowerCase())>-1) {
+                res.sendFile(__dirname + "/data/" + req.query.type + ".json");
             }
         }
     });
@@ -2711,16 +2719,16 @@ bot.on("messageDeleted", function(msg) {
 // Message on user banned
 bot.on("userBanned", function(usr, svr) {
     if(configs.servers[svr.id].servermod && configs.servers[svr.id].membermsg && stats[svr.id].botOn[svr.defaultChannel.id]) {
-        logMsg(new Date().getTime(), "INFO", svr.name, null, "User **@" + usr.username + "** has been banned");
-        bot.sendMessage(svr.defaultChannel, usr.username + " has been banned.");
+        logMsg(new Date().getTime(), "INFO", svr.name, null, "User " + usr.username + " has been banned");
+        bot.sendMessage(svr.defaultChannel, "**@" + usr.username + "** has been banned.");
     }
 });
 
 // Message on user unbanned
 bot.on("userUnbanned", function(usr, svr) {
     if(configs.servers[svr.id].servermod && configs.servers[svr.id].membermsg && stats[svr.id].botOn[svr.defaultChannel.id]) {
-        logMsg(new Date().getTime(), "INFO", svr.name, null, "User @**" + usr.username + "** has been unbanned");
-        bot.sendMessage(svr.defaultChannel, usr.username + " is no longer banned.");
+        logMsg(new Date().getTime(), "INFO", svr.name, null, "User " + usr.username + " has been unbanned");
+        bot.sendMessage(svr.defaultChannel, "**@" + usr.username + "** is no longer banned.");
     }
 });
 

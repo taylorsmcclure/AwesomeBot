@@ -80,6 +80,19 @@
         </div>
         <br>
         
+        <span style="font-size: 20;">
+            <u>Globally Blocked Users</u>
+            <br>
+        </span>
+        <div class="container" id="fileslist">
+            <a id="fileslist-stats" onclick="javascript:getFile(this.id.substring(10));">stats.json</a><br>
+            <a id="fileslist-config" onclick="javascript:getFile(this.id.substring(10));">config.json</a><br>
+            <a id="fileslist-profiles" onclick="javascript:getFile(this.id.substring(10));">profiles.json</a><br>
+            <a id="fileslist-logs" onclick="javascript:getFile(this.id.substring(10));">logs.json</a><br>
+            <a id="fileslist-reminders" onclick="javascript:getFile(this.id.substring(10));">reminders.json</a>
+        </div>
+        <br>
+        
         <button id="refresher" onclick="javascript:document.body.style.opacity = 0;setTimeout(function() {location.reload();}, 250);">Refresh</button>
         
         <select id="themeswitcher" onChange="javascript:switchColors(this.value);">

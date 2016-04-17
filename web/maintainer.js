@@ -128,3 +128,7 @@ function configAvatar() {
         });
     }
 }
+
+function getFile(name) {
+    window.location.href = "/file?auth=" + authtoken + "&type=" + name;
+}

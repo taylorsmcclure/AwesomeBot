@@ -11,3 +11,7 @@
     height: 25px;
     font-size: 14;
 }
+
+#fileslist a:hover {
+    cursor: pointer;
+}
