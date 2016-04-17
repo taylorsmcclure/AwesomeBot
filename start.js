@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.9p7";
+var version = "3.3.9p8";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -4024,22 +4024,26 @@ function handleNSFW(msg) {
 
 // Searches Google Images for keyword(s)
 function giSearch(query, num, svrid, chid, callback) {
-	var url = "https://www.googleapis.com/customsearch/v1?key=" + AuthDetails.google_api_key + "&cx=" + AuthDetails.custom_search_id + ((configs.servers[svrid].nsfwfilter[0] && configs.servers[svrid].nsfwfilter[1].indexOf(chid)==-1) ? "&safe=high" : "") + "&q=" + (query.replace(/\s/g, '+').replace(/&/g, '')) + "&alt=json&searchType=image" + (num ? ("&start=" + num) : "");
-    unirest.get(url)
-    .header("Accept", "application/json")
-    .end(function(response) {
-        var data = response.body;
-        if(!data) {
-			logMsg(new Date().getTime(), "ERROR", "General", null, "Could not connect to Google Images");
-			return;
-		}
-		if(!data.items || data.items.length == 0 || query.indexOf("<#")>-1) {
-            logMsg(new Date().getTime(), "WARN", "General", null, "No image results for " + query);
-            callback(null);
-		} else {
-            callback(data.items[0].link);
-		}
-	});	
+    try {
+        var url = "https://www.googleapis.com/customsearch/v1?key=" + AuthDetails.google_api_key + "&cx=" + AuthDetails.custom_search_id + ((configs.servers[svrid].nsfwfilter[0] && configs.servers[svrid].nsfwfilter[1].indexOf(chid)==-1) ? "&safe=high" : "") + "&q=" + (query.replace(/\s/g, '+').replace(/&/g, '')) + "&alt=json&searchType=image" + (num ? ("&start=" + num) : "");
+        unirest.get(url)
+        .header("Accept", "application/json")
+        .end(function(response) {
+            var data = response.body;
+            if(!data) {
+                logMsg(new Date().getTime(), "ERROR", "General", null, "Could not connect to Google Images");
+                return;
+            }
+            if(!data.items || data.items.length == 0 || query.indexOf("<#")>-1) {
+                logMsg(new Date().getTime(), "WARN", "General", null, "No image results for " + query);
+                callback(null);
+            } else {
+                callback(data.items[0].link);
+            }
+        });	
+    } catch(err) {
+        logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to process image search request");
+    }
 }
 
 // Google Play Store search page scraper

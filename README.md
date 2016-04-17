@@ -60,6 +60,7 @@ Patch #4: Fixed glitchy status page animations
 Patch #5: Fixed for switchProfile too  
 Patch #6: Oops, one last fix  
 Patch #7: Last one, I promise  
+Patch #8: Fixed giSearch crashing  
  
 Open an issue to report a bug or suggest a new feature!
 
