@@ -264,8 +264,8 @@ function switchProfile(n) {
                 
                 document.getElementById("stats").style.opacity = 0;
                 setTimeout(function() {
-                    switchColors(localStorage.getItem("theme") || "contrast");
                     document.getElementById("stats").innerHTML = html || "<i>Nothing here</i>";
+                    switchColors(localStorage.getItem("theme") || "contrast");
                     document.getElementById("stats").style.opacity = 1;
                     setTimeout(function() {
                         destroyLoader();
