@@ -23,20 +23,27 @@
         } else {
             colorDark();
         }
+        showStatus();
+    }
+    function showStatus() {
+        document.getElementById("awesomeloader").style.display = "";
         getJSON("https://awesomebot-botmakersinc.rhcloud.com/data?section=list&type=bot", function(data) {
             if(data) {
                 document.getElementById("addtoserverlink").href = data.oauthurl;
-                document.getElementById("awesomestatus").innerHTML = '<img id="awesomepic" src="" /><span class="awesomeimp" id="awesomename"></span> v<span id="awesomeversion"></span><br><span class="awesomeimp" id="awesomeservers"></span> servers, <span class="awesomeimp" id="awesomeusers"></span> users';
+                document.getElementById("awesomestatus").innerHTML = '<img id="awesomepic" src="" /><span id="awesomeup"></span><span class="awesomeimp" id="awesomename"></span> v<span id="awesomeversion"></span><br><span class="awesomeimp" id="awesomeservers"></span> servers, <span class="awesomeimp" id="awesomeusers"></span> users';
                 document.getElementById("awesomepic").src = data.avatar;
+                document.getElementById("awesomeup").innerHTML = data.uptime.substring(0, data.uptime.indexOf(" ")+2);
                 document.getElementById("awesomename").innerHTML = data.username;
                 document.getElementById("awesomeversion").innerHTML = data.version;
                 document.getElementById("awesomeservers").innerHTML = data.servers;
                 document.getElementById("awesomeusers").innerHTML = data.users;
-                setTimeout(function() {
-                    document.getElementById("awesomeloader").parentNode.removeChild(document.getElementById("awesomeloader"));
-                }, 1000);
+                document.getElementById("awesomestatus").onclick = awesomestatus;
+                document.getElementById("awesomeloader").style.display = "none";
             }
         });
+        setTimeout(function() {
+            showStatus();
+        }, 60000);
     }
     function getJSON(url, callback) {
         var xhr = new XMLHttpRequest();
@@ -165,11 +172,11 @@
 
         <ul>
           <li id="addtoserver"><a id="addtoserverlink" href="https://discordapp.com/oauth2/authorize?&client_id=168130366450827264&scope=bot&permissions=0" target="_blank">Add To <strong>Server</strong></a></li>
-          <li><a href="https://discord.gg/0pRFCTcG2aIY53Jk" target="_blank">Join Server <strong>BotMakers</strong></a></li>
+          <li><a href="https://discord.gg/0pRFCTcG2aIY53Jk" target="_blank">Join Server <strong>Support</strong></a></li>
           <li><a href="https://github.com/BitQuote/AwesomeBot">View On <strong>GitHub</strong></a></li>
         </ul>
         
-        <div id="awesomestatus" onclick="javascript:awesomestatus();">
+        <div id="awesomestatus">
             <div id="awesomedown">AwesomeBot is currently down :(</div>
         </div>
         <br>

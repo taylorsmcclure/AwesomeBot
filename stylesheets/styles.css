@@ -216,6 +216,11 @@ header ul {
     border-radius:0;
 }
 
+#awesomeup {
+    float:right;
+    padding-right:7px;
+}
+
 .awesomeimp {
   color:#222;
   font-weight:700;
