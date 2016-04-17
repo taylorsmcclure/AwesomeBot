@@ -64,6 +64,7 @@ Patch #8: Fixed giSearch crashing
 Patch #9: Fixed addExtension crash  
 Patch #10: Fixed extended help and extension channel filtering  
 Patch #11: Removed test output for extensions  
+Patch #12: Fixed bot appearing in stats  
  
 Open an issue to report a bug or suggest a new feature!
 

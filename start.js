@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.9p11";
+var version = "3.3.9p12";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -1621,7 +1621,7 @@ bot.on("ready", function() {
                 if(svr) {
                     data.stream = [];
                     for(var i=0; i<svr.members.length; i++) {
-                        if(svr.members[i].username && svr.members[i].id) {
+                        if(svr.members[i].username && svr.members[i].id && svr.members[i].id!=bot.user.id) {
                             data.stream.push([svr.members[i].username, svr.members[i].id]);
                         }
                     }
@@ -2860,21 +2860,23 @@ function populateStats(svr) {
     }
     // Stats for members
     for(var i=0; i<svr.members.length; i++) {
-        var defaultMemberStats = {
-            messages: 0,
-            seen: new Date().getTime(),
-            mentions: {
-                pm: false,
-                stream: []
-            },
-            strikes: []
-        };
-        if(!stats[svr.id].members[svr.members[i].id]) {
-            stats[svr.id].members[svr.members[i].id] = JSON.parse(JSON.stringify(defaultMemberStats));
-        } else {
-            for(var key in defaultMemberStats) {
-                if(!stats[svr.id].members[svr.members[i].id][key]) {
-                    stats[svr.id].members[svr.members[i].id][key] = JSON.parse(JSON.stringify(defaultMemberStats[key]));
+        if(svr.members[i].id!=bot.user.id) {
+            var defaultMemberStats = {
+                messages: 0,
+                seen: new Date().getTime(),
+                mentions: {
+                    pm: false,
+                    stream: []
+                },
+                strikes: []
+            };
+            if(!stats[svr.id].members[svr.members[i].id]) {
+                stats[svr.id].members[svr.members[i].id] = JSON.parse(JSON.stringify(defaultMemberStats));
+            } else {
+                for(var key in defaultMemberStats) {
+                    if(!stats[svr.id].members[svr.members[i].id][key]) {
+                        stats[svr.id].members[svr.members[i].id][key] = JSON.parse(JSON.stringify(defaultMemberStats[key]));
+                    }
                 }
             }
         }
@@ -3047,7 +3049,7 @@ function clearStatCounter() {
                     stats[bot.servers[i].id].games[game] += 0.1;
                 }
                 // Create member stats if necessary
-                if(!stats[bot.servers[i].id].members[bot.servers[i].members[j].id]) {
+                if(!stats[bot.servers[i].id].members[bot.servers[i].members[j].id] && bot.servers[i].members[j].id!=bot.user.id) {
                     stats[bot.servers[i].id].members[bot.servers[i].members[j].id] = {
                         messages: 0,
                         seen: new Date().getTime(),
