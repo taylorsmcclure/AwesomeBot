@@ -235,8 +235,6 @@ function switchStats(n, nodestroy) {
 }
 
 function switchProfile(n) {
-    document.getElementById("stats").style.opacity = 0;
-    document.getElementById("stats").style.height = 0;
     showLoader();
     
     document.getElementById("profileselect").value = n;
@@ -264,12 +262,16 @@ function switchProfile(n) {
                 }
                 html = html.substring(0, html.length-4);
                 
-                document.getElementById("stats").innerHTML = html || "<i>Nothing here</i>";
-                document.getElementById("stats").style.height = (document.getElementById("stats").innerHTML.match(/<br>/ig).length + 1) * 18;
-                document.getElementById("stats").style.opacity = 1;
-                switchColors(localStorage.getItem("theme") || "contrast");
+                document.getElementById("stats").style.opacity = 0;
                 setTimeout(function() {
-                    destroyLoader();
+                    switchColors(localStorage.getItem("theme") || "contrast");
+                    document.getElementById("stats").innerHTML = html || "<i>Nothing here</i>";
+                    document.getElementById("stats").style.opacity = 1;
+                    if(!nodestroy) {
+                        setTimeout(function() {
+                            destroyLoader();
+                        }, 250);
+                    }
                 }, 250);
             });
         }
