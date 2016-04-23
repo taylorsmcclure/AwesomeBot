@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.9p13";
+var version = "3.3.10";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2461,7 +2461,7 @@ bot.on("message", function (msg, user) {
 
         // Check if message is a command (bot tagged and matches commands list)
         if(msg.author.id!=bot.user.id && (msg.content.indexOf(bot.user.mention()) == 0 || msg.channel.isPrivate) && msg.content.indexOf("**")!=0) {
-            if(msg.content.length < 22 && !msg.channel.isPrivate) {
+            if(msg.content.length<22 && !msg.channel.isPrivate) {
                 return;
             }
             if(!msg.channel.isPrivate) {
@@ -2496,7 +2496,7 @@ bot.on("message", function (msg, user) {
                 }
                 bot.stopTyping(msg.channel);
             // Process message as chatterbot prompt if not a command
-            } else if(msg.author.id != bot.user.id && !extensionApplied) {
+            } else if(msg.author.id!=bot.user.id && !extensionApplied) {
                 if(!msg.channel.isPrivate) {
                     if(!configs.servers[msg.channel.server.id].chatterbot || !stats[msg.channel.server.id].botOn[msg.channel.id]) {
                         return;
@@ -2509,8 +2509,8 @@ bot.on("message", function (msg, user) {
                 
                 var prompt = "", clever = true;
                 if(!msg.channel.isPrivate) {
-                    prompt = msg.cleanContent.substring(msg.cleanContent.indexOf(" ") + 1);
-                    clever = cleverOn[msg.channel.server.id]
+                    prompt = msg.cleanContent.substring(bot.user.username+2);
+                    clever = cleverOn[msg.channel.server.id];
                 } else {
                     prompt = msg.cleanContent;
                 }
@@ -2579,7 +2579,6 @@ bot.on("serverCreated", function(svr) {
     
     // Configure new server
     if(!configs.servers[svr.id]) {
-        console.log("didn't find configs for " + svr.name);
         defaultConfig(svr);
         adminMsg(false, svr, {username: bot.user.username}, " (me) has been added to " + svr.name + ". You're one of my admins. You can manage me in this server by PMing me `config " + svr.name + "`. Check out https://git.io/vaa2F to learn more.");
         bot.sendMessage(svr.defaultChannel, "Hi, I'm " + bot.user.username + "! Use `@" + bot.user.username + " help` to learn more or check out https://git.io/vaa2F");
@@ -3398,6 +3397,13 @@ function parseMaintainerConfig(delta, callback) {
                     callback(err);
                 });
                 break;
+            case "message":
+                for(var i=0; i<bot.servers.length; i++) {
+                    bot.sendMessage(bot.servers[i].defaultChannel, delta[key]);
+                }
+                logMsg(new Date().getTime(), "INFO", "General", null, "Sent message \"" + delta[key] + "\" in every server");
+                callback(false);
+                break;
             case "logout":
                 clearTimeout(onlineconsole[delta[key]].timer);
                 delete onlineconsole[delta[key]];
@@ -3752,7 +3758,7 @@ function addExtension(extension, svr, consoleid, callback) {
 
 // Default game: rotates between stats
 function defaultGame(i, force) {
-    var games = [bot.servers.length + " server" + (bot.servers.length==1 ? "" : "s") + " connected", "Serving " + bot.users.length + " users", "git.io/vaa2F", "v" + version, "@" + bot.user.username + " help", "by @BitQuote", configs.hosting || "Limited mode", "the best Discord bot!"];
+    var games = [bot.servers.length + " server" + (bot.servers.length==1 ? "" : "s") + " connected", "serving " + bot.users.length + " users", "git.io/vaa2F", "v" + version, "@" + bot.user.username + " help", "by @BitQuote", configs.hosting || "limited mode", "the best Discord bot!"];
     if(configs.game=="default" || force) {
         if(i>=games.length) {
             i = 0;
@@ -4678,7 +4684,7 @@ function getLogIDs() {
 
 // Check for updates
 function checkVersion() {
-    unirest.get("http://awesome-botmakersinc.rhcloud.com/")
+    unirest.get("http://awesome-botmakersinc.rhcloud.com/updates")
     .header("Accept", "application/json")
     .end(function(response) {
         try {

@@ -46,26 +46,10 @@ If you want a stable bot, please use the [latest milestone release](https://gith
 Changelog
 ---------
 
-Latest, version **3.3.9**:
+Latest, version **3.3.10**:
 
- - Per-channel spam/NSFW filter options
- - Added extension data store
- - Ability to close individual polls/trivia games in admin console
- - Misc. improvements
-
-Patch #1: Enabled CORS for status page  
-Patch #2: Fixed exposed data directory  
-Patch #3: Fixed maintainer console files display  
-Patch #4: Fixed glitchy status page animations  
-Patch #5: Fixed for switchProfile too  
-Patch #6: Oops, one last fix  
-Patch #7: Last one, I promise  
-Patch #8: Fixed giSearch crashing  
-Patch #9: Fixed addExtension crash  
-Patch #10: Fixed extended help and extension channel filtering  
-Patch #11: Removed test output for extensions  
-Patch #12: Fixed bot appearing in stats  
-Patch #13: Fixed last commit  
+ - BigMessage in maintainer console
+ - Minor bug fixes
  
 Open an issue to report a bug or suggest a new feature!
 

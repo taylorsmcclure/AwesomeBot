@@ -93,6 +93,19 @@
         </div>
         <br>
         
+        <span style="font-size: 20;">
+            <u>BigMessage&trade;</u>
+            <br>
+        </span>
+        <div class="container" id="bigmessage">
+            Use BigMessage to send an announcement message in all servers.<br>
+            <textarea id="bigmessageinput" style="float: left; height: 40; width: 400;" placeholder="Message shown to new members, in markdown"></textarea>
+            &nbsp;
+            <span class="removetool" id="bigmessagesubmit" onclick="javascript:newBigmessage();"><i>(submit)</i></span>
+            <br>&nbsp;
+        </div>
+        <br>
+        
         <button id="refresher" onclick="javascript:document.body.style.opacity = 0;setTimeout(function() {location.reload();}, 250);">Refresh</button>
         
         <select id="themeswitcher" onChange="javascript:switchColors(this.value);">

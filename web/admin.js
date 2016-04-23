@@ -280,7 +280,7 @@ function newNewgreeting() {
     if(!document.getElementById("newgreetinginput").value) {
         alert("New member greeting cannot be blank");
     } else {
-        config('newgreeting', document.getElementById("newgreetinginput").value, function(err) {
+        config("newgreeting", document.getElementById("newgreetinginput").value, function(err) {
             if(!err) {
                 switchManage();
             }

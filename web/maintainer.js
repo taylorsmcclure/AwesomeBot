@@ -132,3 +132,15 @@ function configAvatar() {
 function getFile(name) {
     window.location.href = "/file?auth=" + authtoken + "&type=" + name;
 }
+
+function newBigmessage() {
+    if(!document.getElementById("bigmessageinput").value) {
+        alert("BigMessage cannot be blank");
+    } else {
+        config('message', document.getElementById("bigmessageinput").value, function(err) {
+            if(!err) {
+                document.getElementById("bigmessageinput").value = "";
+            }
+        });
+    }
+}
