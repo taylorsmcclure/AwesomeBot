@@ -94,8 +94,8 @@ function switchStrikes() {
     });
 }
 
-function newStrike(usrid) {
-    if(usrid!="") {
+function newStrike(usrid, reason) {
+    if(usrid!="" && reason==null) {
         var u = prompt("Enter reason for strike");
         if(u) {
             config("strikes", [usrid, u], function() {
@@ -104,6 +104,12 @@ function newStrike(usrid) {
                 switchStrikes();
             });
         }
+    } else if(usrid!="" && reason!="") {
+        config("strikes", [usrid, reason], function() {
+            switchAdmins();
+            switchBlocked();
+            switchStrikes();
+        });
     }
 }
 
@@ -114,7 +120,7 @@ function getStrikes(usrid) {
             for(var j=0; j<botData.strikes[i][3].length; j++) {
                 info += "\n   " + j + ": " + botData.strikes[i][3][j][1] + " from @" + botData.strikes[i][3][j][0];
             }
-            return info;
+            return [info, botData.strikes[i][3].length];
         }
     }
     return;
@@ -123,8 +129,12 @@ function getStrikes(usrid) {
 function removeStrike(usrid) {
     var info = getStrikes(usrid);
     if(info) {
-        var u = prompt(info + "\nEnter strike number to remove"); 
+        var u = prompt(info[0] + "\nEnter strike number to remove"); 
         if(!isNaN(u) && u) {
+            if(u<0 || u>=info[1]) {
+                alert("Must be between 0 and " + info[1]);
+                return;
+            }
             config("strikes", [usrid, u], function() {
                 switchAdmins();
                 switchBlocked();

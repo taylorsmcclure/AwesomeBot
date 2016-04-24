@@ -114,7 +114,7 @@ function switchColors(n) {
     setTimeout(function() {
         document.getElementById("themeswitcher").value = n;
         document.getElementById("theme-" + n).selected = true;
-    }, 250);
+    }, 1);
     
     if(["black", "dark", "blue", "red", "deep"].indexOf(n)>-1) {
         loader = "dark";

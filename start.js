@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.11";
+var version = "3.3.11p1";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -3565,6 +3565,7 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                             configs.servers[svr.id][key][2] = 10;
                             break;
                     }
+                    logMsg(new Date().getTime(), "INFO", consoleid, null, key + " sensitivity set to " + delta[key] + " for " + svr.name);
                 } else {
                     callback(true);
                     return;
@@ -3605,17 +3606,22 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
             case "unbanmembermsg":
                 if(typeof(delta[key])=="boolean") {
                     configs.servers[svr.id][key][0] = delta[key];
+                    var yn = delta[key] ? "on" : "off";
+                    logMsg(new Date().getTime(), "INFO", consoleid, null, key + " turned " + yn + " in " + svr.name);
                 } else if(typeof(delta[key])=="string") {
                     if(delta[key].toLowerCase()=="default") {
-                        configs.servers[svr.id][key][1] = configDefaults.default[key][1];
+                        configs.servers[svr.id][key][1] = JSON.parse(JSON.stringify(configDefaults.default[key][1]));
+                        logMsg(new Date().getTime(), "INFO", consoleid, null, "Reset " + key + " to default in " + svr.name);
                     } else if(configs.servers[svr.id][key][1].indexOf(delta[key])>-1) {
                         configs.servers[svr.id][key][1].splice(configs.servers[svr.id][key][1].indexOf(delta[key]), 1);
                         if(configs.servers[svr.id][key][1].length==0) {
                             configs.servers[svr.id][key][0] = false;
-                            configs.servers[svr.id][key][1] = configDefaults.default[key][1];
+                            configs.servers[svr.id][key][1] = JSON.parse(JSON.stringify(configDefaults.default[key][1]));
                         }
+                        logMsg(new Date().getTime(), "INFO", consoleid, null, key + " '" + delta[key] + "' removed in " + svr.name);
                     } else {
                         configs.servers[svr.id][key][1].push(delta[key]);
+                        logMsg(new Date().getTime(), "INFO", consoleid, null, key + " '" + delta[key] + "' added in " + svr.name);
                     }
                 } else {
                     callback(true);
@@ -3861,10 +3867,10 @@ function defaultConfig(svr, override) {
                 }
             }
         }
-        configs.servers[svr.id] = configDefaults.default; 
+        configs.servers[svr.id] = JSON.parse(JSON.stringify(configDefaults.default)); 
         configs.servers[svr.id].admins = adminList;
         for(var key in configDefaults.full) {
-            configs.servers[svr.id][key] = configDefaults.full[key];
+            configs.servers[svr.id][key] = JSON.parse(JSON.stringify(configDefaults.full[key]));
         }
         saveData("./data/config.json", function(err) {
             if(err) {
@@ -3936,13 +3942,13 @@ function checkConfig(svr) {
     for(var key in configDefaults.default) {
         if(configs.servers[svr.id][key]==null) {
             changed = true;
-            configs.servers[svr.id][key] = configDefaults.default[key];
+            configs.servers[svr.id][key] = JSON.parse(JSON.stringify(configDefaults.default[key]));
         }
     }
     for(var key in configDefaults.full) {
         if(configs.servers[svr.id][key]==null) {
             changed = true;
-            configs.servers[svr.id][key] = configDefaults.full[key];
+            configs.servers[svr.id][key] = JSON.parse(JSON.stringify(configDefaults.full[key]));
         }
     }
     

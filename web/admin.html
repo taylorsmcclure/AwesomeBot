@@ -92,7 +92,8 @@
             </div>
             <span id="strikesadd">
                 Add Strike: 
-                <select id="strikesselector" onChange="javascript:newStrike(this.value);"></select>
+                <select id="strikesselector"></select>
+                <input id="rssnewurl" type="text" style="width: 250;" placeholder="Reason for strike" onkeydown="if(event.keyCode==13){newStrike(document.getElementById('strikesselector').value, this.value);}"></input>
             </span>
         </div>
         <br>
@@ -153,13 +154,13 @@
                 <label><input style="height: auto;" id="manageentry-newmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Member joined messages</label>
                 <span id="manageentry-newmembermsg-block"></span>
                 <br>
-                <label><input style="height: auto;" id="manageentry-rmmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Member joined messages</label>
+                <label><input style="height: auto;" id="manageentry-rmmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Member removed messages</label>
                 <span id="manageentry-rmmembermsg-block"></span>
                 <br>
-                <label><input style="height: auto;" id="manageentry-banmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Member joined messages</label>
+                <label><input style="height: auto;" id="manageentry-banmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Member banned messages</label>
                 <span id="manageentry-banmembermsg-block"></span>
                 <br>
-                <label><input style="height: auto;" id="manageentry-unbanmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Member joined messages</label>
+                <label><input style="height: auto;" id="manageentry-unbanmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Member unbanned messages</label>
                 <span id="manageentry-unbanmembermsg-block"></span>
                 <br><span id="manageentry-space" style="font-size: 6;"><br><br></span>
                 <label><input style="height: auto;" id="manageentry-spamfilter" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Spam filter</label>

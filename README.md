@@ -54,6 +54,8 @@ Latest, version **3.3.11**:
  - Option to hide servers on status page
  - A few bug fixes
  
+Patch #1: Fixed bugs in admin console  
+ 
 Open an issue to report a bug or suggest a new feature!
 
 Contribute
