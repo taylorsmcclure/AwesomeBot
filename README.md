@@ -46,10 +46,13 @@ If you want a stable bot, please use the [latest milestone release](https://gith
 Changelog
 ---------
 
-Latest, version **3.3.10**:
+Latest, version **3.3.11**:
 
- - BigMessage in maintainer console
- - Minor bug fixes
+ - Customizable membermsg
+ - Spam filter sensitivity option
+ - Per-server command modifier option
+ - Option to hide servers on status page
+ - A few bug fixes
  
 Open an issue to report a bug or suggest a new feature!
 

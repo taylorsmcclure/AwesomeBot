@@ -14,14 +14,53 @@
         ],
         "tags": {},
         "triviasets": {},
-        "extensions": {}
+        "extensions": {},
+        "cmdtag": "tag",
+        "newmembermsg": [
+            true,
+            [
+                "++ Welcome to our little corner of hell!",
+                "++ has joined the server.",
+                "++ You're gonna have a jolly good time here!",
+                "++ is new here.", "++ is here, everybody!",
+                "++ sends his/her regards.", "++, welcome to the server!",
+                "++ is our next victim...",
+                "Hello ++!",
+                "Please welcome our newest member, ++"
+            ]
+        ],
+        "rmmembermsg": [
+            true,
+            [
+                "++ has left us :(",
+                "Goodbye ++",
+                "++ Come back!",
+                "++ is gone *cries*",
+                "++ has left the server",
+                "RIP ++",
+                "Uh-oh, ++ went away",
+                "Please convince ++ to come back!"
+            ]
+        ],
+        "banmembermsg": [
+            true,
+            [
+                "++ has been banned"
+            ]
+        ],
+        "unbanmembermsg": [
+            true,
+            [
+                "++ has been unbanned"
+            ]
+        ]
     },
     "full": {
         "servermod": true,
-        "membermsg": true,
         "spamfilter": [
             true,
-            []
+            [],
+            5
         ],
         "nsfwfilter": [
             true,
@@ -54,14 +93,15 @@
         "profile": true,
         "tagreaction": true,
         "poll": true,
-        "trivia": true
+        "trivia": true,
+        "showpub": true
     },
     "lite": {
         "servermod": true,
-        "membermsg": false,
         "spamfilter": [
             false,
-            []
+            [],
+            5
         ],
         "nsfwfilter": [
             true,
@@ -94,14 +134,15 @@
         "profile": false,
         "tagreaction": false,
         "poll": true,
-        "trivia": false
+        "trivia": false,
+        "showpub": false
     },
     "sense": {
         "servermod": true,
-        "membermsg": false,
         "spamfilter": [
             false,
-            []
+            [],
+            5
         ],
         "nsfwfilter": [
             false,
@@ -134,6 +175,7 @@
         "profile": true,
         "tagreaction": false,
         "poll": true,
-        "trivia": true
+        "trivia": true,
+        "showpub": false
     }  
 }

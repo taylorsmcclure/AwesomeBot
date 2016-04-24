@@ -95,13 +95,15 @@ function switchStrikes() {
 }
 
 function newStrike(usrid) {
-    var u = prompt("Enter reason for strike");
-    if(u) {
-        config("strikes", [usrid, u], function() {
-            switchAdmins();
-            switchBlocked();
-            switchStrikes();
-        });
+    if(usrid!="") {
+        var u = prompt("Enter reason for strike");
+        if(u) {
+            config("strikes", [usrid, u], function() {
+                switchAdmins();
+                switchBlocked();
+                switchStrikes();
+            });
+        }
     }
 }
 
@@ -122,7 +124,7 @@ function removeStrike(usrid) {
     var info = getStrikes(usrid);
     if(info) {
         var u = prompt(info + "\nEnter strike number to remove"); 
-        if(!isNaN(u)) {
+        if(!isNaN(u) && u) {
             config("strikes", [usrid, u], function() {
                 switchAdmins();
                 switchBlocked();
@@ -168,11 +170,13 @@ function newRss() {
 function switchCommands() {
     var commands = "";
     for(var cmd in botData.configs) {
-        if(["admins", "blocked", "extensions", "newgreeting", "nsfwfilter", "rss", "servermod", "spamfilter"].indexOf(cmd)==-1) {
+        if(["admins", "blocked", "extensions", "newgreeting", "nsfwfilter", "rss", "servermod", "spamfilter", "cmdtag", "membermsg", "triviasets", "showpub"].indexOf(cmd)==-1) {
             commands += "<label><input style=\"height: auto;\" id=\"commandsentry-" + cmd + "\" type=\"checkbox\" onclick=\"javascript:config(this.id.substring(14), this.checked, switchCommands);\" " + (botData.configs[cmd] ? "checked " : "") + "/>" + cmd + "</label><br>";
         }
     }
     document.getElementById("commands").innerHTML = commands;
+    document.getElementById("commandtag-tag").innerHTML = "@" + botData.botnm;
+    document.getElementById("commandtag-selector").value = botData.configs.cmdtag;
 }
 
 function resetConfigs() {
@@ -188,24 +192,53 @@ function resetConfigs() {
 
 function switchManage() {
     document.getElementById("manageentry-servermod").checked = botData.configs.servermod;
-    document.getElementById("manageentry-membermsg").checked = botData.configs.membermsg;
+    
+    var membermsg = ["newmembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg"];
+    for(var i=0; i<membermsg.length; i++) {
+        document.getElementById("manageentry-" + membermsg[i]).checked = botData.configs[membermsg[i]][0];
+        if(botData.configs[membermsg[i]][0]) {
+            var current_block = "";
+            for(var j=0; j<botData.configs[membermsg[i]][1].length; j++) {
+                current_block += "<br>&nbsp;&nbsp;&nbsp;&nbsp;<label><input style=\"height: auto;\" id=\"manageentry-" + membermsg[i] + "-" + j + "\" value=\"" + botData.configs[membermsg[i]][1][j] + "\" type=\"checkbox\" onclick=\"javascript:config('" + membermsg[i] + "', this.value, function() {});\" checked>" + botData.configs[membermsg[i]][1][j].replace("++", "<b>@user</b>") + "</label>";
+            }
+            current_block += "<br>&nbsp;&nbsp;&nbsp;&nbsp;New: <input id=\"manageentry-" + membermsg[i] + "-input\" type=\"text\" placeholder=\"++ is replaced with username\" style=\"width:200;\" onkeydown=\"if(event.keyCode==13){config('" + membermsg[i] + "', this.value, function() {});}\"></input>&nbsp;<span class=\"removetool\" onclick=\"javascript:config('" + membermsg[i] + "', 'default', function() {});\"><i>(default)</i></span>";
+            document.getElementById("manageentry-" + membermsg[i] + "-block").innerHTML = current_block;
+        } else {
+            document.getElementById("manageentry-" + membermsg[i] + "-block").innerHTML = "";
+        }
+    }
     
     document.getElementById("manageentry-spamfilter").checked = botData.configs.spamfilter[0];
     if(botData.configs.spamfilter[0]) {
         var spamfilter_block = "";
         for(var i=0; i<botData.channels.length; i++) {
-            spamfilter_block += "<br>&nbsp;&nbsp;&nbsp;<label><input style=\"height: auto;\" id=\"manageentry-spamfilter-" + botData.channels[i][1] + "\" type=\"checkbox\" onclick=\"javascript:config('spamfilter', this.id.substring(23), function() {});\"" + (botData.configs.spamfilter[1].indexOf(botData.channels[i][1])==-1 ? " checked" : "") + ">#" + botData.channels[i][0] + "</label>"
+            spamfilter_block += "<br>&nbsp;&nbsp;&nbsp;&nbsp;<label><input style=\"height: auto;\" id=\"manageentry-spamfilter-" + botData.channels[i][1] + "\" type=\"checkbox\" onclick=\"javascript:config('spamfilter', this.id.substring(23), function() {});\"" + (botData.configs.spamfilter[1].indexOf(botData.channels[i][1])==-1 ? " checked" : "") + ">#" + botData.channels[i][0] + "</label>"
         }
         document.getElementById("manageentry-spamfilter-block").innerHTML = spamfilter_block;
+        document.getElementById("manageentry-spamfilter-selector").style.display = "";
+        document.getElementById("manageentry-spamfilter-selector-break").style.display = "";
     } else {
         document.getElementById("manageentry-spamfilter-block").innerHTML = "";
+        document.getElementById("manageentry-spamfilter-selector").style.display = "none";
+        document.getElementById("manageentry-spamfilter-selector-break").style.display = "none";
+    }
+    switch(botData.configs.spamfilter[2]) {
+        case 10:
+            document.getElementById("manageentry-spamfilter-selector").value = "low";
+            break;
+        case 5:
+            document.getElementById("manageentry-spamfilter-selector").value = "medium";
+            break;
+        case 3:
+            document.getElementById("manageentry-spamfilter-selector").value = "high";
+            break;
     }
     
     document.getElementById("manageentry-nsfwfilter").checked = botData.configs.nsfwfilter[0];
     if(botData.configs.nsfwfilter[0]) {
         var nsfwfilter_block = "";
         for(var i=0; i<botData.channels.length; i++) {
-            nsfwfilter_block += "<br>&nbsp;&nbsp;&nbsp;<label><input style=\"height: auto;\" id=\"manageentry-nsfwfilter-" + botData.channels[i][1] + "\" type=\"checkbox\" onclick=\"javascript:config('nsfwfilter', this.id.substring(23), function() {});\"" + (botData.configs.nsfwfilter[1].indexOf(botData.channels[i][1])==-1 ? " checked" : "") + ">#" + botData.channels[i][0] + "</label>"
+            nsfwfilter_block += "<br>&nbsp;&nbsp;&nbsp;&nbsp;<label><input style=\"height: auto;\" id=\"manageentry-nsfwfilter-" + botData.channels[i][1] + "\" type=\"checkbox\" onclick=\"javascript:config('nsfwfilter', this.id.substring(23), function() {});\"" + (botData.configs.nsfwfilter[1].indexOf(botData.channels[i][1])==-1 ? " checked" : "") + ">#" + botData.channels[i][0] + "</label>"
         }
         document.getElementById("manageentry-nsfwfilter-block").innerHTML = nsfwfilter_block;
     } else {
@@ -250,6 +283,8 @@ function switchManage() {
         document.getElementById("cleanselector").innerHTML += "<option id=\"cleanentry-" + botData.channels[i][1] + "\" value=\"cleanentry-" + botData.channels[i][1] + "\">#" + botData.channels[i][0] + "</option>";
         document.getElementById("archiveselector").innerHTML += "<option id=\"cleanentry-" + botData.channels[i][1] + "\" value=\"archiveentry-" + botData.channels[i][1] + "\">#" + botData.channels[i][0] + "</option>";
     }
+    
+    document.getElementById("manageentry-showpub").checked = botData.configs.showpub;
 }
 
 function disableBlock(blockname, disable) {
@@ -359,7 +394,7 @@ function switchExtensions() {
     var extensionstablebody = "";
     for(var i=0; i<botData.configs.extensions.length; i++) {
         var info = "<tr id=\"extensionsentry-" + encodeURI(botData.configs.extensions[i][0]) + "\"><td>" + botData.configs.extensions[i][0] + "</td><td>" + botData.configs.extensions[i][1] + "</td><td>";
-        if(botData.configs.extensions[i][2]) {
+        if(botData.configs.extensions[i][2].length>0) {
             var chinfo = "";
             for(var j=0; j<botData.configs.extensions[i][2].length; j++) {
                 chinfo += "#" + botData.configs.extensions[i][2][j] + ", ";

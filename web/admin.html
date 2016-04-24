@@ -124,7 +124,23 @@
             <u>Command Settings</u>
         </span>
         <div class="container" id="commands"></div>
-        Apply Preset: <button id="presetentry-full" onclick="javascript:config('preset', 'full', switchCommands);">Full</button>&nbsp;<button id="presetentry-lite" onclick="javascript:config('preset', 'lite', switchCommands);">Lite</button>&nbsp;<button id="presetentry-sense" onclick="javascript:config('preset', 'sense', switchCommands);">Sense</button>&nbsp;<button id="presetentry-sense" onclick="javascript:resetConfigs();">Default</button><br>
+        <span id="commands-space" style="font-size: 6;"><br><br></span>
+        Apply Preset: 
+        <button id="presetentry-full" onclick="javascript:config('preset', 'full', switchCommands);">Full</button>&nbsp;
+        <button id="presetentry-lite" onclick="javascript:config('preset', 'lite', switchCommands);">Lite</button>&nbsp;
+        <button id="presetentry-sense" onclick="javascript:config('preset', 'sense', switchCommands);">Sense</button>&nbsp;
+        <button id="presetentry-sense" onclick="javascript:resetConfigs();">Default</button>
+        <span id="commands-space" style="font-size: 6;"><br><br></span>
+        Command Modifier: <select id="commandtag-selector" onchange="javascript:config('cmdtag', this.value, switchCommands);">
+            <option id="commandtag-tag" value="tag"></option>
+            <option id="commandtag-plus" value="+">+</option>
+            <option id="commandtag-amp" value="&">&</option>
+            <option id="commandtag-bang" value="!">!</option>
+            <option id="commandtag-min" value="-">-</option>
+            <option id="commandtag-dub" value="--">--</option>
+            <option id="commandtag-slash" value="/">/</option>
+            <option id="commandtag-dollar" value="$">$</option>
+        </select><br>
         <br>
         
         <span style="font-size: 20;">
@@ -132,17 +148,32 @@
         </span>
         <div class="container" id="management">
             <label><input style="height: auto;" id="manageentry-servermod" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Act as a server moderator</label>
-            <br>
+            <br><span id="manageentry-space" style="font-size: 6;"><br><br></span>
             <span id="manageentry-servermod-block">
-                <label><input style="height: auto;" id="manageentry-membermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Member joined/left/banned/unbanned messages</label>
+                <label><input style="height: auto;" id="manageentry-newmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Member joined messages</label>
+                <span id="manageentry-newmembermsg-block"></span>
                 <br>
+                <label><input style="height: auto;" id="manageentry-rmmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Member joined messages</label>
+                <span id="manageentry-rmmembermsg-block"></span>
+                <br>
+                <label><input style="height: auto;" id="manageentry-banmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Member joined messages</label>
+                <span id="manageentry-banmembermsg-block"></span>
+                <br>
+                <label><input style="height: auto;" id="manageentry-unbanmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Member joined messages</label>
+                <span id="manageentry-unbanmembermsg-block"></span>
+                <br><span id="manageentry-space" style="font-size: 6;"><br><br></span>
                 <label><input style="height: auto;" id="manageentry-spamfilter" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Spam filter</label>
                 <span id="manageentry-spamfilter-block"></span>
+                <br id="manageentry-spamfilter-selector-break">&nbsp;&nbsp;&nbsp;<select id="manageentry-spamfilter-selector" onChange="javascript:config('spamfilter', this.value, function() {});">
+                    <option id="spamfilter-high" value="high">High</option>
+                    <option id="spamfilter-medium" value="medium">Medium</option>
+                    <option id="spamfilter-low" value="low">Low</option>
+                </select>
                 <br>
                 <label><input style="height: auto;" id="manageentry-nsfwfilter" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">NSFW filter (blocks NSFW fetching through bot)</label>
                 <span id="manageentry-nsfwfilter-block"></span>
                 <br>
-            </span>
+            </span><span id="manageentry-space" style="font-size: 6;"><br><br></span>
             <span id="manageentry-newgreeting">
                 <textarea id="newgreetinginput" style="float: left; height: 40; width: 400;" placeholder="Message shown to new members, in markdown"></textarea>
                 &nbsp;
@@ -162,7 +193,6 @@
                 <ul id="manageentry-trivia-block"></ul>
             </span>
             
-            <span id="manageentry-space" style="font-size: 6;"><br><br></span>
             Clean: 
             <select id="cleanselector"></select>
             <input id="cleaninput" type="number" style="width: 50;" placeholder="#" onkeydown="if(event.keyCode==13){configCA('clean')}"></input>
@@ -170,6 +200,8 @@
             Archive: 
             <select id="archiveselector"></select>
             <input id="archiveinput" type="number" style="width: 50;" placeholder="#" onkeydown="if(event.keyCode==13){configCA('archive')}"></input>
+            <br><span style="font-size: 6;"><br><br></span>
+            <label><input style="height: auto;" id="manageentry-showpub" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">Show logs and data for this server on public status page</label>
         </div>
         <br>
         
