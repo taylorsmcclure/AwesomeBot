@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.11p1";
+var version = "3.3.11p2";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2032,7 +2032,7 @@ bot.on("message", function (msg, user) {
                 for(var i=0; i<polls[msg.author.id].options.length; i++) {
                     info += "\n\t" + i + ": " + polls[msg.author.id].options[i];
                 }
-                info += "\nYou can vote by typing `" + (configs.servers[msg.channel.server.id].cmdtag=="tag" ? ("@" + bot.user.username + " ") : configs.servers[msg.channel.server.id].cmdtag) + "vote <no. of choice>`. If you don't include a number, I'll just show results";
+                info += "\nYou can vote by typing `" + (configs.servers[ch.server.id].cmdtag=="tag" ? ("@" + bot.user.username + " ") : configs.servers[ch.server.id].cmdtag) + "vote <no. of choice>`. If you don't include a number, I'll just show results";
                 bot.sendMessage(ch, info);
                 return;
             }
@@ -2327,12 +2327,28 @@ bot.on("message", function (msg, user) {
                             store: configs.servers[msg.channel.server.id].extensions[ext].store,
                             unirest: unirest,
                             imgur: imgur,
+                            gif: getGIF,
                             image: giSearch,
                             rss: getRSS,
                             message: msg.content.substring((bot.user.mention() + " " + configs.servers[msg.channel.server.id].extensions[ext].key).length),
-                            svrid: msg.channel.server.id,
-                            chid: msg.channel.id,
-                            author: msg.author.mention(),
+                            svr: {
+                                name: msg.channel.server.name,
+                                id: msg.channel.server.id,
+                                icon: msg.channel.server.iconURL
+                            },
+                            ch: {
+                                name: msg.channel.name,
+                                id: msg.channel.id
+                            },
+                            author: {
+                                username: msg.author.username,
+                                id: msg.author.id,
+                                mention: msg.author.mention(),
+                                avatar: msg.author.avatarURL
+                            },
+                            profiles: getSvrProfiles(msg.channel.server),
+                            prettyDate: prettyDate,
+                            secondsToString: secondsToString,
                             setTimeout: setTimeout,
                             JSON: JSON,
                             Math: Math,
@@ -3024,7 +3040,7 @@ function clearLogCounter() {
         }
     });
     setTimeout(function() {
-        clearMessageCounter();
+        clearLogCounter();
     }, 600000);
 }
 
@@ -3201,9 +3217,20 @@ function runTimerExtension(svrid, extnm) {
             unirest: unirest,
             imgur: imgur,
             image: giSearch,
+            gif: getGIF,
             rss: getRSS,
-            svrid: svrid,
-            chid: svr.channels.get("id", extension.channels[0]).id,
+            svr: {
+                name: svr.name,
+                id: svr.id,
+                icon: svr.iconURL
+            },
+            ch: {
+                name: svr.defaultChannel.name,
+                id: svr.defaultChannel.id
+            },
+            profiles: getSvrProfiles(svr),
+            prettyDate: prettyDate,
+            secondsToString: secondsToString,
             setTimeout: setTimeout,
             JSON: JSON,
             Math: Math,
@@ -3252,29 +3279,34 @@ function runTimerExtension(svrid, extnm) {
 
 // Converts seconds to a nicely formatted string in years, days, hours, minutes, seconds
 function secondsToString(seconds) {
-    var numyears = Math.floor(seconds / 31536000);
-    var numdays = Math.floor((seconds % 31536000) / 86400);
-    var numhours = Math.floor(((seconds % 31536000) % 86400) / 3600);
-    var numminutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60);
-    var numseconds = Math.round((((seconds % 31536000) % 86400) % 3600) % 60);
-    
-    var str = "";
-    if(numyears>0) {
-        str += numyears + " year" + (numyears==1 ? "" : "s") + " ";
+    try {
+        var numyears = Math.floor(seconds / 31536000);
+        var numdays = Math.floor((seconds % 31536000) / 86400);
+        var numhours = Math.floor(((seconds % 31536000) % 86400) / 3600);
+        var numminutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60);
+        var numseconds = Math.round((((seconds % 31536000) % 86400) % 3600) % 60);
+        
+        var str = "";
+        if(numyears>0) {
+            str += numyears + " year" + (numyears==1 ? "" : "s") + " ";
+        }
+        if(numdays>0) {
+            str += numdays + " day" + (numdays==1 ? "" : "s") + " ";
+        }
+        if(numhours>0) {
+            str += numhours + " hour" + (numhours==1 ? "" : "s") + " ";
+        }
+        if(numminutes>0) {
+            str += numminutes + " minute" + (numminutes==1 ? "" : "s") + " ";
+        }
+        if(numseconds>0) {
+            str += numseconds + " second" + (numseconds==1 ? "" : "s") + " ";
+        }
+        return str;
+    } catch(err) {
+        logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to process secondsToString request");
+        return;
     }
-    if(numdays>0) {
-        str += numdays + " day" + (numdays==1 ? "" : "s") + " ";
-    }
-    if(numhours>0) {
-        str += numhours + " hour" + (numhours==1 ? "" : "s") + " ";
-    }
-    if(numminutes>0) {
-        str += numminutes + " minute" + (numminutes==1 ? "" : "s") + " ";
-    }
-    if(numseconds>0) {
-        str += numseconds + " second" + (numseconds==1 ? "" : "s") + " ";
-    }
-    return str;
 }
 
 // Generate key for online config
@@ -3786,11 +3818,27 @@ function addExtension(extension, svr, consoleid, callback) {
             unirest: unirest,
             imgur: imgur,
             image: giSearch,
+            gif: getGIF,
             rss: getRSS,
             message: bot.user.mention() + " " + (extension.type=="command" ? extension.key : extension.key[0]) + " test",
-            svrid: svr.id,
-            chid: svr.defaultChannel.id,
-            author: bot.user.mention(),
+            svr: {
+                name: svr.name,
+                id: svr.id,
+                icon: svr.iconURL
+            },
+            ch: {
+                name: svr.defaultChannel.name,
+                id: svr.defaultChannel.id
+            },
+            author: {
+                username: bot.user.username,
+                id: bot.user.id,
+                mention: bot.user.mention(),
+                avatar: bot.user.avatarURL
+            },
+            profiles: getSvrProfiles(svr),
+            prettyDate: prettyDate,
+            secondsToString: secondsToString,
             selected: extension.key[0],
             setTimeout: setTimeout,
             JSON: JSON,
@@ -4189,28 +4237,32 @@ function scrapeSearch(data) {
 
 // Searches Giphy for matching GIFs
 function getGIF(tags, callback, rating) {
-    var params = {
-        "api_key": AuthDetails.giphy_api_key,
-        "rating": rating,
-        "format": "json",
-        "limit": 1
-    };
-    var query = qs.stringify(params);
+    try {
+        var params = {
+            "api_key": AuthDetails.giphy_api_key,
+            "rating": rating,
+            "format": "json",
+            "limit": 1
+        };
+        var query = qs.stringify(params);
 
-    if(tags!==null) {
-        query += "&tag=" + tags.join("+")
-    }
-    
-    unirest.get("http://api.giphy.com/v1/gifs/random?" + query)
-    .header("Accept", "application/json")
-    .end(function(response) {
-        if(response.status!==200 || !response.body) {
-            logMsg(new Date().getTime(), "ERROR", "General", null, "Could not connect to Giphy");
-            callback(null);
-        } else {
-            callback(response.body.data.id);
+        if(tags!==null) {
+            query += "&tag=" + tags.join("+")
         }
-    }.bind(this));
+        
+        unirest.get("http://api.giphy.com/v1/gifs/random?" + query)
+        .header("Accept", "application/json")
+        .end(function(response) {
+            if(response.status!==200 || !response.body) {
+                logMsg(new Date().getTime(), "ERROR", "General", null, "Could not connect to Giphy");
+                callback(null);
+            } else {
+                callback(response.body.data.id);
+            }
+        }.bind(this));
+    } catch(err) {
+        logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to process GIF search request");
+    }
 }
 
 // Get YouTube URL given tags as query
@@ -4417,6 +4469,14 @@ function getProfile(usr, svr) {
     return info;
 }
 
+function getSvrProfiles(svr) {
+    var profiles = {};
+    for(var i=0; i<svr.members.length; i++) {
+        profiles[svr.members[i].id] = profileData[svr.members[i].id] || {};
+    }
+    return profiles;
+}
+
 // Get the game a user is playing
 function getGame(usr) {
     if(usr.game) {
@@ -4604,7 +4664,12 @@ function adminMsg(error, svr, author, info) {
 
 // Ouput a pretty date for logging
 function prettyDate(date) {
-    return date.getUTCFullYear() + "-" + ("0" + (date.getUTCMonth() + 1)).slice(-2) + "-" + ("0" + date.getUTCDate()).slice(-2) + " " + ("0" + date.getUTCHours()).slice(-2) + ":" + ("0" + date.getUTCMinutes()).slice(-2) + ":" + ("0" + date.getUTCSeconds()).slice(-2) + " UTC";
+    try {
+        return date.getUTCFullYear() + "-" + ("0" + (date.getUTCMonth() + 1)).slice(-2) + "-" + ("0" + date.getUTCDate()).slice(-2) + " " + ("0" + date.getUTCHours()).slice(-2) + ":" + ("0" + date.getUTCMinutes()).slice(-2) + ":" + ("0" + date.getUTCSeconds()).slice(-2) + " UTC";
+    } catch(err) {
+        logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to process prettyDate request");
+        return;
+    }
 }
 
 // Number of days between two dates

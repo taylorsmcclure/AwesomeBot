@@ -55,6 +55,7 @@ Latest, version **3.3.11**:
  - A few bug fixes
  
 Patch #1: Fixed bugs in admin console  
+Patch #2: Bug fixes and extensions improvements  
  
 Open an issue to report a bug or suggest a new feature!
 
