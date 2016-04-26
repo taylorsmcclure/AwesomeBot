@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.11p2";
+var version = "3.3.11p3";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2354,6 +2354,7 @@ bot.on("message", function (msg, user) {
                             Math: Math,
                             isNaN: isNaN,
                             Date: Date,
+                            RegExp: RegExp,
                             Array: Array,
                             Number: Number,
                             send: ""
@@ -2763,9 +2764,6 @@ bot.on("presence", function(oldusr, newusr) {
                 }
                 if(oldusr.status=="online" && newusr.status!="online") {
                     stats[bot.servers[i].id].members[oldusr.id].seen = new Date().getTime();
-                }
-                if(oldusr.username!=newusr.username && configs.servers[bot.servers[i].id].servermod && configs.servers[bot.servers[i].id].membermsg && stats[bot.servers[i].id].botOn[bot.servers[i].defaultChannel.id]) {
-                    bot.sendMessage(bot.servers[i].defaultChannel, "**@" + oldusr.username + "** is now **@" + newusr.username + "**");
                 }
             }
         }
@@ -3236,6 +3234,7 @@ function runTimerExtension(svrid, extnm) {
             Math: Math,
             isNaN: isNaN,
             Date: Date,
+            RegExp: RegExp,
             Array: Array,
             Number: Number,
             send: ""
@@ -3845,6 +3844,7 @@ function addExtension(extension, svr, consoleid, callback) {
             Math: Math,
             isNaN: isNaN,
             Date: Date,
+            RegExp: RegExp,
             Array: Array,
             Number: Number,
             send: ""
