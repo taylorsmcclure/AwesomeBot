@@ -9,6 +9,7 @@ try {
     var filter = require("./filter.json");
     var reminders = require("./data/reminders.json");
     var logs = require("./data/logs.json");
+    const emotes = require("./emotes.json");
 
     // Hijack spawn for auto-update to work properly
     (function() {
@@ -49,7 +50,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.12p3";
+var version = "3.3.13";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -145,7 +146,7 @@ var commands = {
                 if(!key || !value) {
                     logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, msg.author.username + " did not provide proper key and value for tag command");
                     bot.sendMessage(msg.channel, msg.author + " `" + (configs.servers[msg.channel.server.id].cmdtag=="tag" ? ("@" + bot.user.username + " ") : configs.servers[msg.channel.server.id].cmdtag) + "tag <key>|<value>` is the syntax I need");
-                } else if((configs.servers[msg.channel.server.id].tags[key] || ["lenny", "shrug"].indexOf(key)>-1) && value!=".") {
+                } else if((configs.servers[msg.channel.server.id].tags[key] || ["lenny", "shrug"].indexOf(key)>-1 || emotes[key]) && value!=".") {
                     logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, msg.author.username + " tried to set tag key that already exists");
                     bot.sendMessage(msg.channel, msg.author + " I already have a tag set for that. Try `" + (configs.servers[msg.channel.server.id].cmdtag=="tag" ? ("@" + bot.user.username + " ") : configs.servers[msg.channel.server.id].cmdtag) + "tag " + key + "|.` to remove it");
                 } else if(configs.servers[msg.channel.server.id].tags[key] && value==".") {
@@ -187,6 +188,8 @@ var commands = {
                 bot.sendMessage(msg.channel, "( ͡° ͜ʖ ͡°)");
             } else if(suffix.toLowerCase()=="shrug") {
                 bot.sendMessage(msg.channel, "¯\\\_(ツ)\_/¯");
+            } else if(emotes[suffix.toLowerCase()]) {
+                bot.sendMessage(msg.channel, "http://static-cdn.jtvnw.net/emoticons/v1/" + emotes[suffix.toLowerCase()] + "/2.0");
             } else if(!suffix) {
                 var info = ""
                 for(var tag in configs.servers[msg.channel.server.id].tags) {
@@ -2596,6 +2599,9 @@ bot.on("message", function(msg, user) {
                 var prompt = "", clever = true;
                 if(!msg.channel.isPrivate) {
                     prompt = msg.cleanContent.substring(bot.user.username.length+2);
+                    if(prompt.toLowerCase().indexOf("help")==0) {
+                        bot.sendMessage(msg.channel, "Use `" + (configs.servers[msg.channel.server.id].cmdtag=="tag" ? ("@" + bot.user.username + " ") : configs.servers[msg.channel.server.id].cmdtag) + "help` for info about how to use me on this server :smiley:");
+                    }
                     clever = cleverOn[msg.channel.server.id];
                 } else {
                     prompt = msg.cleanContent;

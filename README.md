@@ -46,17 +46,10 @@ If you want a stable bot, please use the [latest milestone release](https://gith
 Changelog
 ---------
 
-Latest, version **3.3.12**:
+Latest, version **3.3.13**:
 
- - Rebuilt web interface with Bootstrap  
- - Presence change message option
- - Added AFK message support
- - New reminders to command to view/cancel
- - Bug fixes and other improvements
- 
-Patch #1: AFK and admin console bug fixes  
-Patch #2: Fixed removed user crashes  
-Patch #3: More crash fixes  
+ - Added Twitch emotes support in tag  
+ - Global help command to avoid confusion  
  
 Open an issue to report a bug or suggest a new feature!
 
