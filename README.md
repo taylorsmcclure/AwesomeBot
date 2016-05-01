@@ -51,6 +51,8 @@ Latest, version **3.3.13**:
  - Added Twitch emotes support in tag  
  - Global help command to avoid confusion  
  
+Patch #1: Fixed strike removal crash  
+ 
 Open an issue to report a bug or suggest a new feature!
 
 Contribute

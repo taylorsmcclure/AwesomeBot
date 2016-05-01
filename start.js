@@ -50,7 +50,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.13";
+var version = "3.3.13p1";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -3609,11 +3609,11 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                             if(stats[svr.id].members[usr.id]) {
                                 if(delta[key][1]<stats[svr.id].members[usr.id].strikes.length && delta[key][1]>=0) {
                                     if(["First-time spam violation", "First-time NSFW filter violation"].indexOf(stats[svr.id].members[usr.id].strikes[delta[key][1]][1])>-1 && stats[svr.id].members[usr.id].strikes[delta[key][1]][0]=="Automatic") {
-                                        if(configs.servers[msg.channel.server.id].points && profileData[usr.id].points) {
+                                        if(configs.servers[svr.id].points && profileData[usr.id].points) {
                                             profileData[usr.id].points += 50;
                                         }
                                     } else if(["Second-time spam violation", "Second-time NSFW filter violation"].indexOf(stats[svr.id].members[usr.id].strikes[delta[key][1]][1])>-1 && stats[svr.id].members[usr.id].strikes[delta[key][1]][0]=="Automatic") {
-                                        if(configs.servers[msg.channel.server.id].points && profileData[usr.id].points) {
+                                        if(configs.servers[svr.id].points && profileData[usr.id].points) {
                                             profileData[usr.id].points += 100;
                                         }
                                         if(configs.servers[svr.id].blocked.indexOf(usr.id)>-1) {
