@@ -52,6 +52,7 @@ Latest, version **3.3.13**:
  - Global help command to avoid confusion  
  
 Patch #1: Fixed strike removal crash  
+Patch #2: Fixed global help chatterbot  
  
 Open an issue to report a bug or suggest a new feature!
 

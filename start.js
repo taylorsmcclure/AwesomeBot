@@ -50,7 +50,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.13p1";
+var version = "3.3.13p2";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2601,6 +2601,7 @@ bot.on("message", function(msg, user) {
                     prompt = msg.cleanContent.substring(bot.user.username.length+2);
                     if(prompt.toLowerCase().indexOf("help")==0) {
                         bot.sendMessage(msg.channel, "Use `" + (configs.servers[msg.channel.server.id].cmdtag=="tag" ? ("@" + bot.user.username + " ") : configs.servers[msg.channel.server.id].cmdtag) + "help` for info about how to use me on this server :smiley:");
+                        return;
                     }
                     clever = cleverOn[msg.channel.server.id];
                 } else {
