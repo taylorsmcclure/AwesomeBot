@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.12p1";
+var version = "3.3.12p2";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -1787,7 +1787,7 @@ bot.on("ready", function() {
                 var blockedUsers = [];
                 for(var i=0; i<configs.botblocked.length; i++) {
                     var usr = bot.users.get("id", configs.botblocked[i]);
-                    if(usr) {
+                    if(usr && usr.username) {
                         blockedUsers.push([usr.avatarURL || "http://i.imgur.com/fU70HJK.png", usr.username, usr.id]);
                     }
                 }
@@ -1859,7 +1859,7 @@ bot.on("ready", function() {
                             if(key=="blocked") {
                                 for(var i=0; i<configs.botblocked.length; i++) {
                                     var usr = bot.users.get("id", configs.botblocked[i]);
-                                    if(usr) {
+                                    if(usr && usr.username) {
                                         currentConfig[key].push([usr.avatarURL || "http://i.imgur.com/fU70HJK.png", usr.username + " (global)", usr.id, true]);
                                     }
                                 }
@@ -2039,7 +2039,7 @@ bot.on("ready", function() {
     logMsg(new Date().getTime(), "INFO", "General", null, "Started " + bot.user.username + " v" + version);
 });
 
-bot.on("message", function (msg, user) {
+bot.on("message", function(msg, user) {
     try {
         // Stop responding if the sender is another bot
         if(configs.botblocked.indexOf(msg.author.id)>-1) {
