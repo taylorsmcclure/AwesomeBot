@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.12";
+var version = "3.3.12p1";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2252,8 +2252,10 @@ bot.on("message", function (msg, user) {
                     if(mentions.pm && usr.status!="online") {
                         bot.sendMessage(usr, "__You were mentioned by @" + msg.author.username + " on **" + msg.channel.server.name + "**:__\n" + msg.cleanContent);
                     }
-                    if(profileData[usr.id].AFK) {
-                        bot.sendMessage(msg.channel, "**@" + usr.username + "** is currently AFK: " + profileData[usr.id].AFK);
+                    if(profileData[usr.id]) {
+                        if(profileData[usr.id].AFK) {
+                            bot.sendMessage(msg.channel, "**@" + usr.username + "** is currently AFK: " + profileData[usr.id].AFK);
+                        }
                     }
                     
                     if([msg.author.id, bot.user.id].indexOf(usr.id)==-1 && configs.servers[msg.channel.server.id].points && !novoting[msg.author.id]) {

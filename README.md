@@ -54,6 +54,8 @@ Latest, version **3.3.12**:
  - New reminders to command to view/cancel
  - Bug fixes and other improvements
  
+Patch #1: AFK and admin console bug fixes  
+ 
 Open an issue to report a bug or suggest a new feature!
 
 Contribute
