@@ -12,9 +12,7 @@ function getHelp() {
 }
 
 function doAuth() {
-    switchColors(localStorage.getItem("theme") || "contrast");
-    showLoader();
-    document.body.style.opacity = 1;
+    $("#loading-modal").modal("show");
     
     if(localStorage.getItem("auth")) {
         var auth = JSON.parse(localStorage.getItem("auth"));
@@ -29,15 +27,20 @@ function doAuth() {
                     doAdminSetup();
                 }
             } else {
-                alert("Authentication failed");
-                localStorage.removeItem("auth");
-                document.location.replace("/");
+                leaveConsole("Authentication failed");
             }
         });
     } else {
-        alert("Authentication failed");
-        document.location.replace("/");
+        leaveConsole("Authentication failed");
     }
+}
+
+function leaveConsole(msg) {
+    richModal(msg);
+    $("#error-modal").on("hidden.bs.modal", function(e) {
+        localStorage.removeItem("auth");
+        document.location.replace("/");
+    });
 }
 
 function filterMembers(toRemove, callback) {
@@ -62,7 +65,7 @@ function config(key, value, callback) {
         return;
     }
     
-    showLoader();
+    $("#loading-modal").modal("show");
     var data = {};
     data[key] = value;
     postJSON(data, function(response) {
@@ -71,41 +74,36 @@ function config(key, value, callback) {
                 if(Object.keys(mData).length>0) {
                     botData = mData;
                     if(authtype=="admin") {
+                        document.getElementById("rssrow").style.display = botData.configs.rss ? "" : "none";
                         switchManage();
                     }
                     callback(false);
-                    destroyLoader();
+                    $("#loading-modal").modal("hide");
                 } else {
-                    alert("Session timeout");
-                    localStorage.removeItem("auth");
-                    document.location.replace("/");
+                    leaveConsole("Session timeout");
                 }
             });
         } else if(response==401) {
-            alert("Session timeout");
-            localStorage.removeItem("auth");
-            document.location.replace("/");
+            leaveConsole("Session timeout");
         } else {
-            alert("Error saving changes");
+            richModal("Error saving changes");
             if(authtype=="admin") {
                 switchManage();
             }
             callback(true);
-            destroyLoader();
+            $("#loading-modal").modal("hide");
         }
     });
 }
 
 function doLogout() {
-    var u = confirm("Logout of " + authtype + " console?");
-    if(u) {
-        postJSON({logout: JSON.parse(localStorage.getItem("auth")).usrid}, function(response) {
-            if(response==200) {
-                localStorage.removeItem("auth");
-                window.close();
-            } else {
-                alert("Error logging out, wait 3 minutes to timeout");
-            }
-        });
-    }
+    postJSON({logout: JSON.parse(localStorage.getItem("auth")).usrid}, function(response) {
+        if(response==200) {
+            localStorage.removeItem("auth");
+            window.close();
+            richModal("You may now close this page", "Info");
+        } else {
+            richModal("Error logging out, wait 3 minutes to timeout");
+        }
+    });
 }

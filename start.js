@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.11p3";
+var version = "3.3.12";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -335,7 +335,7 @@ var commands = {
             if(!suffix) {
                 bot.sendMessage(msg.channel, "\t\n");
             } else {
-                bot.sendMessage(msg.channel, msg.cleanContent.substring(bot.user.username.length+6));
+                bot.sendMessage(msg.channel, suffix);
             }
         }
     },
@@ -903,7 +903,7 @@ var commands = {
         usage: "<username, \"color\", or \"role\"> [<hex code to set or role to create>]",
         process: function(bot, msg, suffix) {
             var usr = msg.channel.server.members.get("username", suffix);
-            if(!suffix) {
+            if(!suffix || suffix=="me") {
                 usr = msg.author;
             } else if(suffix.indexOf("role")==0) {
                 if(configs.servers[msg.channel.server.id].customroles) {
@@ -1227,6 +1227,35 @@ var pmcommands = {
             }
         }
     },
+    // Lists all active reminders
+    "reminders": {
+        usage: "[<reminder note to cancel>]",
+        process: function(bot, msg, suffix) {
+            if(!suffix) {
+                var info = "";
+                for(var i=0; i<reminders.length; i++) {
+                    if(reminders[i].user==msg.author.id) {
+                        info += "**" + reminders[i].note + "** in " + secondsToString((reminders[i].time - new Date().getTime()) / 1000) + "\n";
+                    }
+                }
+                if(!info) {
+                    info = "Hmmm, you haven't set any reminders recently. Reply with `remindme <no.> <h, m, or s> <note>` to set one.";
+                }
+                bot.sendMessage(msg.author, info);
+            } else {
+                for(var i=0; i<reminders.length; i++) {
+                    if(reminders[i].user==msg.author.id && reminders[i].note.toLowerCase()==suffix.toLowerCase()) {
+                        logMsg(new Date().getTime(), "INFO", msg.author.id, null, "Cancelled reminder set at " + prettyDate(new Date(reminders[i].time)));
+                        reminders.splice(i, 1);
+                        bot.sendMessage(msg.author, "Got it, I won't remind you.");
+                        return;
+                    }
+                }
+                logMsg(new Date().getTime(), "INFO", msg.author.id, null, "Could not find matching reminder to cancel");
+                bot.sendMessage(msg.author, "Sorry, I couldn't find a reminder like that. Use `remindme <no.> <h, m, or s> " + suffix + "` to set it.");
+            }
+        }
+    },
     // Modify the value for a key in a user's profile
     "profile": {
         usage: "<key>,<value or \".\">",
@@ -1239,7 +1268,7 @@ var pmcommands = {
                 }
                 var key = msg.content.substring(8,msg.content.indexOf(","));
                 var value = msg.content.substring(msg.content.indexOf(",")+1);
-                if(["id", "status", "points"].indexOf(key.toLowerCase())>-1) {
+                if(["id", "status", "points", "afk"].indexOf(key.toLowerCase())>-1) {
                     logMsg(new Date().getTime(), "WARN", msg.author.id, null, "User tried to assign default profile value");
                     bot.sendMessage(msg.channel, "You can't change the value for " + key);
                     return;
@@ -1528,6 +1557,39 @@ var pmcommands = {
                 } 
             });
         }
+    },
+    // Sets an AFK message
+    "afk": {
+        usage: "<message or \".\">",
+        process: function(bot, msg, suffix) {
+            if(!suffix) {
+                logMsg(new Date().getTime(), "WARN", msg.author.id, null, "User did not provide AFK message");
+                bot.sendMessage(msg.author, "What message should I send when you're AFK? Use the syntax `afk <message>`");
+            } else if(suffix==".") {
+                if(profileData[msg.author.id]) {
+                    delete profileData[msg.author.id].AFK;
+                    logMsg(new Date().getTime(), "INFO", msg.author.id, null, "Removed AFK message");
+                    bot.sendMessage(msg.author, "OK, I won't show that message anymore.");
+                } else {
+                    logMsg(new Date().getTime(), "WARN", msg.author.id, null, "User tried to delete nonexistent AFK message");
+                    bot.sendMessage(msg.author, "I didn't have an AFK message set for you in the first place. Use `afk <message>`");
+                }
+            } else {
+                if(!profileData[msg.author.id]) {
+                    profileData[msg.author.id] = {
+                        points: 0
+                    };
+                }
+                profileData[msg.author.id].AFK = suffix;
+                logMsg(new Date().getTime(), "INFO", msg.author.id, null, "Set AFK message");
+                bot.sendMessage(msg.author, "Thanks, I'll show that if/when someone tags you in a server. Reply with `afk .` when you come back :)");
+                saveData("./data/profiles.json", function(err) {
+                    if(err) {
+                        logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile AFK message for " + msg.author.username);
+                    }
+                });
+            }
+        }
     }
 }
 
@@ -1791,14 +1853,14 @@ bot.on("ready", function() {
                             for(var i=0; i<configs.servers[svr.id][key].length; i++) {
                                 var usr = svr.members.get("id", configs.servers[svr.id][key][i]);
                                 if(usr && configs.botblocked.indexOf(usr.id)==-1) {
-                                    currentConfig[key].push([usr.avatarURL || "http://i.imgur.com/fU70HJK.png",usr.username, usr.id]);
+                                    currentConfig[key].push([usr.avatarURL || "http://i.imgur.com/fU70HJK.png", usr.username, usr.id]);
                                 }
                             }
                             if(key=="blocked") {
                                 for(var i=0; i<configs.botblocked.length; i++) {
                                     var usr = bot.users.get("id", configs.botblocked[i]);
                                     if(usr) {
-                                        currentConfig[key].push([usr.avatarURL || "http://i.imgur.com/fU70HJK.png",usr.username + " (global)", usr.id, true]);
+                                        currentConfig[key].push([usr.avatarURL || "http://i.imgur.com/fU70HJK.png", usr.username + " (global)", usr.id, true]);
                                     }
                                 }
                             }
@@ -1893,17 +1955,17 @@ bot.on("ready", function() {
     });
     
     app.get("/", function(req, res) {
-        var html = fs.readFileSync("./web/index.html");
+        var html = fs.readFileSync("./web/index/index.html");
         res.writeHead(200, {"Content-Type": "text/html"});
         res.end(html);
     });
     app.get("/maintainer", function(req, res) {
-        var html = fs.readFileSync("./web/maintainer.html");
+        var html = fs.readFileSync("./web/maintainer/maintainer.html");
         res.writeHead(200, {"Content-Type": "text/html"});
         res.end(html);
     });
     app.get("/admin", function(req, res) {
-        var html = fs.readFileSync("./web/admin.html");
+        var html = fs.readFileSync("./web/admin/admin.html");
         res.writeHead(200, {"Content-Type": "text/html"});
         res.end(html);
     });
@@ -2189,6 +2251,9 @@ bot.on("message", function (msg, user) {
                     });
                     if(mentions.pm && usr.status!="online") {
                         bot.sendMessage(usr, "__You were mentioned by @" + msg.author.username + " on **" + msg.channel.server.name + "**:__\n" + msg.cleanContent);
+                    }
+                    if(profileData[usr.id].AFK) {
+                        bot.sendMessage(msg.channel, "**@" + usr.username + "** is currently AFK: " + profileData[usr.id].AFK);
                     }
                     
                     if([msg.author.id, bot.user.id].indexOf(usr.id)==-1 && configs.servers[msg.channel.server.id].points && !novoting[msg.author.id]) {
@@ -2488,7 +2553,6 @@ bot.on("message", function (msg, user) {
         if(msg.author.id!=bot.user.id) {
             var cmd;
             if(!msg.channel.isPrivate && checkCommandTag(msg.content, msg.channel.server.id)) {
-                console.log(checkCommandTag(msg.content, msg.channel.server.id));
                 var cmdTxt = checkCommandTag(msg.content, msg.channel.server.id)[0];
                 var suffix = checkCommandTag(msg.content, msg.channel.server.id)[1];
                 cmd = commands[cmdTxt];
@@ -2516,7 +2580,7 @@ bot.on("message", function (msg, user) {
                 }
                 bot.stopTyping(msg.channel);
             // Process message as chatterbot prompt if not a command
-            } else if(!extensionApplied && msg.content.indexOf(bot.user.mention())==0) {
+            } else if(!extensionApplied && (msg.content.indexOf(bot.user.mention())==0 || msg.channel.isPrivate)) {
                 if(!msg.channel.isPrivate) {
                     if(!configs.servers[msg.channel.server.id].chatterbot || !stats[msg.channel.server.id].botOn[msg.channel.id]) {
                         return;
@@ -2694,6 +2758,12 @@ bot.on("serverNewMember", function(svr, usr) {
 // Deletes stats when member leaves
 bot.on("serverMemberRemoved", function(svr, usr) {
     delete stats[svr.id].members[usr.id];
+    if(configs.servers[svr.id].admins.indexOf(usr.id)>-1) {
+        configs.servers[svr.id].admins.splice(configs.servers[svr.id].admins.indexOf(usr.id), 1);
+    }
+    if(configs.servers[svr.id].blocked.indexOf(usr.id)>-1) {
+        configs.servers[svr.id].blocked.splice(configs.servers[svr.id].blocked.indexOf(usr.id), 1);
+    }
     if(configs.servers[svr.id].servermod && configs.servers[svr.id].rmmembermsg[0] && stats[svr.id].botOn[svr.defaultChannel.id]) {
         logMsg(new Date().getTime(), "INFO", svr.name, null, "Member removed: " + usr.username);
         bot.sendMessage(svr.defaultChannel, configs.servers[svr.id].rmmembermsg[1][getRandomInt(0, configs.servers[svr.id].rmmembermsg[1].length-1)].replace("++", "**@" + usr.username + "**"));
@@ -2746,7 +2816,7 @@ bot.on("userUnbanned", function(usr, svr) {
     }
 });
 
-// Update lastSeen status on presence change
+// Update lastSeen status on presence change and messages
 bot.on("presence", function(oldusr, newusr) {
     if(newusr.id!=bot.user.id) {
         for(var i=0; i<bot.servers.length; i++) {
@@ -2762,8 +2832,17 @@ bot.on("presence", function(oldusr, newusr) {
                         strikes: []
                     };
                 }
+                
                 if(oldusr.status=="online" && newusr.status!="online") {
                     stats[bot.servers[i].id].members[oldusr.id].seen = new Date().getTime();
+                    
+                    if(configs.servers[bot.servers[i].id].servermod && configs.servers[bot.servers[i].id].offmembermsg[0] && stats[bot.servers[i].id].botOn[bot.servers[i].defaultChannel.id]) {
+                        bot.sendMessage(bot.servers[i].defaultChannel, configs.servers[bot.servers[i].id].offmembermsg[1][getRandomInt(0, configs.servers[bot.servers[i].id].offmembermsg[1].length-1)].replace("++", "**@" + newusr.username + "**"));
+                    }
+                } else if(oldusr.status=="offline" && newusr.status=="online") {
+                    if(configs.servers[bot.servers[i].id].servermod && configs.servers[bot.servers[i].id].onmembermsg[0] && stats[bot.servers[i].id].botOn[bot.servers[i].defaultChannel.id]) {
+                        bot.sendMessage(bot.servers[i].defaultChannel, configs.servers[bot.servers[i].id].onmembermsg[1][getRandomInt(0, configs.servers[bot.servers[i].id].onmembermsg[1].length-1)].replace("++", "**@" + newusr.username + "**"));
+                    }
                 }
             }
         }
@@ -3182,6 +3261,7 @@ function clearServerStats(svrid) {
                 logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save update profile data");
             }
         });
+        logMsg(new Date().getTime(), "INFO", "General", null, "Cleared stats for " + svr.name);
     }
     for(var game in stats[svrid].games) {
         delete stats[svrid].games[game];
@@ -3437,7 +3517,6 @@ function parseMaintainerConfig(delta, callback) {
             case "clearstats":
                 try {
                     clearServerStats(delta[key]);
-                    logMsg(new Date().getTime(), "INFO", "General", null, "Cleared stats for " + svr.name);
                     callback(false);
                 } catch(err) {
                     callback(err);
@@ -3525,9 +3604,25 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                     if(usr) {
                         if(!isNaN(delta[key][1])) {
                             if(stats[svr.id].members[usr.id]) {
-                                if(delta[key][1]<stats[svr.id].members[usr.id].strikes.length) {
+                                if(delta[key][1]<stats[svr.id].members[usr.id].strikes.length && delta[key][1]>=0) {
+                                    if(["First-time spam violation", "First-time NSFW filter violation"].indexOf(stats[svr.id].members[usr.id].strikes[delta[key][1]][1])>-1 && stats[svr.id].members[usr.id].strikes[delta[key][1]][0]=="Automatic") {
+                                        if(configs.servers[msg.channel.server.id].points && profileData[usr.id].points) {
+                                            profileData[usr.id].points += 50;
+                                        }
+                                    } else if(["Second-time spam violation", "Second-time NSFW filter violation"].indexOf(stats[svr.id].members[usr.id].strikes[delta[key][1]][1])>-1 && stats[svr.id].members[usr.id].strikes[delta[key][1]][0]=="Automatic") {
+                                        if(configs.servers[msg.channel.server.id].points && profileData[usr.id].points) {
+                                            profileData[usr.id].points += 100;
+                                        }
+                                        if(configs.servers[svr.id].blocked.indexOf(usr.id)>-1) {
+                                            configs.servers[svr.id].blocked.splice(configs.servers[svr.id].blocked.indexOf(usr.id), 1);
+                                        }
+                                    }
+                                    
                                     stats[svr.id].members[usr.id].strikes.splice(delta[key][1], 1);
                                     logMsg(new Date().getTime(), "INFO", consoleid, null, "Removed strike for " + usr.username + " in " + svr.name);
+                                } else if(delta[key][1]==-1) {
+                                    stats[svr.id].members[usr.id].strikes = [];
+                                    logMsg(new Date().getTime(), "INFO", consoleid, null, "Cleared strikes for " + usr.username + " in " + svr.name);
                                 } else {
                                     callback(true);
                                     return;
@@ -3537,6 +3632,10 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                                 return;
                             }
                         } else {
+                            if(delta[key][1].length>200) {
+                                callback(true);
+                                return;
+                            }
                             if(!stats[svr.id].members[usr.id]) {
                                 stats[svr.id].members[usr.id] = {
                                     messages: 0,
@@ -3632,6 +3731,8 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                 }
                 break;
             case "newmembermsg":
+            case "onmembermsg":
+            case "offmembermsg":
             case "rmmembermsg":
             case "banmembermsg":
             case "unbanmembermsg":
@@ -4556,7 +4657,7 @@ function parseReminder(suffix, usr, pch) {
         if(["d", "h", "m", "s"].indexOf(num.charAt(num.length-1).toString().toLowerCase())!=-1) {
             time = num.charAt(num.length-1).toString().toLowerCase();
             num = num.substring(0, num.length-1);
-        } else if(num.indexOf(" ")!=-1) {
+        } else if(num.indexOf(" ")>-1) {
             time = num.substring(num.indexOf(" ")+1);
             num = num.substring(0, num.indexOf(" ")); 
         }
@@ -4573,7 +4674,7 @@ function parseReminder(suffix, usr, pch) {
         }
         remind = suffix;
     }
-
+    
     if(isNaN(num) || ["d", "h", "m", "s"].indexOf(time)==-1 || remind=="") {
         bot.sendMessage(ch, tag + "Sorry, I don't know what that means. Make sure you're using the syntax `remindme <no.> <h, m, or s> <note>`");
         return;
@@ -4624,7 +4725,7 @@ function setReminder(i) {
         var countdown = obj.time - new Date().getTime();
         setTimeout(function() {
             bot.sendMessage(usr, "**Reminder:** " + obj.note);
-            logMsg(new Date().getTime(), "INFO", usr.id, null, "Reminded user " + usr.username);
+            logMsg(new Date().getTime(), "INFO", usr.id, null, "Reminded user for note set at " + prettyDate(new Date(obj.time)));
             reminders.splice(i, 1);
             saveData("./data/reminders.json", function(err) {
                 if(err) {

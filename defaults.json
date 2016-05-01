@@ -29,6 +29,20 @@
                 "Please welcome our newest member, ++"
             ]
         ],
+        "onmembermsg": [
+            false,
+            [
+                "++ is now online!",
+                "Welcome back ++!"
+            ]
+        ],
+        "offmembermsg": [
+            false,
+            [
+                "++ is gone (for now)",
+                "++ has gone offline."
+            ]
+        ],
         "rmmembermsg": [
             true,
             [
@@ -43,13 +57,13 @@
             ]
         ],
         "banmembermsg": [
-            true,
+            false,
             [
                 "++ has been banned"
             ]
         ],
         "unbanmembermsg": [
-            true,
+            false,
             [
                 "++ has been unbanned"
             ]

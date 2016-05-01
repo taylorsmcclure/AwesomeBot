@@ -46,17 +46,13 @@ If you want a stable bot, please use the [latest milestone release](https://gith
 Changelog
 ---------
 
-Latest, version **3.3.11**:
+Latest, version **3.3.12**:
 
- - Customizable membermsg
- - Spam filter sensitivity option
- - Per-server command modifier option
- - Option to hide servers on status page
- - A few bug fixes
- 
-Patch #1: Fixed bugs in admin console  
-Patch #2: Bug fixes and extensions improvements  
-Patch #3: Minor fixes and tweaks  
+ - Rebuilt web interface with Bootstrap  
+ - Presence change message option
+ - Added AFK message support
+ - New reminders to command to view/cancel
+ - Bug fixes and other improvements
  
 Open an issue to report a bug or suggest a new feature!
 

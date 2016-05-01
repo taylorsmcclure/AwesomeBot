@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="AwesomeBot: the best Discord bot!">
+    <meta name="author" content="BitQuote">
+    <title>Bot Status</title>
+
+    <link id="theme" href="./../bootstrap-default.min.css" rel="stylesheet">
+    <link href="./../bootstrap-select.min.css" rel="stylesheet">
+    <link href="./../navbar-fixed-top.css" rel="stylesheet">
+    <style type="text/css">
+    :root #content > #right > .dose > .dosesingle,
+    :root #content > #center > .dose > .dosesingle {
+        display: none !important;
+    }
+    body {
+        position: relative;
+    }
+    #console {
+        max-height: 400px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+    </style>
+    <script src="./../jquery.min.js"></script>
+    <script src="./../bootstrap.min.js"></script>
+    <script src="./../bootstrap-select.min.js"></script>
+    <script src="./../index.js"></script>
+</head>
+<body onload="switchColors();doSetup();" data-spy="scroll" data-target="#navbar">
+    <!-- Navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">
+                    <img alt="Icon" id="profilepic" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" style="float:left;" width="24" height="24" class="img-responsive img-circle">
+                    &nbsp;
+                    <span id="botname">Bot</span> Info
+                </a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#stats">Stats</a>
+                    </li>
+                    <li>
+                        <a href="#activity">Activity</a>
+                    </li>
+                    <li>
+                        <a href="#servers">Servers</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a id="addserverlink" target="_blank" href="">Add To Server</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Theme <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a id="theme-default" href="javascript:switchColors('default');">Default</a></li>
+                            <li><a id="theme-cyborg" href="javascript:switchColors('cyborg');">Cyborg</a></li>
+                            <li><a id="theme-paper" href="javascript:switchColors('paper');">Paper</a></li>
+                            <li><a id="theme-slate" href="javascript:switchColors('slate');">Slate</a></li>
+                            <li><a id="theme-superhero" href="javascript:switchColors('superhero');">Superhero</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a id="nav-auth" href="#">Config</a>
+                        <div id="nav-auth-popover-content" class="hide">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="nav-authinput" onkeydown="if(event.keyCode==13){checkAuth(this.value);}" placeholder="Auth code">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" onclick="checkAuth($('.popover-content').find('#nav-authinput').val());" type="button">Go</button>
+                                </span>
+                                </input>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 id="stats">Stats</h2>
+                <select id="statsselect" class="selectpicker" data-width="auto" data-live-search="true" onChange="javascript:switchStats(this.value);">
+                    <option value="null" selected>General</option>
+                </select>
+                &nbsp;
+                <select style="visibility: hidden;" id="profileselect" class="selectpicker" data-width="auto" data-live-search="true" title="View Profile" onChange="javascript:switchProfile(this.value);">
+                </select>
+                <br><br>
+                <div id="stats-body">
+                    
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 id="activity">Activity Log</h2>
+                <select id="idselector" class="selectpicker" data-live-search="true" data-width="auto" onChange="javascript:switchLogID(this.value);">
+                    <option id="id-null" value="null">All</option>
+                </select>
+                &nbsp;
+                <select id="levelselector" class="selectpicker" data-width="auto" onChange="javascript:switchLogLevel(this.value);">
+                    <option id="level-null" value="null">All</option>
+                    <option id="level-INFO" value="INFO">Info</option>>
+                    <option id="level-WARN" value="WARN">Warning</option>
+                    <option id="level-ERROR" value="ERROR">Error</option>
+                </select>
+                <br><br>
+                <div id="activity-body">
+                    <pre id="console"></pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 id="servers">Servers <span id="servers-badge" class="badge"></span></h2>
+                <div id="servers-body">
+                    <p class="help-block">Some servers excluded for privacy. Message count is only for the past 24 hours.</p>
+                    <div class="table-responsive">
+                        <table id="servertable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Icon</th>
+                                    <th>Name</th>
+                                    <th>Owner</th>
+                                    <th>Messages</th>
+                                    <th>Members</th>
+                                </tr>
+                            </thead>
+                            <tbody id="servertablebody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-12">
+                <br><i>Created by @BitQuote, <a href="https://git.io/vaa2F">https://git.io/vaa2F</a></i><br><br>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loading-modal" role="dialog" data-backdrop="static" aria-labelledby="loading">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">Loading...</div>
+                <div class="modal-body">Please wait</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Error Modal -->
+    <div class="modal fade" id="error-modal" tabindex="-1" role="dialog" aria-labelledby="error">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="error-modal-header" class="modal-title">Error</h4>
+                </div>
+                <div id="error-modal-body" class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    $(document).ready(function(){
+        $('a[href^="#"]').click(function(e) {
+            e.preventDefault();
+            if(this.hash!="#navbar") {
+                var target = this.hash, $target = $(target);
+                $('html, body').stop().animate({
+                    'scrollTop': $target.offset().top
+                }, 900, 'swing', function() {
+                    window.location.hash = target;
+                });
+            }
+        });
+    });
+    $("#nav-auth").popover({ 
+        html: true,
+        content: function() {
+            return $("#nav-auth-popover-content").html();
+        },
+        placement: "bottom",
+        container: "body",
+        trigger: "click"
+    });
+    </script>
+</body>
+</html>
