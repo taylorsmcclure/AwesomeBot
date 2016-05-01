@@ -49,7 +49,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.12p2";
+var version = "3.3.12p3";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -1672,7 +1672,7 @@ bot.on("ready", function() {
                 data.stream = [];
                 for(var i=0; i<bot.servers.length; i++) {
                     if(configs.servers[bot.servers[i].id].showpub) {
-                        data.stream.push([bot.servers[i].name.replaceAll("\"", "'"), bot.servers[i].id]);
+                        data.stream.push([bot.servers[i].name, bot.servers[i].id]);
                     }
                 }
                 data.stream.sort(function(a, b) {
@@ -1723,7 +1723,7 @@ bot.on("ready", function() {
                         }
                     } else if(req.query.type=="server") {
                         data = getStats(svr);
-                        data.name = svr.name.replaceAll("\"", "'");
+                        data.name = svr.name;
                     }
                 }
             }
@@ -1733,7 +1733,7 @@ bot.on("ready", function() {
                 if(configs.servers[bot.servers[i].id].showpub) {
                     var icon = bot.servers[i].iconURL || "http://i.imgur.com/fU70HJK.png";
                     var name = bot.servers[i].name;
-                    var owner = bot.servers[i].owner.username.replaceAll("\"", "'");
+                    var owner = bot.servers[i].owner.username;
                     var ms = messages[bot.servers[i].id] || 0;
                     var total = bot.servers[i].members.length;
                     var online = bot.servers[i].members.getAll("status", "online").length;
@@ -2735,7 +2735,7 @@ bot.on("serverNewMember", function(svr, usr) {
         logMsg(new Date().getTime(), "INFO", svr.name, null, "New member: " + usr.username);
         bot.sendMessage(svr.defaultChannel, configs.servers[svr.id].newmembermsg[1][getRandomInt(0, configs.servers[svr.id].newmembermsg[1].length-1)].replace("++", usr));
     }
-    var info = "Welcome to the " + svr.name + " Discord chat! " + configs.servers[svr.id].newgreeting + "I'm " + bot.user.username + " by the way. Learn more with `" + (configs.servers[svr.id].cmdtag=="tag" ? ("@" + bot.user.username + " ") : configs.servers[svr.id].cmdtag) + "help`";
+    var info = "Welcome to the " + svr.name + " Discord chat! " + configs.servers[svr.id].newgreeting + " I'm " + bot.user.username + " by the way. Learn more with `" + (configs.servers[svr.id].cmdtag=="tag" ? ("@" + bot.user.username + " ") : configs.servers[svr.id].cmdtag) + "help`";
     bot.sendMessage(usr, info);
     
     stats[svr.id].members[usr.id] = {
@@ -3060,11 +3060,6 @@ function countOccurrences(arr, ref) {
 
     return a;
 }
-
-// Fast replacement in string prototype
-String.prototype.replaceAll = function(str1, str2, ignore) {
-    return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g, "\\$&"), (ignore ? "gi" : "g")),(typeof(str2)=="string") ? str2.replace(/\$/g,"$$$$") : str2);
-} 
 
 // Determine if string contains substring in an array
 function contains(arr, str, sens) {
@@ -4443,7 +4438,7 @@ function getStats(svr) {
         }
         var usr = svr.members.get("id", sortedMembers[i][0]);
         if(usr && sortedMembers[i][1]>0) {
-            info["Most active members"].push(usr.username.replaceAll("\"", "'") + ": " + sortedMembers[i][1] + " message" + (sortedMembers[i][1]==1 ? "" : "s"));
+            info["Most active members"].push(usr.username + ": " + sortedMembers[i][1] + " message" + (sortedMembers[i][1]==1 ? "" : "s"));
         }
     }
     for(var i=sortedRichest.length-1; i>sortedRichest.length-6; i--) {
@@ -4452,14 +4447,14 @@ function getStats(svr) {
         }
         var usr = svr.members.get("id", sortedRichest[i][0]);
         if(usr && sortedRichest[i][1]>0) {
-            info["Richest members"].push(usr.username.replaceAll("\"", "'") + ": " + sortedRichest[i][1] + " point" + (sortedRichest[i][1]==1 ? "" : "s"));
+            info["Richest members"].push(usr.username + ": " + sortedRichest[i][1] + " point" + (sortedRichest[i][1]==1 ? "" : "s"));
         }
     }
     for(var i=sortedGames.length-1; i>sortedGames.length-6; i--) {
         if(i<0) {
             break;
         }
-        info["Most played games"].push(sortedGames[i][0].replaceAll("\"", "'") + ": " + secondsToString(sortedGames[i][1] * 3000));
+        info["Most played games"].push(sortedGames[i][0] + ": " + secondsToString(sortedGames[i][1] * 3000));
     }
     for(var i=sortedCommands.length-1; i>sortedCommands.length-6; i--) {
         if(i<0) {
@@ -4523,7 +4518,7 @@ function getProfile(usr, svr) {
         usrinfo["Avatar"] = usr.avatarURL;
     }
     if(getGame(usr)) {
-        usrinfo["Playing"] = getGame(usr).replaceAll("\"", "'");
+        usrinfo["Playing"] = getGame(usr)
     }
     if(!profileData[usr.id]) {
         profileData[usr.id] = {
@@ -4536,15 +4531,15 @@ function getProfile(usr, svr) {
         });
     }
     for(var field in profileData[usr.id]) {
-        usrinfo[(field.charAt(0).toUpperCase() + field.slice(1)).replaceAll("\"", "'")] = profileData[usr.id][field].toString().replaceAll("\"", "'");
+        usrinfo[(field.charAt(0).toUpperCase() + field.slice(1))] = profileData[usr.id][field].toString();
     }
     var details = svr.detailsOfUser(usr);
     var svrinfo = {};
     if(details) {
         if(details.roles.length>0) {
-            svrinfo["Roles"] = details.roles[0].name.replaceAll("\"", "'");
+            svrinfo["Roles"] = details.roles[0].name;
             for(var i=1; i<details.roles.length; i++) {
-                info += ", " + details.roles[i].name.replaceAll("\"", "'");
+                info += ", " + details.roles[i].name;
             }
         }
         svrinfo["Joined"] = prettyDate(new Date(details.joinedAt));

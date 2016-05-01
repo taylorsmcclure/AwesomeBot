@@ -56,6 +56,7 @@ Latest, version **3.3.12**:
  
 Patch #1: AFK and admin console bug fixes  
 Patch #2: Fixed removed user crashes  
+Patch #3: More crash fixes  
  
 Open an issue to report a bug or suggest a new feature!
 
