@@ -4,7 +4,6 @@ var logLevel = "null";
 
 function doSetup() {
     var param = Object.keys(getQueryParams(document.URL))[0];
-    console.log(param);
     if(param) {
         if(param.indexOf("?auth")==param.length-5) {
             var token = getQueryParams(document.URL)[param];

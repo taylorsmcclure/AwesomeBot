@@ -50,7 +50,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.13p3";
+var version = "3.3.13p4";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2138,8 +2138,9 @@ bot.on("message", function(msg, user) {
             stats[msg.channel.server.id].members[msg.author.id].messages++;
             
             // If start statement is issued, say hello and begin listening
-            if(msg.content.indexOf(bot.user.mention())==0 && msg.content.indexOf("start") > -1 && configs.servers[msg.channel.server.id].admins.indexOf(msg.author.id)>-1 && !stats[msg.channel.server.id].botOn[msg.channel.id]) {
-                var suffix = msg.content.substring(msg.content.indexOf("start")+6);
+            var startcmd = (configs.servers[msg.channel.server.id].cmdtag=="tag" ? (bot.user.mention() + " ") : configs.servers[msg.channel.server.id].cmdtag) + "start";
+            if(msg.content.indexOf(startcmd)==0 && configs.servers[msg.channel.server.id].admins.indexOf(msg.author.id)>-1 && !stats[msg.channel.server.id].botOn[msg.channel.id]) {
+                var suffix = msg.content.substring(startcmd.length+1);
                 var timestr = "";
                 if(suffix.toLowerCase()=="all") {
                     timestr = " in all channels";
@@ -2381,7 +2382,7 @@ bot.on("message", function(msg, user) {
                     }
                     
                     var keywordcontains = contains(extension.key, msg.content, extension.case);
-                    if((extension.type.toLowerCase()=="keyword" && keywordcontains)>-1 || (extension.type.toLowerCase()=="command" && msg.content.indexOf(bot.user.mention() + " " + extension.key)==0)) {
+                    if((extension.type.toLowerCase()=="keyword" && keywordcontains)>-1 || (extension.type.toLowerCase()=="command" && msg.content.indexOf((configs.servers[msg.channel.server.id].cmdtag=="tag" ? (bot.user.mention() + " ") : configs.servers[msg.channel.server.id].cmdtag) + extension.key)==0)) {
                         logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Treating '" + msg.cleanContent + "' from " + msg.author.username + " as an extension " + configs.servers[msg.channel.server.id].extensions[ext].type);
                         bot.startTyping(msg.channel);
                         extensionApplied = true;

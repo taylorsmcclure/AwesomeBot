@@ -54,6 +54,7 @@ Latest, version **3.3.13**:
 Patch #1: Fixed strike removal crash  
 Patch #2: Fixed global help chatterbot  
 Patch #3: Updated admin console poll/trivia buttons  
+Patch #4: Command modifier fixes  
  
 Open an issue to report a bug or suggest a new feature!
 
