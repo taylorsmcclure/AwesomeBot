@@ -318,7 +318,7 @@ function switchManage() {
         document.getElementById("manageentry-polls").style.display = "";
         var manageentry_polls_block = "";
         for(var i=0; i<botData.polls.length; i++) {
-            manageentry_polls_block += "<li>" + botData.polls[i][1] + " <span class=\"removetool\" id=\"manageentry-polls-" + botData.polls[i][0] + "\" onclick=\"javascript:config('closepoll', this.id.substring(18), function() {});\"><i>(close)</i></span></li>";
+            manageentry_polls_block += "<li>" + botData.polls[i][1] + "&nbsp;<button type=\"button\" class=\"btn btn-danger btn-xs\" id=\"manageentry-polls-" + botData.polls[i][0] + "\" onclick=\"javascript:config('closepoll', this.id.substring(18), function() {});\">Close</button></li>";
         }
         document.getElementById("manageentry-polls-block").innerHTML = manageentry_polls_block;
     } else {
@@ -329,7 +329,7 @@ function switchManage() {
         document.getElementById("manageentry-trivia").style.display = "";
         var manageentry_trivia_block = "";
         for(var i=0; i<botData.trivia.length; i++) {
-            manageentry_trivia_block += "<li>" + botData.trivia[i][1] + " <span class=\"removetool\" id=\"manageentry-trivia-" + botData.trivia[i][0] + "\" onclick=\"javascript:config('endtrivia', this.id.substring(19), function() {});\"><i>(end)</i></span></li>";
+            manageentry_trivia_block += "<li>" + botData.trivia[i][1] + "&nbsp;<button type=\"button\" class=\"btn btn-danger btn-xs\" id=\"manageentry-trivia-" + botData.trivia[i][0] + "\" onclick=\"javascript:config('endtrivia', this.id.substring(19), function() {});\">End</button></li>";
         }
         document.getElementById("manageentry-trivia-block").innerHTML = manageentry_trivia_block;
     } else {
