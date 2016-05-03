@@ -74,7 +74,7 @@ function config(key, value, callback) {
                 if(Object.keys(mData).length>0) {
                     botData = mData;
                     if(authtype=="admin") {
-                        document.getElementById("rssrow").style.display = botData.configs.rss ? "" : "none";
+                        document.getElementById("rssrow").style.display = botData.configs.rss[0] ? "" : "none";
                         switchManage();
                     }
                     callback(false);

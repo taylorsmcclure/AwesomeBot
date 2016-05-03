@@ -17,7 +17,7 @@
         "extensions": {},
         "cmdtag": "tag",
         "newmembermsg": [
-            true,
+            false,
             [
                 "++ Welcome to our little corner of hell!",
                 "++ has joined the server.",
@@ -27,24 +27,27 @@
                 "++ is our next victim...",
                 "Hello ++!",
                 "Please welcome our newest member, ++"
-            ]
+            ],
+            null
         ],
         "onmembermsg": [
             false,
             [
                 "++ is now online!",
                 "Welcome back ++!"
-            ]
+            ],
+            null
         ],
         "offmembermsg": [
             false,
             [
                 "++ is gone (for now)",
                 "++ has gone offline."
-            ]
+            ],
+            null
         ],
         "rmmembermsg": [
-            true,
+            false,
             [
                 "++ has left us :(",
                 "Goodbye ++",
@@ -54,19 +57,22 @@
                 "RIP ++",
                 "Uh-oh, ++ went away",
                 "Please convince ++ to come back!"
-            ]
+            ],
+            null
         ],
         "banmembermsg": [
             false,
             [
                 "++ has been banned"
-            ]
+            ],
+            null
         ],
         "unbanmembermsg": [
             false,
             [
                 "++ has been unbanned"
-            ]
+            ],
+            null
         ]
     },
     "full": {
@@ -80,7 +86,11 @@
             true,
             []
         ],
-        "customroles": true,
+        "customroles": [
+            true,
+            [],
+            true
+        ],
         "customcolors": true,
         "tag": true,
         "stats": true,
@@ -121,7 +131,11 @@
             true,
             []
         ],
-        "customroles": false,
+        "customroles": [
+            false,
+            [],
+            true
+        ],
         "customcolors": false,
         "tag": false,
         "stats": false,
@@ -162,7 +176,11 @@
             false,
             []
         ],
-        "customroles": false,
+        "customroles": [
+            false,
+            [],
+            true
+        ],
         "customcolors": false,
         "tag": true,
         "stats": true,

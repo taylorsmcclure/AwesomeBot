@@ -46,15 +46,16 @@ If you want a stable bot, please use the [latest milestone release](https://gith
 Changelog
 ---------
 
-Latest, version **3.3.13**:
+Latest, version **3.3.14**:
 
- - Added Twitch emotes support in tag  
- - Global help command to avoid confusion  
- 
-Patch #1: Fixed strike removal crash  
-Patch #2: Fixed global help chatterbot  
-Patch #3: Updated admin console poll/trivia buttons  
-Patch #4: Command modifier fixes  
+ - Bug report option in about command
+ - More role options and join role support
+ - Added timestamps to admin strikes
+ - Fixed oversensitive NSFW filter
+ - Option for membermsg channels
+ - More command prefixes available
+ - Included config updater
+ - Other fixes and enhancements
  
 Open an issue to report a bug or suggest a new feature!
 

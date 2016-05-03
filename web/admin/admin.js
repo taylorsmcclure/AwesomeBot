@@ -4,6 +4,7 @@ function doAdminSetup() {
     document.getElementById("profilepic").src = botData.svricon;
     setFavicon(botData.svricon);
     document.getElementById("botsince").innerHTML = botData.botnm + " added " + botData.joined + " ago";
+    document.getElementById("rssrow").style.display = botData.configs.rss[0] ? "" : "none";
     
     switchAdmins();
     $("#admins-body").collapse("show");
@@ -100,9 +101,9 @@ function switchStrikes() {
         },
         content: function() {
             i = parseInt(this.id.substring(this.id.indexOf("-")+1, this.id.lastIndexOf("-")));
-            var popovercontent = "<div class=\"table-responsive\"><table class=\"table table-striped\"><thead><tr><th>#</th><th>Reason</th><th>From</th><th>Action</th></tr></thead><tbody>";
+            var popovercontent = "<div class=\"table-responsive\"><table class=\"table table-striped\"><thead><tr><th>#</th><th>Reason</th><th>From</th><th>Date</th><th>Action</th></tr></thead><tbody>";
             for(var j=0; j<botData.strikes[i][3].length; j++) {
-                popovercontent += "<tr id=\"" + j + "-" + botData.strikes[i][0] + "-strikesentry\"><td>" + (j+1) + "</td><td>" + botData.strikes[i][3][j][1] + "</td><td>@" + botData.strikes[i][3][j][0] + "</td><td><button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:removeStrike('" + botData.strikes[i][0] + "', " + i + ", this.parentNode.parentNode.id.substring(0, this.parentNode.parentNode.id.indexOf('-')));\">Remove</button></td></tr>";
+                popovercontent += "<tr id=\"" + j + "-" + botData.strikes[i][0] + "-strikesentry\"><td>" + (j+1) + "</td><td>" + botData.strikes[i][3][j][1] + "</td><td>@" + botData.strikes[i][3][j][0] + "</td><td>" + botData.strikes[i][3][j][2] + "</td><td><button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:removeStrike('" + botData.strikes[i][0] + "', " + i + ", this.parentNode.parentNode.id.substring(0, this.parentNode.parentNode.id.indexOf('-')));\">Remove</button></td></tr>";
             }
             popovercontent += "</tbody></table></div>";
             return popovercontent;
@@ -219,8 +220,8 @@ function newRss() {
 function switchCommands() {
     var commands = "";
     for(var cmd in botData.configs) {
-        if(["admins", "blocked", "extensions", "newgreeting", "nsfwfilter", "rss", "servermod", "spamfilter", "cmdtag", "newmembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg", "triviasets", "showpub"].indexOf(cmd)==-1) {
-            commands += "<div class=\"checkbox\"><input style=\"height: auto;\" id=\"commandsentry-" + cmd + "\" type=\"checkbox\" onclick=\"javascript:config(this.id.substring(14), this.checked, switchCommands);\" " + (botData.configs[cmd] ? "checked " : "") + "/><label for=\"commandsentry-" + cmd + "\">" + cmd + "</label></div>";
+        if(["admins", "blocked", "extensions", "newgreeting", "nsfwfilter", "servermod", "spamfilter", "customroles", "customcolors","cmdtag", "newmembermsg", "onmembermsg", "offmembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg", "triviasets", "showpub"].indexOf(cmd)==-1) {
+            commands += "<div class=\"checkbox\"><input style=\"height: auto;\" id=\"commandsentry-" + cmd + "\" type=\"checkbox\" onclick=\"javascript:config(this.id.substring(14), this.checked, switchCommands);\" " + ((cmd=="rss" ? botData.configs[cmd][0] : botData.configs[cmd]) ? "checked " : "") + "/><label for=\"commandsentry-" + cmd + "\">" + cmd + "</label></div>";
         }
     }
     $("#commands-container").html(commands);
@@ -244,6 +245,15 @@ function switchManage() {
     for(var i=0; i<membermsg.length; i++) {
         document.getElementById("manageentry-" + membermsg[i]).checked = botData.configs[membermsg[i]][0];
         if(botData.configs[membermsg[i]][0]) {
+            var manageentry_select = ""; 
+            for(var j=0; j<botData.channels.length; j++) {
+                manageentry_select += "<option value=\"" + botData.channels[j][1] + "\">#" + botData.channels[j][0] + "</option>";
+            }
+            document.getElementById("manageentry-select-" + membermsg[i]).innerHTML = manageentry_select;
+            document.getElementById("manageentry-select-" + membermsg[i]).value = botData.configs[membermsg[i]][2];
+            document.getElementById("manageentry-select-" + membermsg[i]).removeAttribute("disabled");
+            $("#manageentry-select-" + membermsg[i]).selectpicker("refresh");
+            
             var current_block = "";
             for(var j=0; j<botData.configs[membermsg[i]][1].length; j++) {
                 current_block += "<div class=\"checkbox\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" onclick=\"javascript:config('" + membermsg[i] + "', this.value, function() {});\" id=\"manageentry-" + membermsg[i] + "-" + j + "\" value=\"" + botData.configs[membermsg[i]][1][j] + "\" checked><label for=\"manageentry-" + membermsg[i] + "-" + j + "\">" + botData.configs[membermsg[i]][1][j].replace("++", "<b>@user</b>") + "</label></div>";
@@ -252,6 +262,8 @@ function switchManage() {
             document.getElementById(membermsg[i] + "-input").value = "";
             $("#manageentry-" + membermsg[i] + "-body").collapse("show");
         } else {
+            document.getElementById("manageentry-select-" + membermsg[i]).setAttribute("disabled", "disable");
+            $("#manageentry-select-" + membermsg[i]).selectpicker("refresh");
             $("#manageentry-" + membermsg[i] + "-body").collapse("hide");
         }
     }
@@ -261,7 +273,7 @@ function switchManage() {
         if(!document.getElementById("manageentry-spamfilter-block").innerHTML) {
             var spamfilter_block = "";
             for(var i=0; i<botData.channels.length; i++) {
-                spamfilter_block += "<div class=\"checkbox\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" id=\"manageentry-spamfilter-" + botData.channels[i][1] + "\" onclick=\"javascript:config('spamfilter', this.id.substring(23), function() {});\"" + (botData.configs.spamfilter[1].indexOf(botData.channels[i][1])==-1 ? " checked" : "") + "><label for=\"manageentry-spamfilter-" + botData.channels[i][1] + "\">" + botData.channels[i][0] + "</label></div>";
+                spamfilter_block += "<div class=\"checkbox\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" id=\"manageentry-spamfilter-" + botData.channels[i][1] + "\" onclick=\"javascript:config('spamfilter', this.id.substring(23), function() {});\"" + (botData.configs.spamfilter[1].indexOf(botData.channels[i][1])==-1 ? " checked" : "") + "><label for=\"manageentry-spamfilter-" + botData.channels[i][1] + "\">#" + botData.channels[i][0] + "</label></div>";
             }
             document.getElementById("manageentry-spamfilter-block").innerHTML = spamfilter_block;
         }
@@ -286,7 +298,7 @@ function switchManage() {
         if(!document.getElementById("manageentry-nsfwfilter-block").innerHTML) {
             var nsfwfilter_block = "";
             for(var i=0; i<botData.channels.length; i++) {
-                nsfwfilter_block += "<div class=\"checkbox\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" id=\"manageentry-nsfwfilter-" + botData.channels[i][1] + "\" onclick=\"javascript:config('nsfwfilter', this.id.substring(23), function() {});\"" + (botData.configs.nsfwfilter[1].indexOf(botData.channels[i][1])==-1 ? " checked" : "") + "><label for=\"manageentry-nsfwfilter-" + botData.channels[i][1] + "\">" + botData.channels[i][0] + "</label></div>";
+                nsfwfilter_block += "<div class=\"checkbox\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" id=\"manageentry-nsfwfilter-" + botData.channels[i][1] + "\" onclick=\"javascript:config('nsfwfilter', this.id.substring(23), function() {});\"" + (botData.configs.nsfwfilter[1].indexOf(botData.channels[i][1])==-1 ? " checked" : "") + "><label for=\"manageentry-nsfwfilter-" + botData.channels[i][1] + "\">#" + botData.channels[i][0] + "</label></div>";
             }
             document.getElementById("manageentry-nsfwfilter-block").innerHTML = nsfwfilter_block;
         }
@@ -312,6 +324,22 @@ function switchManage() {
     } else {
         document.getElementById("newgreetingremove").style.display = "none";
         document.getElementById("newgreetinginput").value = "";
+    }
+    
+    document.getElementById("manageentry-customcolors").checked = botData.configs.customcolors;
+    document.getElementById("manageentry-customroles").checked = botData.configs.customroles[0];
+    if(botData.configs.customroles[0]) {
+        if(!document.getElementById("manageentry-customroles-block").innerHTML) {
+            var customroles_block = "";
+            for(var i=0; i<botData.roles.length; i++) {
+                customroles_block += "<div class=\"checkbox\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" id=\"manageentry-customroles-" + botData.roles[i][1] + "\" onclick=\"javascript:config('customroles', this.id.substring(24), function() {});\"" + (botData.configs.customroles[1].indexOf(botData.roles[i][1])>-1 ? " checked" : "") + "><label style=\"color: " + botData.roles[i][3] + ";\" for=\"manageentry-customroles-" + botData.roles[i][1] + "\">" + botData.roles[i][0] + "</label></div>";
+            }
+            customroles_block += "<div class=\"checkbox\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id=\"manageentry-customroles-custom\" type=\"checkbox\" onclick=\"javascript:config('customroles', 'custom', function() {});\"><label for=\"manageentry-customroles-custom\">Custom roles</label></div>"
+            document.getElementById("manageentry-customroles-block").innerHTML = customroles_block;
+        }
+        $("#manageentry-customroles-body").collapse("show");
+    } else {
+        $("#manageentry-customroles-body").collapse("hide");
     }
     
     if(botData.polls.length>0) {

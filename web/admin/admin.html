@@ -184,7 +184,7 @@
                     <div class="col-lg-12">
                         <h2 id="commands" data-toggle="collapse" data-target="#commands-body" aria-expanded="false" aria-controls="collapsecommands">Commands</h2>
                         <div id="commands-body" class="collapse">
-                            Command Modifier:
+                            Command Prefix:
                             &nbsp;&nbsp;
                             <select id="commandtag-selector" onchange="javascript:config('cmdtag', this.value, switchCommands);" class="selectpicker">
                                 <option id="commandtag-tag" value="tag"></option>
@@ -195,6 +195,13 @@
                                 <option id="commandtag-dub" value="--">--</option>
                                 <option id="commandtag-slash" value="/">/</option>
                                 <option id="commandtag-dollar" value="$">$</option>
+                                <option id="commandtag-great" value=">">></option>
+                                <option id="commandtag-backtick" value="`">`</option>
+                                <option id="commandtag-tilde" value="~">~</option>
+                                <option id="commandtag-star" value="*">*</option>
+                                <option id="commandtag-equals" value="=">=</option>
+                                <option id="commandtag-backslash" value="\\">\</option>
+                                <option id="commandtag-quote" value="''">'</option>
                             </select>
                             
                             <br>
@@ -260,6 +267,8 @@
                                     <label for="manageentry-newmembermsg">
                                         Member joined messages
                                     </label>
+                                    &nbsp;
+                                    <select id="manageentry-select-newmembermsg" onchange="javascript:config(this.id.substring(19), this.value, function() {});" class="selectpicker" data-live-search="true"></select>
                                 </div>
                                 <span id="manageentry-newmembermsg-body" class="collapse">
                                     <span id="manageentry-newmembermsg-block"></span>
@@ -275,6 +284,8 @@
                                     <label for="manageentry-onmembermsg">
                                         Member came online messages
                                     </label>
+                                    &nbsp;
+                                    <select id="manageentry-select-onmembermsg" onchange="javascript:config(this.id.substring(19), this.value, function() {});" class="selectpicker" data-live-search="true"></select>
                                 </div>
                                 <span id="manageentry-onmembermsg-body" class="collapse">
                                     <span id="manageentry-onmembermsg-block"></span>
@@ -290,6 +301,8 @@
                                     <label for="manageentry-offmembermsg">
                                         Member went offline messages
                                     </label>
+                                    &nbsp;
+                                    <select id="manageentry-select-offmembermsg" onchange="javascript:config(this.id.substring(19), this.value, function() {});" class="selectpicker" data-live-search="true"></select>
                                 </div>
                                 <span id="manageentry-offmembermsg-body" class="collapse">
                                     <span id="manageentry-offmembermsg-block"></span>
@@ -305,6 +318,8 @@
                                     <label for="manageentry-rmmembermsg">
                                         Member left messages
                                     </label>
+                                    &nbsp;
+                                    <select id="manageentry-select-rmmembermsg" onchange="javascript:config(this.id.substring(19), this.value, function() {});" class="selectpicker" data-live-search="true"></select>
                                 </div>
                                 <span id="manageentry-rmmembermsg-body" class="collapse">
                                     <span id="manageentry-rmmembermsg-block"></span>
@@ -320,6 +335,8 @@
                                     <label for="manageentry-banmembermsg">
                                         Member banned messages
                                     </label>
+                                    &nbsp;
+                                    <select id="manageentry-select-banmembermsg" onchange="javascript:config(this.id.substring(19), this.value, function() {});" class="selectpicker" data-live-search="true"></select>
                                 </div>
                                 <span id="manageentry-banmembermsg-body" class="collapse">
                                     <span id="manageentry-banmembermsg-block"></span>
@@ -335,6 +352,8 @@
                                     <label for="manageentry-unbanmembermsg">
                                         Member unbanned messages
                                     </label>
+                                    &nbsp;
+                                    <select id="manageentry-select-unbanmembermsg" onchange="javascript:config(this.id.substring(19), this.value, function() {});" class="selectpicker" data-live-search="true"></select>
                                 </div>
                                 <span id="manageentry-unbanmembermsg-body" class="collapse">
                                     <span id="manageentry-unbanmembermsg-block"></span>
@@ -379,6 +398,23 @@
                                 <span id="manageentry-nsfwfilter-body" class="collapse">
                                     <span id="manageentry-nsfwfilter-block"></span>
                                 </span>
+                            </span>
+                            
+                            <br>
+                            <div class="checkbox">
+                                <input id="manageentry-customcolors" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
+                                <label for="manageentry-customcolors">
+                                    Allow members to set a custom color
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <input id="manageentry-customroles" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
+                                <label for="manageentry-customroles">
+                                    Allow members to create/join basic roles
+                                </label>
+                            </div>
+                            <span id="manageentry-customroles-body" class="collapse">
+                                <span id="manageentry-customroles-block"></span>
                             </span>
                                 
                             <br>
@@ -458,6 +494,8 @@
                             </div>
                             Upload: 
                             <input id="extensionsupload" type="file" style="display:inline-block;width:300;" accept="application/json" onchange="javascript:newExtension(this.files)" />
+                            <br><br>
+                            <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Coming soon: the AwesomeBot extensions gallery, where you download, rate, and build third-party extensions!">Extensions Gallery</button>
                         </div>
                     </div>
                 </div>
