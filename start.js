@@ -50,7 +50,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.14p1";
+var version = "3.3.14p2";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -4885,7 +4885,7 @@ function getHelp(svr) {
     for(var cmd in commands) {
         if(commands[cmd]) {
             if(configs.servers[svr.id][cmd]) {
-                if(!configs.servers[svr.id][cmd]) {
+                if(configs.servers[svr.id][cmd]==false) {
                     continue;
                 }
                 if(cmd=="rss") {
