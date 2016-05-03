@@ -50,7 +50,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.14p2";
+var version = "3.3.14p3";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -4884,14 +4884,12 @@ function getHelp(svr) {
     var info = "";
     for(var cmd in commands) {
         if(commands[cmd]) {
-            if(configs.servers[svr.id][cmd]) {
-                if(configs.servers[svr.id][cmd]==false) {
+            if(configs.servers[svr.id][cmd]==false) {
+                continue;
+            }
+            if(cmd=="rss") {
+                if(!configs.servers[svr.id][cmd][0]) {
                     continue;
-                }
-                if(cmd=="rss") {
-                    if(!configs.servers[svr.id][cmd][0]) {
-                        continue;
-                    }
                 }
             }
             info += "\n\t" + cmd;
