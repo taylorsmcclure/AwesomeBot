@@ -50,7 +50,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.14p3";
+var version = "3.3.14p4";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -92,6 +92,7 @@ var commands = {
             if(configs.hosting!="") {
                 info += ". Status: " + configs.hosting;
             }
+            info += "\n\n*This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product.*";
             bot.sendMessage(msg.channel, info);
         }
     },
@@ -108,7 +109,7 @@ var commands = {
             if(["bug", "suggestion", "feature", "issue"].indexOf(suffix.toLowerCase())>-1) {
                 bot.sendMessage(msg.channel, "Please file your " + suffix.toLowerCase() + " here: https://github.com/BitQuote/AwesomeBot/issues/new");
             } else {
-                bot.sendMessage(msg.channel, "Use `" + (configs.servers[msg.channel.server.id].cmdtag=="tag" ? ("@" + bot.user.username + " ") : configs.servers[msg.channel.server.id].cmdtag) + "help` to list commands. Created by **@BitQuote**. Go to https://git.io/vaa2F to learn more.");
+                bot.sendMessage(msg.channel, "Use `" + (configs.servers[msg.channel.server.id].cmdtag=="tag" ? ("@" + bot.user.username + " ") : configs.servers[msg.channel.server.id].cmdtag) + "help` to list commands. Created by **@BitQuote**. Go to https://git.io/vaa2F to learn more.\n\n*This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product.*");
             }
         }
     },
@@ -953,7 +954,7 @@ var commands = {
                     if(rolenm) { 
                         var roles = msg.channel.server.roles;
                         if(roles.get("name", rolenm)) {
-                            if(bot.memberHasRole(msg.author, roles.get("name", rolenm))) {
+                            if(bot.memberHasRole(msg.author, roles.get("name", rolenm)) && configs.servers[msg.channel.server.id].customroles[1].indexOf(roles.get("name", rolenm).id)>-1) {
                                 bot.removeMemberFromRole(msg.author.id, roles.get("name", rolenm), function(err) {
                                     if(err) {
                                         logMsg(new Date().getTime(), "ERROR", msg.channel.server.name, msg.channel.name, "Failed to remove " + msg.author.username + " from role " + roles.get("name", rolenm).name);
@@ -2102,6 +2103,7 @@ bot.on("ready", function() {
     
     // Ready to go!
     logMsg(new Date().getTime(), "INFO", "General", null, "Started " + bot.user.username + " v" + version);
+    logMsg(new Date().getTime(), "INFO", "General", null, "This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product.");
 });
 
 bot.on("message", function(msg, user) {
@@ -2213,7 +2215,7 @@ bot.on("message", function(msg, user) {
                     stats[msg.channel.server.id].botOn[msg.channel.id] = true;
                 }
                 logMsg(new Date().getTime(), "INFO", msg.channel.server.name, msg.channel.name, "Bot has been started by an admin" + timestr);
-                bot.sendMessage(msg.channel, "Hello!");
+                bot.sendMessage(msg.channel, "Hello!\n\n*This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product.*");
                 return;
             }
             
@@ -2774,9 +2776,8 @@ bot.on("serverNewMember", function(svr, usr) {
     if(configs.servers[svr.id].servermod && configs.servers[svr.id].newmembermsg[0] && stats[svr.id].botOn[svr.defaultChannel.id]) {
         logMsg(new Date().getTime(), "INFO", svr.name, null, "New member: " + usr.username);
         bot.sendMessage(svr.channels.get("id", configs.servers[svr.id].newmembermsg[2]), configs.servers[svr.id].newmembermsg[1][getRandomInt(0, configs.servers[svr.id].newmembermsg[1].length-1)].replace("++", usr));
+        bot.sendMessage(usr, "Welcome to the " + svr.name + " Discord chat! " + configs.servers[svr.id].newgreeting + " I'm " + bot.user.username + " by the way. Learn more with `" + (configs.servers[svr.id].cmdtag=="tag" ? ("@" + bot.user.username + " ") : configs.servers[svr.id].cmdtag) + "help`");
     }
-    var info = "Welcome to the " + svr.name + " Discord chat! " + configs.servers[svr.id].newgreeting + " I'm " + bot.user.username + " by the way. Learn more with `" + (configs.servers[svr.id].cmdtag=="tag" ? ("@" + bot.user.username + " ") : configs.servers[svr.id].cmdtag) + "help`";
-    bot.sendMessage(usr, info);
     
     stats[svr.id].members[usr.id] = {
         messages: 0,
@@ -4970,7 +4971,7 @@ function getHelp(svr) {
         help.push("\nFinally: *AwesomePoints*, a karma system for Discord. You can upvote someone with `@user <\"^\", \"+1\", or \"up\">`, and give 10 of your own points with `@user gild`. You'll lose points for doing bad things, and get a reward for being the most active user at the end of the week.");
     }
     
-    help.push("\nOn top of all this, you can talk to me about anything privately or in the main chat (by tagging me). Learn more on my wiki: https://git.io/vVHvQ \n\nVersion " + version + " by **@BitQuote**, https://git.io/vaa2F");
+    help.push("\nOn top of all this, you can talk to me about anything privately or in the main chat (by tagging me). Learn more on my wiki: https://git.io/vVHvQ \n\nVersion " + version + " by **@BitQuote**, https://git.io/vaa2F. *This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product.*");
     return help;
 }
 

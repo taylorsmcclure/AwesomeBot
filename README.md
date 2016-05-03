@@ -60,6 +60,7 @@ Latest, version **3.3.14**:
 Patch #1: Fixed admin console botblocked display  
 Patch #2: Made help respect command config  
 Patch #3: Fixed the last update  
+Patch #4: Bug fixes and performance enhancements™  
  
 Open an issue to report a bug or suggest a new feature!
 
