@@ -50,7 +50,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.14";
+var version = "3.3.14p1";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -1922,7 +1922,7 @@ bot.on("ready", function() {
                             }
                             if(key=="blocked") {
                                 for(var i=0; i<configs.botblocked.length; i++) {
-                                    var usr = bot.users.get("id", configs.botblocked[i]);
+                                    var usr = svr.members.get("id", configs.botblocked[i]);
                                     if(usr && usr.username) {
                                         currentConfig[key].push([usr.avatarURL || "http://i.imgur.com/fU70HJK.png", usr.username + " (global)", usr.id, true]);
                                     }

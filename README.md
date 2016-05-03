@@ -57,6 +57,8 @@ Latest, version **3.3.14**:
  - Included config updater
  - Other fixes and enhancements
  
+Patch #1: Fixed admin console botblocked display  
+ 
 Open an issue to report a bug or suggest a new feature!
 
 Contribute
