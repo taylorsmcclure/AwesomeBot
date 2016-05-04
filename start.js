@@ -51,7 +51,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.15";
+var version = "3.3.15p1";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -4230,7 +4230,7 @@ function checkConfig(svr) {
     for(key in configs.servers[svr.id]) {
         if(configDefaults.default[key]==null && configDefaults.full[key]==null) {
             changed = true;
-            delete configs.servers[svr.id][config];
+            delete configs.servers[svr.id][key];
         }
     }
     

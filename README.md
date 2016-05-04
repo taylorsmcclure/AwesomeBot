@@ -51,6 +51,8 @@ Latest, version **3.3.15**:
 - Added choose for me command
 - Upload Twitch emotes instead of sending URL
 - Removed useless quote command
+
+Patch #1: Fixed config pruning crash  
  
 Open an issue to report a bug or suggest a new feature!
 
