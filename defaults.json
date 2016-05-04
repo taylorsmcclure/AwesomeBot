@@ -92,6 +92,8 @@
             true
         ],
         "customcolors": true,
+        "meme": true,
+        "choose": true,
         "tag": true,
         "stats": true,
         "points": true,
@@ -102,7 +104,6 @@
         "say": true,
         "me": true,
         "convert": true,
-        "quote": true,
         "twitter": true,
         "youtube": true,
         "image": true,
@@ -118,6 +119,7 @@
         "tagreaction": true,
         "poll": true,
         "trivia": true,
+        "afk": true,
         "showpub": true
     },
     "lite": {
@@ -138,6 +140,8 @@
         ],
         "customcolors": false,
         "tag": false,
+        "meme": false,
+        "choose": false,
         "stats": false,
         "points": false,
         "lottery": false,
@@ -147,7 +151,6 @@
         "say": false,
         "me": false,
         "convert": false,
-        "quote": false,
         "twitter": false,
         "youtube": true,
         "image": true,
@@ -163,6 +166,7 @@
         "tagreaction": false,
         "poll": true,
         "trivia": false,
+        "afk": false,
         "showpub": false
     },
     "sense": {
@@ -183,6 +187,8 @@
         ],
         "customcolors": false,
         "tag": true,
+        "meme": false,
+        "choose": false,
         "stats": true,
         "points": true,
         "lottery": false,
@@ -192,7 +198,6 @@
         "say": true,
         "me": false,
         "convert": false,
-        "quote": false,
         "twitter": false,
         "youtube": true,
         "image": true,
@@ -208,6 +213,7 @@
         "tagreaction": false,
         "poll": true,
         "trivia": true,
+        "afk": true,
         "showpub": false
     }  
 }

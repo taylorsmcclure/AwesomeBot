@@ -10,6 +10,7 @@ try {
     var reminders = require("./data/reminders.json");
     var logs = require("./data/logs.json");
     const emotes = require("./emotes.json");
+    const memes = require("./memes.json");
 
     // Hijack spawn for auto-update to work properly
     (function() {
@@ -50,7 +51,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.14p5";
+var version = "3.3.15";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -142,6 +143,56 @@ var commands = {
             }
         }
     },
+    // Generates a dank new meme
+    "meme": {
+        usage: "<image name>|<top text>|<bottom text>",
+        process: function(bot, msg, suffix) {
+            if(suffix && suffix.split("|").length==3) {
+                var name = suffix.split("|")[0];
+                var top = suffix.split("|")[1];
+                var bottom = suffix.split("|")[2];
+                if(!name || !top || !bottom) {
+                    logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, msg.author.username + " did not provide proper syntax for meme");
+                    bot.sendMessage(msg.channel, "http://i.imgur.com/IHqy8l6.jpg");
+                } else {
+                    var found = false;
+                    for(var i=0; i<memes.length; i++) {
+                        if(levenshtein.get(name.toLowerCase(), memes[i].toLowerCase())<3) {
+                            name = memes[i];
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(found) {
+                        var url = "http://apimeme.com/meme?meme=" + encodeURI(name.replace(/\s/g, '+').replace(/&/g, '')) + "&top=" + encodeURI(top.replace(/\s/g, '+').replace(/&/g, '')) + "&bottom=" + encodeURI(bottom.replace(/\s/g, '+').replace(/&/g, ''));
+                        base64.base64encoder(url, {filename: "meme.jpg"}, function(error, image) {
+                            if(!error) {
+                                bot.sendFile(msg.channel, image);
+                            } else {
+                                bot.sendMessage(msg.channel, url);
+                            }
+                        });
+                    } else {
+                        bot.sendMessage(msg.channel, "http://i.imgur.com/theaeKM.png");
+                    }
+                }
+            } else {
+                bot.sendMessage(msg.channel, "http://i.imgur.com/5VKP1Yj.gifv");
+            }
+        }
+    },
+    // Chooses from a set of options
+    "choose": {
+        usage: "<option 1>|<option 2>|...",
+        process: function(bot, msg, suffix) {
+            if(suffix && suffix.split("|").length>=2) {
+                bot.sendMessage(msg.channel, suffix.split("|")[getRandomInt(0, suffix.split("|").length-1)]);
+            } else {
+                logMsg(new Date().getTime(), "WARN", msg.channel.server.name, msg.channel.name, msg.author.username + " did not provide proper syntax for choose");
+                bot.sendMessage(msg.channel, msg.author + " :thinking: I didn't quite get that. Make sure to use the syntax `choose <option 1>|<option 2>|...`");
+            }
+        }
+    },
     // Database of easily accessible responses
     "tag": {
         usage: "<key or \"clear\">[|<value>]",
@@ -195,7 +246,7 @@ var commands = {
             } else if(suffix.toLowerCase()=="shrug") {
                 bot.sendMessage(msg.channel, "¯\\\_(ツ)\_/¯");
             } else if(emotes[suffix.toLowerCase()]) {
-                bot.sendMessage(msg.channel, "http://static-cdn.jtvnw.net/emoticons/v1/" + emotes[suffix.toLowerCase()] + "/2.0");
+                bot.sendFile(msg.channel, "http://emote.3v.fi/2.0/" + emotes[suffix.toLowerCase()] + ".png");
             } else if(!suffix) {
                 var info = ""
                 for(var tag in configs.servers[msg.channel.server.id].tags) {
@@ -215,18 +266,6 @@ var commands = {
                 bot.sendMessage(msg.channel, msg.author + " That tag isn't registered in my database. Use `" + (configs.servers[msg.channel.server.id].cmdtag=="tag" ? ("@" + bot.user.username + " ") : configs.servers[msg.channel.server.id].cmdtag) + "tag " + suffix.toLowerCase() + "|<value>` to set it.");
             }
         }
-    },
-    // Gets Forbes Quote of the Day or creates author quote
-    "quote": {
-        process: function(bot, msg, suffix) {
-            if(suffix) {
-                bot.sendMessage(msg.channel, "`" + suffix + "`\n\t- " + msg.author.username);
-            } else {
-                quotable().then(function (quote) {
-                    bot.sendMessage(msg.channel, "`" + quote.quote + "`\n\t- " + quote.author + ": " + quote.url);
-                });
-            }
-        } 
     },
     // Searches Google for a given query
     "search": {
@@ -2038,23 +2077,42 @@ bot.on("ready", function() {
     app.use(express.static("web"));
     
     app.post("/config", function(req, res) {
-        if(Object.keys(getOnlineConsole(req.query.auth)).length>0) {
-            if(req.query.type=="maintainer") {
-                parseMaintainerConfig(req.body, function(err) {
-                    res.sendStatus(err ? 400 : 200);
-                });
-            } else if(req.query.type=="admin" && req.query.svrid && req.query.usrid) {
-                svr = bot.servers.get("id", req.query.svrid);
-                if(svr) {
-                    parseAdminConfig(req.body, svr, req.query.usrid, function(err) {
+        if(req.query.auth && req.query.type) {
+            var data = getOnlineConsole(req.query.auth);
+            if(Object.keys(data).length>0) {
+                var consoleid = data.usrid.slice(0);
+                clearTimeout(onlineconsole[consoleid].timer);
+                
+                if(req.query.type=="maintainer") {
+                    onlineconsole[consoleid].timer = setTimeout(function() {
+                        logMsg(new Date().getTime(), "INFO", "General", null, "Timeout on online maintainer console");
+                        delete onlineconsole[consoleid];
+                    }, 180000);   
+                    
+                    parseMaintainerConfig(req.body, function(err) {
                         res.sendStatus(err ? 400 : 200);
                     });
-                } else {
-                    res.sendStatus(400);
+                } else if(req.query.type=="admin" && req.query.svrid && req.query.usrid) {
+                    onlineconsole[consoleid].timer = setTimeout(function() {
+                        logMsg(new Date().getTime(), "INFO", consoleid, null, "Timeout on online admin console for " + svr.name);
+                        delete adminconsole[consoleid];
+                        delete onlineconsole[consoleid];
+                    }, 180000);
+                    
+                    svr = bot.servers.get("id", req.query.svrid);
+                    if(svr) {
+                        parseAdminConfig(req.body, svr, req.query.usrid, function(err) {
+                            res.sendStatus(err ? 400 : 200);
+                        });
+                    } else {
+                        res.sendStatus(400);
+                    }
                 }
+            } else {
+                res.sendStatus(401);
             }
         } else {
-            res.sendStatus(401);
+            res.sendStatus(400);
         }
     });
     

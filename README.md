@@ -46,22 +46,11 @@ If you want a stable bot, please use the [latest milestone release](https://gith
 Changelog
 ---------
 
-Latest, version **3.3.14**:
-
- - Bug report option in about command
- - More role options and join role support
- - Added timestamps to admin strikes
- - Fixed oversensitive NSFW filter
- - Option for membermsg channels
- - More command prefixes available
- - Included config updater
- - Other fixes and enhancements
- 
-Patch #1: Fixed admin console botblocked display  
-Patch #2: Made help respect command config  
-Patch #3: Fixed the last update  
-Patch #4: Bug fixes and performance enhancements™  
-Patch #5: Added disclaimers in web interface  
+Latest, version **3.3.15**:
+- Meme generator via APImeme
+- Added choose for me command
+- Upload Twitch emotes instead of sending URL
+- Removed useless quote command
  
 Open an issue to report a bug or suggest a new feature!
 
