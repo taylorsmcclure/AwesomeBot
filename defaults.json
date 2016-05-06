@@ -46,6 +46,10 @@
             ],
             null
         ],
+        "changemembermsg": [
+            false,
+            null
+        ],
         "rmmembermsg": [
             false,
             [
@@ -73,7 +77,8 @@
                 "++ has been unbanned"
             ],
             null
-        ]
+        ],
+        "muted": {}
     },
     "full": {
         "servermod": true,
@@ -93,6 +98,7 @@
         ],
         "customcolors": true,
         "meme": true,
+        "urban": true,
         "choose": true,
         "tag": true,
         "stats": true,
@@ -120,6 +126,7 @@
         "poll": true,
         "trivia": true,
         "afk": true,
+        "shorten": true,
         "showpub": true
     },
     "lite": {
@@ -141,6 +148,7 @@
         "customcolors": false,
         "tag": false,
         "meme": false,
+        "urban": false,
         "choose": false,
         "stats": false,
         "points": false,
@@ -167,6 +175,7 @@
         "poll": true,
         "trivia": false,
         "afk": false,
+        "shorten": false,
         "showpub": false
     },
     "sense": {
@@ -188,6 +197,7 @@
         "customcolors": false,
         "tag": true,
         "meme": false,
+        "urban": true,
         "choose": false,
         "stats": true,
         "points": true,
@@ -214,6 +224,7 @@
         "poll": true,
         "trivia": true,
         "afk": true,
+        "shorten": false,
         "showpub": false
     }  
 }

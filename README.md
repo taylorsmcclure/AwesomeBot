@@ -46,13 +46,13 @@ If you want a stable bot, please use the [latest milestone release](https://gith
 Changelog
 ---------
 
-Latest, version **3.3.15**:
-- Meme generator via APImeme
-- Added choose for me command
-- Upload Twitch emotes instead of sending URL
-- Removed useless quote command
-
-Patch #1: Fixed config pruning crash  
+Latest, version **3.3.16**:
+ - Ability to mute members per-channel
+ - URL shortener command
+ - Better web interface error handling
+ - Username change message option
+ - More reliable logging
+ - Misc. fixes as always
  
 Open an issue to report a bug or suggest a new feature!
 

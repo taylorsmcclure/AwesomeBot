@@ -60,12 +60,32 @@ function switchBlocked() {
     var blockedtablebody = "";
     for(var i=0; i<botData.configs.blocked.length; i++) {
         blacklist.push(botData.configs.blocked[i][2]);
-        blockedtablebody += "<tr id=\"blockedentry-" + botData.configs.blocked[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.configs.blocked[i][0] + "\" /></td><td>" + botData.configs.blocked[i][1] + "</td><td>" + botData.configs.blocked[i][2] + "</td>" + (botData.configs.blocked[i][3] ? "" : "<td><button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:config('blocked', this.parentNode.parentNode.id.substring(13), function() {switchAdmins();switchBlocked();switchStrikes();});\">Unblock</button></td>") + "</tr>";
+        blockedtablebody += "<tr id=\"blockedentry-" + botData.configs.blocked[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.configs.blocked[i][0] + "\" /></td><td>" + botData.configs.blocked[i][1] + "</td><td>" + botData.configs.blocked[i][2] + "</td><td><button type=\"button\" class=\"btn btn-primary btn-xs blockedmute\" id=\"blockedentry-"+ i + "-mute\">Mute</button>&nbsp;" + (botData.configs.blocked[i][3] ? "" : "<button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:config('blocked', this.parentNode.parentNode.id.substring(13), function() {switchAdmins();switchBlocked();switchStrikes();});\">Unblock</button>") + "</td></tr>";
     }
     document.getElementById("blockedtablebody").innerHTML = blockedtablebody;
     if(botData.configs.blocked.length==0) {
         document.getElementById("blockedtable").style.display = "none";
     }
+    
+    $("#blockedtable").popover({
+        html: true,
+        title: function() {
+            i = parseInt(this.id.substring(this.id.indexOf("-")+1, this.id.lastIndexOf("-")));
+            return "<button type=\"button\" class=\"close\" id=\"blockedentry-" + botData.configs.blocked[i][2] + "-popoverclose\" onclick=\"$('#" + this.id + "').popover('hide');\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button><h4 class=\"modal-title\">Mute @" + botData.configs.blocked[i][1] + "</h4>";
+        },
+        content: function() {
+            i = parseInt(this.id.substring(this.id.indexOf("-")+1, this.id.lastIndexOf("-")));
+            var popovercontent = "Block sending messages in:";
+            for(var j=0; j<botData.channels.length; j++) {
+                popovercontent += "<div class=\"checkbox\"><input type=\"checkbox\" id=\"blockedentry-mute-" + j + "\" onclick=\"javascript:newMute(['" + botData.configs.blocked[i][2] + "', '" + botData.channels[j][1] + "'], " + i + ");\"" + (botData.configs.blocked[i][4][botData.channels[j][1]] ? " checked" : "") + "><label for=\"blockedentry-mute-" + j + "\">#" + botData.channels[j][0] + "</label></div>";
+            }
+            return popovercontent;
+        },
+        selector: ".blockedmute",
+        placement: "bottom",
+        container: "body",
+        trigger: "click"
+    });
     
     for(var i=0; i<botData.configs.admins.length; i++) {
         blacklist.push(botData.configs.admins[i][2]);
@@ -78,6 +98,11 @@ function switchBlocked() {
         document.getElementById("blockedselector").innerHTML = blockedselector;
         $("#blockedselector").selectpicker("refresh");
     });
+}
+
+function newMute(data, i) {
+    $("#blockedentry-" + i + "-mute").popover("hide");
+    config("mute", data, switchBlocked);
 }
 
 function switchStrikes() {
@@ -220,7 +245,7 @@ function newRss() {
 function switchCommands() {
     var commands = "";
     for(var cmd in botData.configs) {
-        if(["admins", "blocked", "extensions", "newgreeting", "nsfwfilter", "servermod", "spamfilter", "customroles", "customcolors","cmdtag", "newmembermsg", "onmembermsg", "offmembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg", "triviasets", "showpub"].indexOf(cmd)==-1) {
+        if(["admins", "blocked", "extensions", "newgreeting", "nsfwfilter", "servermod", "spamfilter", "customroles", "customcolors","cmdtag", "newmembermsg", "onmembermsg", "offmembermsg", "changemembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg", "triviasets", "showpub"].indexOf(cmd)==-1) {
             commands += "<div class=\"checkbox\"><input style=\"height: auto;\" id=\"commandsentry-" + cmd + "\" type=\"checkbox\" onclick=\"javascript:config(this.id.substring(14), this.checked, switchCommands);\" " + ((cmd=="rss" ? botData.configs[cmd][0] : botData.configs[cmd]) ? "checked " : "") + "/><label for=\"commandsentry-" + cmd + "\">" + cmd + "</label></div>";
         }
     }
@@ -241,7 +266,7 @@ function resetConfigs() {
 function switchManage() {
     document.getElementById("manageentry-servermod").checked = botData.configs.servermod;
     
-    var membermsg = ["newmembermsg", "onmembermsg", "offmembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg"];
+    var membermsg = ["newmembermsg", "onmembermsg", "offmembermsg", "changemembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg"];
     for(var i=0; i<membermsg.length; i++) {
         document.getElementById("manageentry-" + membermsg[i]).checked = botData.configs[membermsg[i]][0];
         if(botData.configs[membermsg[i]][0]) {
@@ -250,21 +275,25 @@ function switchManage() {
                 manageentry_select += "<option value=\"" + botData.channels[j][1] + "\">#" + botData.channels[j][0] + "</option>";
             }
             document.getElementById("manageentry-select-" + membermsg[i]).innerHTML = manageentry_select;
-            document.getElementById("manageentry-select-" + membermsg[i]).value = botData.configs[membermsg[i]][2];
+            document.getElementById("manageentry-select-" + membermsg[i]).value = (membermsg[i]=="changemembermsg" ? botData.configs[membermsg[i]][1] : botData.configs[membermsg[i]][2]);
             document.getElementById("manageentry-select-" + membermsg[i]).removeAttribute("disabled");
             $("#manageentry-select-" + membermsg[i]).selectpicker("refresh");
             
-            var current_block = "";
-            for(var j=0; j<botData.configs[membermsg[i]][1].length; j++) {
-                current_block += "<div class=\"checkbox\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" onclick=\"javascript:config('" + membermsg[i] + "', this.value, function() {});\" id=\"manageentry-" + membermsg[i] + "-" + j + "\" value=\"" + botData.configs[membermsg[i]][1][j] + "\" checked><label for=\"manageentry-" + membermsg[i] + "-" + j + "\">" + botData.configs[membermsg[i]][1][j].replace("++", "<b>@user</b>") + "</label></div>";
+            if(membermsg[i]!="changemembermsg") {
+                var current_block = "";
+                for(var j=0; j<botData.configs[membermsg[i]][1].length; j++) {
+                    current_block += "<div class=\"checkbox\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" onclick=\"javascript:config('" + membermsg[i] + "', this.value, function() {});\" id=\"manageentry-" + membermsg[i] + "-" + j + "\" value=\"" + botData.configs[membermsg[i]][1][j] + "\" checked><label for=\"manageentry-" + membermsg[i] + "-" + j + "\">" + botData.configs[membermsg[i]][1][j].replace("++", "<b>@user</b>") + "</label></div>";
+                }
+                document.getElementById("manageentry-" + membermsg[i] + "-block").innerHTML = current_block;
+                document.getElementById(membermsg[i] + "-input").value = "";
+                $("#manageentry-" + membermsg[i] + "-body").collapse("show");
             }
-            document.getElementById("manageentry-" + membermsg[i] + "-block").innerHTML = current_block;
-            document.getElementById(membermsg[i] + "-input").value = "";
-            $("#manageentry-" + membermsg[i] + "-body").collapse("show");
         } else {
             document.getElementById("manageentry-select-" + membermsg[i]).setAttribute("disabled", "disable");
             $("#manageentry-select-" + membermsg[i]).selectpicker("refresh");
-            $("#manageentry-" + membermsg[i] + "-body").collapse("hide");
+            if(membermsg[i]!="changemembermsg") {
+                $("#manageentry-" + membermsg[i] + "-body").collapse("hide");
+            }
         }
     }
     
@@ -466,7 +495,7 @@ function switchExtensions() {
     var extensionstablebody = "";
     for(var i=0; i<botData.configs.extensions.length; i++) {
         var info = "<tr id=\"extensionsentry-" + encodeURI(botData.configs.extensions[i][0]) + "\"><td>" + botData.configs.extensions[i][0] + "</td><td>" + botData.configs.extensions[i][1] + "</td><td>";
-        if(botData.configs.extensions[i][2].length>0) {
+        if(botData.configs.extensions[i][2]) {
             var chinfo = "";
             for(var j=0; j<botData.configs.extensions[i][2].length; j++) {
                 chinfo += "#" + botData.configs.extensions[i][2][j] + ", ";

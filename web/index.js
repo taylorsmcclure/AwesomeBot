@@ -64,11 +64,13 @@ function writeInterface() {
                 getJSON("/data?section=list&type=logids", function(data) {
                     var idselector = "";
                     for(var i=0; i<data.stream.length; i++) {
-                        if(!isNaN(parseInt(data.stream[i][1]))) {
-                            idselector += "<option id=\"id-" + data.stream[i][1] + "\" value=\"" + data.stream[i][1] + "\">@" + data.stream[i][0] + "</option>";
+                        idselector += "<option id=\"id-" + (data.stream[i][0] ? ("server-" + data.stream[i][0][0]) : ("author-"+ data.stream[i][1][0])) + "\" value=\"" + (data.stream[i][0] ? ("server-" + data.stream[i][0][0]) : ("author-"+ data.stream[i][1][0])) + "\">";
+                        if(!data.stream[i][0] && data.stream[i][1]) {
+                            idselector += "@" + data.stream[i][1][1];
                         } else {
-                            idselector += "<option id=\"id-" + data.stream[i][0] + "\" value=\"" + data.stream[i][0] + "\">" + data.stream[i][0] + "</option>";
+                            idselector += data.stream[i][0][1];
                         }
+                        idselector += "</option>";
                     }
                     document.getElementById("idselector").innerHTML += idselector;
                     $("#idselector").selectpicker("refresh");
@@ -278,6 +280,9 @@ function getJSON(url, callback) {
     var status = xhr.status;
         if(status==200) {
             callback(xhr.response);
+        } else {
+            $("#loading-modal").modal("hide");
+            richModal("Something went wrong");
         }
     };
     try {

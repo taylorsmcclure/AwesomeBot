@@ -130,7 +130,7 @@
                     <div class="col-lg-12">
                         <h2 id="blocked" data-toggle="collapse" data-target="#blocked-body" aria-expanded="false" aria-controls="collapseblocked">Blocklist</h2>
                         <div id="blocked-body" class="collapse">
-                            <p class="help-block">Blocked members will not be able to use the bot anywhere on the server. Entries marked with <code>(global)</code> have been blocked by the bot maintainer.</p>
+                            <p class="help-block">Blocked members will not be able to use the bot anywhere on the server. Entries marked with <code>(global)</code> have been blocked by the bot maintainer. You can also block a member to mute them on certain channels.</p>
                             <div class="table-responsive">
                                 <table id="blockedtable" class="table table-striped">
                                     <thead>
@@ -312,6 +312,15 @@
                                         <span class="input-group-addon btn btn-primary" onclick="javascript:config('offmembermsg', $('#offmembermsg-input').val(), function() {});">Add</span>
                                     </div>
                                 </span>
+                                
+                                <div class="checkbox">
+                                    <input id="manageentry-changemembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
+                                    <label for="manageentry-changemembermsg">
+                                        Member changed username messages
+                                    </label>
+                                    &nbsp;
+                                    <select id="manageentry-select-changemembermsg" onchange="javascript:config(this.id.substring(19), this.value, function() {});" class="selectpicker" data-live-search="true"></select>
+                                </div>
                                 
                                 <div class="checkbox">
                                     <input id="manageentry-rmmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
@@ -522,6 +531,25 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
                         <button type="button" class="btn btn-primary" onclick="doLogout();">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Extender Modal -->
+        <div class="modal fade" id="extender-modal" tabindex="-1" role="dialog" aria-labelledby="extender">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Session</h4>
+                    </div>
+                    <div class="modal-body">
+                        It's been nearly 3 minutes. Would you like to extend your session?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                        <button type="button" class="btn btn-primary" onclick="checkAuth(true);">Yes</button>
                     </div>
                 </div>
             </div>

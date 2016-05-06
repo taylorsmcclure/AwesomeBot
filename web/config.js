@@ -20,6 +20,7 @@ function doAuth() {
         authtype = auth.type;
         getJSON("/data/?auth=" + authtoken + "&type=" + auth.type, function(data) {
             if(Object.keys(data).length>0 && (location.pathname+location.search).substr(1)==authtype) {
+                checkAuth();
                 botData = data;
                 if(authtype=="maintainer") {
                     doMaintainerSetup();
@@ -32,6 +33,24 @@ function doAuth() {
         });
     } else {
         leaveConsole("Authentication failed");
+    }
+}
+
+function checkAuth(extend) {
+    if(extend) {
+        postJSON({extend: true}, function(response) {
+            $("#extender-modal").modal("hide");
+            if(response!=200) {
+                leaveConsole("Session timeout");
+            }
+        });
+    } else {
+        setTimeout(function() {
+            $("#extender-modal").modal("show");
+            setTimeout(function() {
+                checkAuth();
+            }, 30000);
+        }, 150000);
     }
 }
 

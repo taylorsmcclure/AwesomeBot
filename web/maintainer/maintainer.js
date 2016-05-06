@@ -8,6 +8,7 @@ function doMaintainerSetup() {
     switchUsage();
     $("#commandusage-body").collapse("show");
     switchServers();
+    document.getElementById("servers-badge").innerHTML = botData.servers.length; 
     $("#servers-body").collapse("show");
     switchBotBlocked();
     $("#botblocked-body").collapse("show");

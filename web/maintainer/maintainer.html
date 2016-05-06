@@ -117,7 +117,7 @@
                 
                 <div class="row">
                     <div class="col-lg-12">
-                        <h2 class="section-head" id="servers" data-toggle="collapse" data-target="#servers-body" aria-expanded="false" aria-controls="collapseservers">Servers</h2>
+                        <h2 class="section-head" id="servers" data-toggle="collapse" data-target="#servers-body" aria-expanded="false" aria-controls="collapseservers">Servers <span id="servers-badge" class="badge"></span></h2>
                         <div id="servers-body" class="collapse">
                             <div class="table-responsive">
                                 <table id="servertable" class="table table-striped">
@@ -244,6 +244,25 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
                         <button type="button" class="btn btn-primary" onclick="doLogout();">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Extender Modal -->
+        <div class="modal fade" id="extender-modal" tabindex="-1" role="dialog" aria-labelledby="extender">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Session</h4>
+                    </div>
+                    <div class="modal-body">
+                        It's been nearly 3 minutes. Would you like to extend your session?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                        <button type="button" class="btn btn-primary" onclick="checkAuth(true);">Yes</button>
                     </div>
                 </div>
             </div>
