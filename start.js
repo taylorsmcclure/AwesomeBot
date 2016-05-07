@@ -53,7 +53,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.17p10";
+var version = "3.3.17p11";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -961,6 +961,7 @@ var commands = {
                         polls[act].responses.push(vt);
                         polls[act].responderIDs.push(msg.author.id);
                         logMsg(new Date().getTime(), "INFO", msg.channel.server.id, msg.channel.id, "Vote cast for " + vt + " by " + msg.author.username);
+                        bot.sendMessage(msg.channel, "Cast vote for `" + polls[act].options[vt] + "`");
                     } else {
                         logMsg(new Date().getTime(), "WARN", msg.channel.server.id, msg.channel.id, "Could not cast " + msg.author.username + "'s vote, duplicate or not an option");
                         bot.sendMessage(msg.channel, msg.author + " I couldn't cast your vote.");
@@ -1151,7 +1152,30 @@ var commands = {
         usage: "<username>",
         process: function(bot, msg, suffix) {
             var usr = msg.channel.server.members.get("username", suffix);
-            if(!suffix || suffix=="me") {
+            if(!suffix) {
+                var memberMessages = [];
+                for(var usrid in stats[msg.channel.server.id].members) {
+                    usr = msg.channel.server.members.get("id", usrid);
+                    if(usr) { 
+                        memberMessages.push([usr.username, stats[msg.channel.server.id].members[usrid].messages]); 
+                    }
+                }
+                memberMessages.sort(function(a, b) {
+                    return a[1] - b[1];
+                });
+                var info = "";
+                for(var i=memberMessages.length-1; i>=0; i--) {
+                    var tmpinfo = "**@" + memberMessages[i][0] + "**: " + memberMessages[i][1] + " message" + (memberMessages[i][1]==1 ? "" : "s") + " this week\n";
+                    if((tmpinfo.length + info.length)>2000) {
+                        break;
+                    } else {
+                        info += tmpinfo;
+                    }
+                }
+                bot.sendMessage(msg.channel, info);
+                return;
+            }
+            if(suffix=="me") {
                 usr = msg.author;
             } else if(suffix.indexOf("<@!")==0) {
                 usr = msg.channel.server.members.get("id", suffix.substring(3, suffix.length-1));
