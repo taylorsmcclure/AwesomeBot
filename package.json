@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/BitQuote/AwesomeBot.git"
   },
-  "license": "GNU",
+  "license": "CCPL",
   "dependencies": {
     "discord.js": ">=6.2.0",
     "request": ">=2.58.0",

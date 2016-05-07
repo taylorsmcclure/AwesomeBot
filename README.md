@@ -62,6 +62,7 @@ Patch #5: Fixed newrole showing as a command
 Patch #6: Fixed console timeout crash  
 Patch #7: Fixed role and changemembermsg bugs  
 Patch #8: Fixed past names display  
+Patch #9: Fixed license in package.json  
  
 Open an issue to report a bug or suggest a new feature!
 

@@ -53,7 +53,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.17p8";
+var version = "3.3.17p9";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
