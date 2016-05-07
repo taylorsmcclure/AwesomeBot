@@ -53,7 +53,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.17p2";
+var version = "3.3.17p3";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2274,7 +2274,7 @@ bot.on("ready", function() {
 
 bot.on("message", function(msg, user) {
     try {
-        // Stop responding if the sender is another bot
+        // Stop responding if the sender is another bot or botblocked
         if(configs.botblocked.indexOf(msg.author.id)>-1 || msg.author.bot) {
             return;
         }
@@ -3390,7 +3390,7 @@ function clearStatCounter() {
                 };
             }
             for(var j=0; j<bot.servers[i].members.length; j++) {
-                if(bot.servers[i].members[j].id!=bot.user.id) {
+                if(bot.servers[i].members[j].id!=bot.user.id && !bot.servers[i].members[j].bot) {
                     // If member is playing game, add 0.1 (equal to five minutes) to game tally
                     var game = getGame(bot.servers[i].members[j]); 
                     if(game && bot.servers[i].members[j].id) {
