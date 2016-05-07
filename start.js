@@ -53,7 +53,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.17p7";
+var version = "3.3.17p8";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -3081,7 +3081,7 @@ bot.on("presence", function(oldusr, newusr) {
                         profileData[newusr.id]["Past Names"] = "";
                     }
                     if(profileData[newusr.id]["Past Names"].indexOf(oldusr.username)==-1) {
-                        profileData[newusr.id]["Past Names"] += (profileData[newusr.id]["Past Names"].length==1 ? "" : ", ") + oldusr.username;
+                        profileData[newusr.id]["Past Names"] += (profileData[newusr.id]["Past Names"].length==0 ? "" : ", ") + oldusr.username;
                     }
                     saveData("./data/profiles.json", function(err) {
                         if(err) {
