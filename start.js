@@ -53,7 +53,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.17p5";
+var version = "3.3.17p6";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2202,7 +2202,7 @@ bot.on("ready", function() {
                 } else if(req.query.type=="admin" && req.query.svrid && req.query.usrid) {
                     onlineconsole[consoleid].timer = setTimeout(function() {
                         logMsg(new Date().getTime(), "INFO", null, consoleid, "Timeout on online admin console for " + svr.name);
-                        delete adminconsole[consolFeid];
+                        delete adminconsole[consoleid];
                         delete onlineconsole[consoleid];
                     }, 180000);
                     
