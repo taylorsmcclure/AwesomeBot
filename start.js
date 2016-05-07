@@ -53,7 +53,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.17p9";
+var version = "3.3.17p10";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -3064,7 +3064,7 @@ bot.on("presence", function(oldusr, newusr) {
                     }
                 }
                 
-                if(oldusr.username!=newusr.username) {
+                if(oldusr.username!=newusr.username && oldusr.username && newusr.username) {
                     if(configs.servers[bot.servers[i].id].changemembermsg[0]) {
                         bot.sendMessage(bot.servers[i].channels.get("id", configs.servers[bot.servers[i].id].changemembermsg[1]), "**@" + oldusr.username + "** is now **@" + newusr.username + "**");
                     }

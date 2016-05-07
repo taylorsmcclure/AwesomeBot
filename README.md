@@ -63,6 +63,7 @@ Patch #6: Fixed console timeout crash
 Patch #7: Fixed role and changemembermsg bugs  
 Patch #8: Fixed past names display  
 Patch #9: Fixed license in package.json  
+Patch #10: Fixed changemembermsg null display  
  
 Open an issue to report a bug or suggest a new feature!
 
