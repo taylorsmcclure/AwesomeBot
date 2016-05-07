@@ -30,6 +30,7 @@
             ],
             null
         ],
+        "newrole": null,
         "onmembermsg": [
             false,
             [
@@ -78,7 +79,8 @@
             ],
             null
         ],
-        "muted": {}
+        "muted": {},
+        "filter": []
     },
     "full": {
         "servermod": true,
@@ -103,6 +105,7 @@
         "tag": true,
         "stats": true,
         "points": true,
+        "messages": true,
         "lottery": true,
         "chatterbot": true,
         "linkme": true,
@@ -126,6 +129,7 @@
         "poll": true,
         "trivia": true,
         "afk": true,
+        "joke": true,
         "shorten": true,
         "showpub": true
     },
@@ -152,6 +156,7 @@
         "choose": false,
         "stats": false,
         "points": false,
+        "messages": false,
         "lottery": false,
         "chatterbot": false,
         "linkme": false,
@@ -175,6 +180,7 @@
         "poll": true,
         "trivia": false,
         "afk": false,
+        "joke": false,
         "shorten": false,
         "showpub": false
     },
@@ -201,6 +207,7 @@
         "choose": false,
         "stats": true,
         "points": true,
+        "messages": true,
         "lottery": false,
         "chatterbot": true,
         "linkme": true,
@@ -224,6 +231,7 @@
         "poll": true,
         "trivia": true,
         "afk": true,
+        "joke": false,
         "shorten": false,
         "showpub": false
     }  

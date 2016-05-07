@@ -55,32 +55,40 @@ function writeInterface() {
             $("#statsselect").selectpicker("refresh");
             
             switchStats("null", true);
-            
-            getJSON("/data?section=servers", function(data) {
-                for(var i=0; i<data.stream.length; i++) {
-                    document.getElementById("servertablebody").innerHTML += "<tr><td><img class=\"profilepic\" width=25 src=\"" + data.stream[i][0] + "\" /></td><td>" + data.stream[i][1] + "</td><td>" + data.stream[i][2] + "</td><td>" + data.stream[i][3] + "</td><td>" + data.stream[i][4] + "</td></tr>";
-                }
                 
-                getJSON("/data?section=list&type=logids", function(data) {
-                    var idselector = "";
-                    for(var i=0; i<data.stream.length; i++) {
-                        idselector += "<option id=\"id-" + (data.stream[i][0] ? ("server-" + data.stream[i][0][0]) : ("author-"+ data.stream[i][1][0])) + "\" value=\"" + (data.stream[i][0] ? ("server-" + data.stream[i][0][0]) : ("author-"+ data.stream[i][1][0])) + "\">";
-                        if(!data.stream[i][0] && data.stream[i][1]) {
-                            idselector += "@" + data.stream[i][1][1];
-                        } else {
-                            idselector += data.stream[i][0][1];
-                        }
-                        idselector += "</option>";
+            getJSON("/data?section=list&type=logids", function(data) {
+                var idselector = "";
+                for(var i=0; i<data.stream.length; i++) {
+                    idselector += "<option id=\"id-" + (data.stream[i][0] ? ("server-" + data.stream[i][0][0]) : ("author-"+ data.stream[i][1][0])) + "\" value=\"" + (data.stream[i][0] ? ("server-" + data.stream[i][0][0]) : ("author-"+ data.stream[i][1][0])) + "\">";
+                    if(!data.stream[i][0] && data.stream[i][1]) {
+                        idselector += "@" + data.stream[i][1][1];
+                    } else {
+                        idselector += data.stream[i][0][1];
                     }
-                    document.getElementById("idselector").innerHTML += idselector;
-                    $("#idselector").selectpicker("refresh");
-                    
-                    switchLog(true);
-                    
+                    idselector += "</option>";
+                }
+                document.getElementById("idselector").innerHTML += idselector;
+                $("#idselector").selectpicker("refresh");
+                
+                switchLog(true);
+                
+                switchServers("svrnm", function() {
                     $("#loading-modal").modal("hide");
                 });
             });
         });
+    });
+}
+
+function switchServers(sort, callback) {
+    getJSON("/data?section=servers&sort=" + sort, function(data) {
+        var servertablebody = "";
+        for(var i=0; i<data.stream.length; i++) {
+             servertablebody += "<tr><td><img class=\"profilepic\" width=25 src=\"" + data.stream[i][0] + "\" /></td><td>" + data.stream[i][1] + "</td><td>" + data.stream[i][2] + "</td><td>" + data.stream[i][3] + "</td><td>" + data.stream[i][4] + "</td></tr>";
+        }
+        document.getElementById("servertablebody").innerHTML = servertablebody;
+        
+        callback();
     });
 }
 
@@ -135,10 +143,13 @@ function switchStats(n, nodestroy) {
             $("#profileselect").selectpicker("refresh");
             
             getJSON("/data?section=stats&type=server&svrid=" + n, function(data) {
-                html = "<h4 style=\"margin-top:0px;margin-bottom:0px;\">" + data.name + " (this week)</h4>" + (Object.keys(data).length>1 ? "" : "<br><i>Nothing here</i>");
+                html = "<div class=\"col-xs-9\"><h4 style=\"margin-top:0px;margin-bottom:0px;\">" + data.name + " (this week)</h4>" + (Object.keys(data).length>1 ? "" : "<br><i>Nothing here</i>");
                 if(Object.keys(data).length>1) {
+                    var icon = ""
                     for(var cat in data) {
-                        if(cat!="name") {
+                        if(cat=="icon") {
+                            icon = data.icon;
+                        } else if(cat!="name") {
                             html += "<br><b>" + cat + ":</b>" + (cat=="Data since" ? (" " + data[cat]) : "");;
                             if(cat!="Data since") {
                                 for(var i=0; i<data[cat].length; i++) {
@@ -148,6 +159,7 @@ function switchStats(n, nodestroy) {
                         }
                     }
                 }
+                html += "</div><div class=\"col-xs-3\"><img style=\"float:right;\" src=\"" + icon + "\" width=\"100\" height=\"100\" class=\"img-responsive\" alt=\"Server Icon\"></div>";
                 
                 getJSON("/data?section=list&type=members&svrid=" + n, function(data) {
                     var profileselect = "<option value=\"null-" + n + "\" selected>View Profile</option>";

@@ -297,6 +297,16 @@ function switchManage() {
         }
     }
     
+    if(!document.getElementById("manageentry-select-newrole").innerHTML) {
+        var newrole = "<option id=\"newroleentry-null\">Select role for new members</option>";
+        for(var i=0; i<botData.roles.length; i++) {
+            newrole += "<option id=\"newroleentry-" + botData.roles[i][1] + "\" value=\"" + botData.roles[i][1] + "\" style=\"color: " + botData.roles[i][3] + ";\">" + botData.roles[i][0] + "</option>";
+        }
+        document.getElementById("manageentry-select-newrole").innerHTML = newrole;
+    }
+    document.getElementById("manageentry-select-newrole").value = botData.configs.newrole;
+    $("#manageentry-select-newrole").selectpicker("refresh");
+    
     document.getElementById("manageentry-spamfilter").checked = botData.configs.spamfilter[0];
     if(botData.configs.spamfilter[0]) {
         if(!document.getElementById("manageentry-spamfilter-block").innerHTML) {
@@ -353,6 +363,18 @@ function switchManage() {
     } else {
         document.getElementById("newgreetingremove").style.display = "none";
         document.getElementById("newgreetinginput").value = "";
+    }
+    
+    var filterstr = filterToString(botData.configs.filter);
+    if(filterstr && botData.configs.servermod) {
+        document.getElementById("manageentry-filter").style.display = "";
+        document.getElementById("filterremove").style.display = "";
+        document.getElementById("filterinput").value = filterstr;
+    } else if(!botData.configs.servermod) {
+        document.getElementById("manageentry-filter").style.display = "none";
+    } else {
+        document.getElementById("filterremove").style.display = "none";
+        document.getElementById("filterinput").value = "";
     }
     
     document.getElementById("manageentry-customcolors").checked = botData.configs.customcolors;
@@ -430,6 +452,31 @@ function configNewgreeting(content) {
     }
 }
 
+function configFilter(content) {
+    var words;
+    if(content) {
+        words = content.split[","];
+        if(words) {
+            for(var i=0; i<words.length; i++) {
+                words[i] = words[i].trim();
+            }
+        } else {
+            words = [content];
+        }
+    } else {
+        words = [];
+    }
+    config("filter", words, function() {});
+}
+
+function filterToString(filter) {
+    var filterstr = "";
+    for(var i=0; i<filter.length; i++) {
+        filterstr += filter[i] + (i==filter.length-1 ? "" : ", ");
+    }
+    return filterstr;
+}
+
 function configCA(type) {
     if(!document.getElementById("cainput").value) {
         $("#cainput-block").addClass("has-error");
@@ -437,9 +484,13 @@ function configCA(type) {
     }
     
     $("#cainput-block").addClass("remove-error");
-    if(type=="clean") {
-        config(type, [document.getElementById("caselector").value, parseInt(document.getElementById("cainput").value)], function() {
-            richModal("Cleaned " + num + " messages in " + document.getElementById("cleanentry-" + chid).innerHTML, "Info");
+    if(["clean", "purge"].indexOf(type)>-1) {
+        config(type, [document.getElementById("caselector").value, parseInt(document.getElementById("cainput").value)], function(err) {
+            if(err) {
+                richModal("Error trying to " + type + " messages");
+            } else {
+                richModal((type=="clean" ? "Cleaned" : "Purged") + " " + parseInt(document.getElementById("cainput").value) + " messages in " + document.getElementById("caentry-" + document.getElementById("caselector").value).innerHTML, "Info");
+            }
         });
     } else if(type=="archive") {
         $("#loading-modal").modal("show");

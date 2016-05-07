@@ -45,7 +45,8 @@
     "feed-read": "*",
     "html-to-text": "*",
     "node-base64-image": "*",
-    "goo.gl": "*"
+    "goo.gl": "*",
+    "jokesearch": "*"
   },
   "scripts": {
     "start": "node start.js"

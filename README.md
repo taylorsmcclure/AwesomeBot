@@ -37,7 +37,7 @@ And finally, AwesomeBot can conduct **in-chat polls**, offers a fun **live trivi
 About
 -----
 
-This repository provides the source for the already-running `@AwesomeBot` instance. You are free to use this code as a base for your own bot, so long as you abide by the terms set in the license. Also, please join our [private Discord server](https://discord.gg/0pRFCTcG2aIY53Jk) if you are modifying the code in any way.
+This repository provides the source for the already-running `@AwesomeBot` instance. You are free to use this code as a base for your own bot, so long as you abide by the terms set in the license. Also, please join our [private Discord server](https://discord.gg/0pRFCTcG2aIv7Mr1) if you are modifying the code in any way.
 
 If you want a stable bot, please use the [latest milestone release](https://github.com/BitQuote/AwesomeBot/releases/tag/v3.3.7p1).
 
@@ -46,13 +46,13 @@ If you want a stable bot, please use the [latest milestone release](https://gith
 Changelog
 ---------
 
-Latest, version **3.3.16**:
- - Ability to mute members per-channel
- - URL shortener command
- - Better web interface error handling
- - Username change message option
- - More reliable logging
- - Misc. fixes as always
+Latest, version **3.3.17**:
+ - Ability to assign new members to a role
+ - Custom word filter per-server
+ - New joke and messages command
+ - Preliminary nickname support
+ - Message purge admin option
+ - Other enhancements and fixes
  
 Open an issue to report a bug or suggest a new feature!
 
@@ -60,3 +60,6 @@ Contribute
 ----------
 
 Please feel free to make pull requests or open an issue on this repository. Any help is appreciated!
+
+
+*This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product.*
