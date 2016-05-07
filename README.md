@@ -58,6 +58,7 @@ Patch #1: Fixed tag detection, added clear logs option
 Patch #2: Fixed changemembermsg crash  
 Patch #3: Excluded other bots from stats  
 Patch #4: Added PM help command  
+Patch #5: Fixed newrole showing as a command  
  
 Open an issue to report a bug or suggest a new feature!
 

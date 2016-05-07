@@ -245,7 +245,7 @@ function newRss() {
 function switchCommands() {
     var commands = "";
     for(var cmd in botData.configs) {
-        if(["admins", "blocked", "extensions", "newgreeting", "nsfwfilter", "servermod", "spamfilter", "customroles", "customcolors","cmdtag", "newmembermsg", "onmembermsg", "offmembermsg", "changemembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg", "triviasets", "showpub"].indexOf(cmd)==-1) {
+        if(["admins", "blocked", "extensions", "newgreeting", "nsfwfilter", "servermod", "spamfilter", "customroles", "customcolors","cmdtag", "newmembermsg", "onmembermsg", "offmembermsg", "changemembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg", "triviasets", "newrole", "showpub"].indexOf(cmd)==-1) {
             commands += "<div class=\"checkbox\"><input style=\"height: auto;\" id=\"commandsentry-" + cmd + "\" type=\"checkbox\" onclick=\"javascript:config(this.id.substring(14), this.checked, switchCommands);\" " + ((cmd=="rss" ? botData.configs[cmd][0] : botData.configs[cmd]) ? "checked " : "") + "/><label for=\"commandsentry-" + cmd + "\">" + cmd + "</label></div>";
         }
     }
