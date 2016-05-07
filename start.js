@@ -53,7 +53,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.17";
+var version = "3.3.17p1";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2450,30 +2450,24 @@ bot.on("message", function(msg, user) {
             var tagstring = msg.content.slice(0);
             while(tagstring.length>0 && tagstring.indexOf("@")>-1 && tagstring.substring(tagstring.indexOf("@")+1)) {
                 var usr;
-                var offset;
-                if(tagstring.indexOf(bot.user.mention())==-1 && tagstring.indexOf(">")>(tagstring.indexOf("<@!")+16)) {
-                    var usrid = tagstring.substring(tagstring.indexOf("<@")+3);
-                    usrid = usrid.substring(0, usrid.indexOf(">"));
-                    tagstring = tagstring.indexOf("<@") + usrid.indexOf(">") + 4;
-                    offset = usrid.length + 3;
-                    usr = msg.channel.server.members.get("id", usrid);
-                } else if(tagstring.indexOf(bot.user.mention())==-1 && tagstring.indexOf(">")>(tagstring.indexOf("<@")+15)) {
-                    var usrid = tagstring.substring(tagstring.indexOf("<@")+2);
-                    usrid = usrid.substring(0, usrid.indexOf(">"));
-                    tagstring = tagstring.indexOf("<@") + usrid.indexOf(">") + 3;
-                    offset = usrid.length + 2;
+                tagstring = tagstring.substring(tagstring.indexOf("@")+1);
+                if(tagstring.charAt(0)=='!') {
+                    tagstring = tagstring.substring(1);
+                }
+                if(tagstring.indexOf(">")) {
+                    var usrid = tagstring.substring(0, tagstring.indexOf(">"));
+                    tagstring = tagstring.substring(tagstring.indexOf(">")+1);
                     usr = msg.channel.server.members.get("id", usrid);
                 } else {
-                    var usrnm = tagstring.substring(tagstring.indexOf("@")+1);
+                    var usrnm = tagstring.slice(0);
                     usr = msg.channel.server.members.get("username", usrnm);
                     while(!usr && usrnm.length>0) {
                         usrnm = usrnm.substring(0, usrnm.lastIndexOf(" "));
                         usr = msg.channel.server.members.get("username", usrnm);
                     }
-                    offset = usrnm.length + 1;
-                    tagstring = tagstring.indexOf("@") + usrnm.length + 1;
+                    tagstring = tagstring.substring(usrnm.length);
                 }
-                if(usr) {
+                if(usr && !usr.bot) {
                     var mentions = stats[msg.channel.server.id].members[usr.id].mentions;
                     mentions.stream.push({
                         timestamp: new Date().getTime(),
@@ -2490,12 +2484,10 @@ bot.on("message", function(msg, user) {
                     }
                     
                     if([msg.author.id, bot.user.id].indexOf(usr.id)==-1 && configs.servers[msg.channel.server.id].points && !novoting[msg.author.id]) {
-                        var beyondtag = msg.content.substring(msg.content.lastIndexOf(usrid || usrnm) + offset);
-                        
-                        var votestrings = ["+!", "+1", "up", "^"];
+                        var votestrings = [" +!", " +1", " up", " ^"];
                         var voted;
                         for(var i=0; i<votestrings.length; i++) {
-                            if(beyondtag.indexOf(votestrings[i])==0) {
+                            if(tagstring.indexOf(votestrings[i])==0) {
                                 voted = "upvoted";
                                 if(!profileData[usr.id]) {
                                     profileData[usr.id] = {
@@ -2503,11 +2495,10 @@ bot.on("message", function(msg, user) {
                                     };
                                 }
                                 profileData[usr.id].points++;
-                                logMsg(new Date().getTime(), "INFO", msg.channel.server.id, msg.channel.id, usr.username + " upvoted by " + msg.author.username);
                                 break;
                             }
                         }
-                        if(beyondtag.indexOf("gild")==0) {
+                        if(tagstring.indexOf(" gild")==0) {
                             if(!profileData[msg.author.id]) {
                                 profileData[msg.author.id] = {
                                     points: 0
@@ -3775,6 +3766,12 @@ function parseMaintainerConfig(delta, consoleid, callback) {
                 }
                 logMsg(new Date().getTime(), "INFO", "General", null, "Sent message \"" + delta[key] + "\" in every server");
                 callback(false);
+                break;
+            case "clearlogs":
+                logs.stream = [];
+                logs.timestamp = new Date().getTime();
+                logMsg(new Date().getTime(), "INFO", "General", null, "Cleared logs at maintainer's request");
+                callback();
                 break;
             case "extend":
                 clearTimeout(onlineconsole[consoleid].timer);
@@ -5386,7 +5383,7 @@ function printLog(log) {
         }
         info += "] " + log.msg;
     } catch (err) {
-        logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to print log");
+        ;
     }
     return info;
 }

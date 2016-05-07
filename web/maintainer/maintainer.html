@@ -196,6 +196,7 @@
                                     The log file is very large, storing each and every log entry in the past week. It's there for debugging and recording purposes in case you want to know what happened with the bot a few days ago but it had restarted in between.
                                     <br><br>
                                     <a class="btn btn-default" onclick="getFile('logs');" role="button">Download logs.json</a>
+                                    <a class="btn btn-default" onclick="config('clearlogs', true, function() {richModal('Cleared all bot logs', 'Info');});" role="button">Clear logs</a>
                                 </div>
                                 <div role="tabpanel" class="tab-pane fade" id="files-reminders">
                                     <br>

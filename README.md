@@ -54,6 +54,8 @@ Latest, version **3.3.17**:
  - Message purge admin option
  - Other enhancements and fixes
  
+Patch #1: Fixed tag detection, added clear logs option  
+ 
 Open an issue to report a bug or suggest a new feature!
 
 Contribute
