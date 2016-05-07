@@ -53,7 +53,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.17p3";
+var version = "3.3.17p4";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2795,6 +2795,10 @@ bot.on("message", function(msg, user) {
                     clever = cleverOn[msg.channel.server.id];
                 } else {
                     prompt = msg.cleanContent;
+                    if([0, 1].indexOf(prompt.toLowerCase().indexOf("help"))>-1) {
+                        bot.sendMessage(msg.author, "Use `@" + bot.user.username + " help` in the public chat to get help, or head over to the wiki: https://git.io/vwhGe");
+                        return;
+                    }
                 }
                 
                 if(!clever) {
