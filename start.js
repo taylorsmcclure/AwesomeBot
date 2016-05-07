@@ -53,7 +53,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.17p6";
+var version = "3.3.17p7";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -1041,7 +1041,7 @@ var commands = {
                                         bot.sendMessage(msg.channel, msg.author + " I couldn't add you to that role. Maybe I don't have role management permissions on this server.");
                                     } else {
                                         logMsg(new Date().getTime(), "INFO", msg.channel.server.id, msg.channel.id, "Added " + msg.author.username + " to role " + roles.get("name", rolenm).name);
-                                        bot.sendMessage(msg.channel, msg.author + " Ok, you now have the role `" + role.name + "`");
+                                        bot.sendMessage(msg.channel, msg.author + " Ok, you now have the role `" + roles.get("name", rolenm).name + "`");
                                     }
                                 });
                             } else {
@@ -2037,7 +2037,7 @@ bot.on("ready", function() {
                     
                     var roles = [];
                     for(var i=0; i<svr.roles.length; i++) {
-                        if(svr.roles[i].name!="@everyone") {
+                        if(svr.roles[i].name!="@everyone" && svr.roles[i].name.indexOf("color-")!=0) {
                             roles.push([svr.roles[i].name, svr.roles[i].id, svr.roles[i].position, svr.roles[i].colorAsHex()]);
                         }
                     }
@@ -3064,8 +3064,11 @@ bot.on("presence", function(oldusr, newusr) {
                     }
                 }
                 
-                if(oldusr.username!=newusr.username && configs.servers[bot.servers[i].id].changemembermsg[0]) {
-                    bot.sendMessage(bot.servers[i].channels.get("id", configs.servers[bot.servers[i].id].changemembermsg[1]), "**@" + oldusr.username + "** is now **@" + newusr.username + "**");
+                if(oldusr.username!=newusr.username) {
+                    if(configs.servers[bot.servers[i].id].changemembermsg[0]) {
+                        bot.sendMessage(bot.servers[i].channels.get("id", configs.servers[bot.servers[i].id].changemembermsg[1]), "**@" + oldusr.username + "** is now **@" + newusr.username + "**");
+                    }
+                    
                     if(!profileData[newusr.id]) {
                         profileData[newusr.id] = {
                             points: 0

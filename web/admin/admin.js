@@ -299,7 +299,7 @@ function switchManage() {
     
     if(!document.getElementById("manageentry-select-newrole").innerHTML) {
         var newrole = "<option id=\"newroleentry-null\">Select role for new members</option>";
-        for(var i=0; i<botData.roles.length; i++) {
+        for(var i=botData.roles.length-1; i>=0; i--) {
             newrole += "<option id=\"newroleentry-" + botData.roles[i][1] + "\" value=\"" + botData.roles[i][1] + "\" style=\"color: " + botData.roles[i][3] + ";\">" + botData.roles[i][0] + "</option>";
         }
         document.getElementById("manageentry-select-newrole").innerHTML = newrole;
@@ -382,10 +382,10 @@ function switchManage() {
     if(botData.configs.customroles[0]) {
         if(!document.getElementById("manageentry-customroles-block").innerHTML) {
             var customroles_block = "";
-            for(var i=0; i<botData.roles.length; i++) {
+            for(var i=botData.roles.length-1; i>=0; i--) {
                 customroles_block += "<div class=\"checkbox\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" id=\"manageentry-customroles-" + botData.roles[i][1] + "\" onclick=\"javascript:config('customroles', this.id.substring(24), function() {});\"" + (botData.configs.customroles[1].indexOf(botData.roles[i][1])>-1 ? " checked" : "") + "><label style=\"color: " + botData.roles[i][3] + ";\" for=\"manageentry-customroles-" + botData.roles[i][1] + "\">" + botData.roles[i][0] + "</label></div>";
             }
-            customroles_block += "<div class=\"checkbox\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id=\"manageentry-customroles-custom\" type=\"checkbox\" onclick=\"javascript:config('customroles', 'custom', function() {});\"><label for=\"manageentry-customroles-custom\">Custom roles</label></div>"
+            customroles_block += "<div class=\"checkbox\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id=\"manageentry-customroles-custom\" type=\"checkbox\" onclick=\"javascript:config('customroles', 'custom', function() {});\"" + (botData.configs.customroles[2] ? " checked" : "") + "><label for=\"manageentry-customroles-custom\">Custom roles</label></div>"
             document.getElementById("manageentry-customroles-block").innerHTML = customroles_block;
         }
         $("#manageentry-customroles-body").collapse("show");

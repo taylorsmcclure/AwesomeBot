@@ -60,6 +60,7 @@ Patch #3: Excluded other bots from stats
 Patch #4: Added PM help command  
 Patch #5: Fixed newrole showing as a command  
 Patch #6: Fixed console timeout crash  
+Patch #7: Fixed role and changemembermsg bugs  
  
 Open an issue to report a bug or suggest a new feature!
 
