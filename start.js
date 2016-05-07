@@ -53,7 +53,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.17p1";
+var version = "3.3.17p2";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -1222,7 +1222,7 @@ var commands = {
                 // Buy a lottery ticket
                 if(!profileData[msg.author.id]) {
                     profileData[msg.author.id] = {
-                        points: 0,
+                        points: 0
                     }
                 }
                 if(profileData[msg.author.id].points>=500) {
@@ -1260,7 +1260,7 @@ var commands = {
             if(usr) {
                 if(!profileData[usr.id]) {
                     profileData[usr.id] = {
-                        points: 0,
+                        points: 0
                     }
                     saveData("./data/profiles.json", function(err) {
                         if(err) {
@@ -3062,6 +3062,11 @@ bot.on("presence", function(oldusr, newusr) {
                 
                 if(oldusr.username!=newusr.username && configs.servers[bot.servers[i].id].changemembermsg[0]) {
                     bot.sendMessage(bot.servers[i].channels.get("id", configs.servers[bot.servers[i].id].changemembermsg[1]), "**@" + oldusr.username + "** is now **@" + newusr.username + "**");
+                    if(!profileData[newusr.id]) {
+                        profileData[newusr.id] = {
+                            points: 0
+                        }
+                    }
                     if(!profileData[newusr.id]["Past Names"]) {
                         profileData[newusr.id]["Past Names"] = "";
                     }
@@ -3434,7 +3439,7 @@ function endLottery(ch) {
     if(usr && !lottery[ch.server.id].members.allValuesSame() && configs.servers[ch.server.id].blocked.indexOf(usrid)==-1) {
         if(!profileData[usr.id]) {
             profileData[usr.id] = {
-                points: 0,
+                points: 0
             }
         }
         if(pointsball>1000000) {
@@ -3478,7 +3483,7 @@ function clearServerStats(svrid) {
                 logMsg(new Date().getTime(), "INFO", svr.id, null, usr.username + " won " + amount + " in the weekly activity contest");
                 if(!profileData[usr.id]) {
                     profileData[usr.id] = {
-                        points: 0,
+                        points: 0
                     }
                 }
                 profileData[usr.id].points += amount;
@@ -4945,7 +4950,7 @@ function getProfile(usr, svr) {
     }
     if(!profileData[usr.id]) {
         profileData[usr.id] = {
-            points: 0,
+            points: 0
         }
         saveData("./data/profiles.json", function(err) {
             if(err) {

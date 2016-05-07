@@ -55,6 +55,7 @@ Latest, version **3.3.17**:
  - Other enhancements and fixes
  
 Patch #1: Fixed tag detection, added clear logs option  
+Patch #2: Fixed changemembermsg crash  
  
 Open an issue to report a bug or suggest a new feature!
 
