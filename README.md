@@ -65,6 +65,7 @@ Patch #8: Fixed past names display
 Patch #9: Fixed license in package.json  
 Patch #10: Fixed changemembermsg null display  
 Patch #11: Added poll vote confirmation, messages command list option  
+Patch #12: Fixed on/off membermsg channel  
  
 Open an issue to report a bug or suggest a new feature!
 

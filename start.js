@@ -53,7 +53,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.17p11";
+var version = "3.3.17p12";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -3080,11 +3080,11 @@ bot.on("presence", function(oldusr, newusr) {
                     stats[bot.servers[i].id].members[oldusr.id].seen = new Date().getTime();
                     
                     if(configs.servers[bot.servers[i].id].servermod && configs.servers[bot.servers[i].id].offmembermsg[0] && stats[bot.servers[i].id].botOn[bot.servers[i].defaultChannel.id]) {
-                        bot.sendMessage(bot.servers[i].defaultChannel, configs.servers[bot.servers[i].id].offmembermsg[1][getRandomInt(0, configs.servers[bot.servers[i].id].offmembermsg[1].length-1)].replace("++", "**@" + newusr.username + "**"));
+                        bot.sendMessage(bot.servers[i].channels.get("id", configs.servers[bot.servers[i].id].offmembermsg[2]), configs.servers[bot.servers[i].id].offmembermsg[1][getRandomInt(0, configs.servers[bot.servers[i].id].offmembermsg[1].length-1)].replace("++", "**@" + newusr.username + "**"));
                     }
                 } else if(oldusr.status=="offline" && newusr.status=="online") {
                     if(configs.servers[bot.servers[i].id].servermod && configs.servers[bot.servers[i].id].onmembermsg[0] && stats[bot.servers[i].id].botOn[bot.servers[i].defaultChannel.id]) {
-                        bot.sendMessage(bot.servers[i].defaultChannel, configs.servers[bot.servers[i].id].onmembermsg[1][getRandomInt(0, configs.servers[bot.servers[i].id].onmembermsg[1].length-1)].replace("++", "**@" + newusr.username + "**"));
+                        bot.sendMessage(bot.servers[i].channels.get("id", configs.servers[bot.servers[i].id].onmembermsg[2]), configs.servers[bot.servers[i].id].onmembermsg[1][getRandomInt(0, configs.servers[bot.servers[i].id].onmembermsg[1].length-1)].replace("++", "**@" + newusr.username + "**"));
                     }
                 }
                 
