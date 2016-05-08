@@ -53,7 +53,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.17p12";
+var version = "3.3.17p13";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -3093,19 +3093,19 @@ bot.on("presence", function(oldusr, newusr) {
                         bot.sendMessage(bot.servers[i].channels.get("id", configs.servers[bot.servers[i].id].changemembermsg[1]), "**@" + oldusr.username + "** is now **@" + newusr.username + "**");
                     }
                     
-                    if(!profileData[newusr.id]) {
-                        profileData[newusr.id] = {
+                    if(!profileData[oldusr.id]) {
+                        profileData[oldusr.id] = {
                             points: 0
                         }
                     }
-                    if(!profileData[newusr.id]["Past Names"]) {
-                        profileData[newusr.id]["Past Names"] = "";
+                    if(!profileData[oldusr.id]["Past Names"]) {
+                        profileData[oldusr.id]["Past Names"] = "";
                     }
-                    if(profileData[newusr.id]["Past Names"].length>3) {
-                        profileData[newusr.id]["Past Names"] = "";
+                    if(profileData[oldusr.id]["Past Names"].length>3) {
+                        profileData[oldusr.id]["Past Names"] = "";
                     }
-                    if(profileData[newusr.id]["Past Names"].indexOf(oldusr.username)==-1) {
-                        profileData[newusr.id]["Past Names"] += (profileData[newusr.id]["Past Names"].length==0 ? "" : ", ") + oldusr.username;
+                    if(profileData[oldusr.id]["Past Names"].indexOf(oldusr.username)==-1) {
+                        profileData[oldusr.id]["Past Names"] += (profileData[oldusr.id]["Past Names"].length==0 ? "" : ", ") + oldusr.username;
                     }
                     saveData("./data/profiles.json", function(err) {
                         if(err) {
@@ -3938,11 +3938,11 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                         if(!isNaN(delta[key][1])) {
                             if(stats[svr.id].members[usr.id]) {
                                 if(delta[key][1]<stats[svr.id].members[usr.id].strikes.length && delta[key][1]>=0) {
-                                    if(["First-time spam violation", "First-time NSFW filter violation"].indexOf(stats[svr.id].members[usr.id].strikes[delta[key][1]][1])>-1 && stats[svr.id].members[usr.id].strikes[delta[key][1]][0]=="Automatic") {
+                                    if(["First-time spam violation", "First-time filter violation"].indexOf(stats[svr.id].members[usr.id].strikes[delta[key][1]][1])>-1 && stats[svr.id].members[usr.id].strikes[delta[key][1]][0]=="Automatic") {
                                         if(configs.servers[svr.id].points && profileData[usr.id].points) {
                                             profileData[usr.id].points += 50;
                                         }
-                                    } else if(["Second-time spam violation", "Second-time NSFW filter violation"].indexOf(stats[svr.id].members[usr.id].strikes[delta[key][1]][1])>-1 && stats[svr.id].members[usr.id].strikes[delta[key][1]][0]=="Automatic") {
+                                    } else if(["Second-time spam violation", "Second-time filter violation"].indexOf(stats[svr.id].members[usr.id].strikes[delta[key][1]][1])>-1 && stats[svr.id].members[usr.id].strikes[delta[key][1]][0]=="Automatic") {
                                         if(configs.servers[svr.id].points && profileData[usr.id].points) {
                                             profileData[usr.id].points += 100;
                                         }

@@ -34,6 +34,8 @@ In addition, he has many built-in utility functions:
 
 And finally, AwesomeBot can conduct **in-chat polls**, offers a fun **live trivia game**, and provides **karma for Discord**. He is fully configurable via private message or online, and can be controlled independently between servers. New servers can be added with Discord OAuth, and admins are automatically detected.
 
+[Check out the release history »](http://awesome-botmakersinc.rhcloud.com/)
+
 About
 -----
 
@@ -42,32 +44,6 @@ This repository provides the source for the already-running `@AwesomeBot` instan
 If you want a stable bot, please use the [latest milestone release](https://github.com/BitQuote/AwesomeBot/releases/tag/v3.3.7p1).
 
 [Head to our wiki for more information »](https://github.com/BitQuote/AwesomeBot/wiki)
-
-Changelog
----------
-
-Latest, version **3.3.17**:
- - Ability to assign new members to a role
- - Custom word filter per-server
- - New joke and messages command
- - Preliminary nickname support
- - Message purge admin option
- - Other enhancements and fixes
- 
-Patch #1: Fixed tag detection, added clear logs option  
-Patch #2: Fixed changemembermsg crash  
-Patch #3: Excluded other bots from stats  
-Patch #4: Added PM help command  
-Patch #5: Fixed newrole showing as a command  
-Patch #6: Fixed console timeout crash  
-Patch #7: Fixed role and changemembermsg bugs  
-Patch #8: Fixed past names display  
-Patch #9: Fixed license in package.json  
-Patch #10: Fixed changemembermsg null display  
-Patch #11: Added poll vote confirmation, messages command list option  
-Patch #12: Fixed on/off membermsg channel  
- 
-Open an issue to report a bug or suggest a new feature!
 
 Contribute
 ----------
