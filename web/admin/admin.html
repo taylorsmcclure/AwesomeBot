@@ -92,7 +92,8 @@
                             <span id="servername">ServerName</span>
                         </h1>
                         <h4>
-                            <span id="botsince">Bot added time elapsed</span>
+                            <span id="botname" onclick="javascript:configNickname();">BotName</span>
+                            <span id="botsince"> added time elapsed</span>
                             &nbsp;
                             <button type="button" id="botgameremove" class="btn btn-danger btn-sm" onclick="javascript:leaveServer();" data-toggle="tooltip" data-placement="bottom" title="Bot will be removed from server">Leave Server</button>
                         </h4>
@@ -454,7 +455,7 @@
                                     <option value="archive">Archive</option>
                                 </select>
                                 <div id="cainput-block" style="display:inline-block;">
-                                    <input id="cainput" class="form-control" type="number" placeholder="# of messages" min="1"></input>
+                                    <input id="cainput" class="form-control" type="number" placeholder="# of messages" min="2" max="100"></input>
                                 </div>
                                 &nbsp;in&nbsp;
                                 <select id="caselector" class="selectpicker" data-width="fit" data-live-search="true"></select>
@@ -515,7 +516,7 @@
                             Upload: 
                             <input id="extensionsupload" type="file" style="display:inline-block;width:300;" accept="application/json" onchange="javascript:newExtension(this.files)" />
                             <br><br>
-                            <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Coming soon: the AwesomeBot extension builder! You'll be able to easily build keyword- or command-activated extensions and even publish them for all to download.">Extension Builder</button>
+                            <a role="button" href="http://awesome-botmakersinc.rhcloud.com/builder" target="_blank" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Easily build and test AwesomeBot extensions">Extension Builder</a>
                         </div>
                     </div>
                 </div>

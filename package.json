@@ -8,7 +8,7 @@
   },
   "license": "CCPL",
   "dependencies": {
-    "discord.js": ">=6.2.0",
+    "discord.js": "hydrabolt/discord.js#indev",
     "request": ">=2.58.0",
     "querystring": "*",
     "underscore": "1.8.x",
@@ -46,7 +46,8 @@
     "html-to-text": "*",
     "node-base64-image": "*",
     "goo.gl": "*",
-    "jokesearch": "*"
+    "jokesearch": "*",
+    "bing-translate": "*"
   },
   "scripts": {
     "start": "node start.js"

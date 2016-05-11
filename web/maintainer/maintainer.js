@@ -45,10 +45,34 @@ function switchUsage() {
 function switchServers() {
     var servertablebody = "";
     for(var i=0; i<botData.servers.length; i++) {
-        servertablebody += "<tr id=\"serverentry-" + botData.servers[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.servers[i][0] + "\" class=\"img-responsive img-circle\" /></td><td>" + botData.servers[i][1] + "</td><td>" + botData.servers[i][2] + "</td><td>" + botData.servers[i][3] + "</td><td><button type=\"button\" class=\"btn btn-default btn-xs\" onclick=\"javascript:config('clearstats', this.parentNode.parentNode.id.substring(12), function(err) {if(!err) {switchUsage()}});\">Clear Stats</button>&nbsp;<button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:removeServer(this.parentNode.parentNode.id)\">Leave</button></td></tr>";
+        servertablebody += "<tr id=\"serverentry-" + botData.servers[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.servers[i][0] + "\" class=\"img-responsive img-circle\" /></td><td>" + botData.servers[i][1] + "</td><td>" + botData.servers[i][2] + "</td><td>" + botData.servers[i][3] + "</td><td><button type=\"button\" id=\"serverentry-" + i + "-msg\" class=\"btn btn-primary btn-xs servermsg\">Message</button>&nbsp;<button type=\"button\" class=\"btn btn-warning btn-xs\" onclick=\"javascript:config('clearstats', this.parentNode.parentNode.id.substring(12), function(err) {if(!err) {switchUsage()}});\">Clear Stats</button>&nbsp;<button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:removeServer(this.parentNode.parentNode.id)\">Leave</button></td></tr>";
     }
+    
+    $("#servertablebody").popover({
+        html: true,
+        title: function() {
+            i = parseInt(this.id.substring(this.id.indexOf("-")+1, this.id.lastIndexOf("-")));
+            return "<button type=\"button\" class=\"close\" id=\"serverentry-" + botData.servers[i][2] + "-popoverclose\" onclick=\"$('#" + this.id + "').popover('hide');\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button><h4 class=\"modal-title\">Send Message</h4>";
+        },
+        content: function() {
+            i = parseInt(this.id.substring(this.id.indexOf("-")+1, this.id.lastIndexOf("-")));
+            return "<div class=\"input-group\"><input type=\"text\" id=\"" + botData.servers[i][2] + "-msgserver\" class=\"form-control\" placeholder=\"Message in markdown\" onkeydown=\"if(event.keyCode==13){sendMessage('" + botData.servers[i][2] + "', this.value, " + i + ");}\"><span class=\"input-group-addon btn btn-primary\" onclick=\"javascript:sendMessage('" + botData.servers[i][2] + "', document.getElementById('" + botData.servers[i][2] + "-msgserver').value, " + i + ");\">Send</span></div><script>document.getElementById(\"" + botData.servers[i][2] + "-msgserver\").parentNode.parentNode.parentNode.style.maxWidth = \"350px\";</script>";
+        },
+        selector: ".servermsg",
+        placement: "bottom",
+        container: "body",
+        trigger: "click"
+    });
+    
     document.getElementById("servertablebody").innerHTML = servertablebody;
     document.getElementById("addserverlink").href = botData.oauthurl;
+}
+
+function sendMessage(svrid, msg, i) {
+    if(msg) {
+        $("#serverentry-" + i + "-msg").popover("hide");
+        config("msgserver", [svrid, msg], function() {});
+    }
 }
 
 function removeServer(svrid) {

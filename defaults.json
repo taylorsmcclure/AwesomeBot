@@ -12,7 +12,26 @@
                 "gnews"
             ]
         ],
-        "tags": {},
+        "tags": {
+            "shrug": "¯\\\\\\_(ツ)\\_/¯",
+            "lenny": "( ͡° ͜ʖ ͡°)",
+            "raiseyourdongers": "ヽ༼ຈل͜ຈ༽ﾉ Raise Your Dongers ヽ༼ຈل͜ຈ༽ﾉ",
+            "praisehelix": "つ ◕_◕ ༽つ PRAISE HELIX༼つ ◕_◕ ༽つ",
+            "goodshit": "👌👀👌👀👌👀👌👀👌👀 good shit go౦ԁ sHit👌 thats ✔ some good👌👌shit right👌👌there👌👌👌 right✔there ✔✔if i do ƽaү so my self 💯 i say so 💯 thats what im talking about right there right there (chorus: ʳᶦᵍʰᵗ ᵗʰᵉʳᵉ) mMMMMᎷМ💯 👌👌 👌НO0ОଠOOOOOОଠଠOoooᵒᵒᵒᵒᵒᵒᵒᵒᵒ👌 👌👌 👌 💯 👌 👀 👀 👀 👌👌Good shit",
+            "creepylenny": "┬┴┬┴┤ ͜ʖ ͡°) ├┬┴┬┴",
+            "kawaii": "(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧",
+            "yeeaah": "(•_•) ( •_•)>⌐■-■ (⌐■_■)",
+            "lod": "ಠ_ಠ",
+            "orly": "﴾͡๏̯͡๏﴿ O'RLY?",
+            "ayy": "(☞ﾟ∀ﾟ)☞",
+            "gib": "༼ つ ◕_◕ ༽つ",
+            "kawaiidog": "(ᵔᴥᵔ)",
+            "fite": "(ง'̀-'́)ง",
+            "kawaiimeh": " ╮ (. ❛ ᴗ ❛.) ╭",
+            "evilsmiley": "“ψ(｀∇´)ψ",
+            "rip": "(✖╭╮✖)",
+            "wink": "ಠ‿↼"
+        },
         "triviasets": {},
         "extensions": {},
         "cmdtag": "tag",
@@ -130,6 +149,7 @@
         "trivia": true,
         "afk": true,
         "joke": true,
+        "translate": true,
         "shorten": true,
         "showpub": true
     },
@@ -181,6 +201,7 @@
         "trivia": false,
         "afk": false,
         "joke": false,
+        "translate": false,
         "shorten": false,
         "showpub": false
     },
@@ -214,7 +235,7 @@
         "appstore": true,
         "say": true,
         "me": false,
-        "convert": false,
+        "convert": true,
         "twitter": false,
         "youtube": true,
         "image": true,
@@ -232,6 +253,7 @@
         "trivia": true,
         "afk": true,
         "joke": false,
+        "translate": false,
         "shorten": false,
         "showpub": false
     }  

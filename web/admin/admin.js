@@ -3,7 +3,8 @@ function doAdminSetup() {
     document.getElementById("servername").innerHTML = botData.svrnm;
     document.getElementById("profilepic").src = botData.svricon;
     setFavicon(botData.svricon);
-    document.getElementById("botsince").innerHTML = botData.botnm + " added " + botData.joined + " ago";
+    document.getElementById("botname").innerHTML = botData.botnm;
+    document.getElementById("botsince").innerHTML = " added " + botData.joined + " ago";
     document.getElementById("rssrow").style.display = botData.configs.rss[0] ? "" : "none";
     
     switchAdmins();
@@ -24,6 +25,17 @@ function doAdminSetup() {
     $("#extensions-body").collapse("show");
     
     $("#loading-modal").modal("hide");
+}
+
+function configNickname() {
+    if(!document.getElementById("botnameinput")) {
+        document.getElementById("botname").innerHTML = "<div class=\"col-xs-4 input-group\"><span class=\"input-group-addon btn btn-danger\" onclick=\"config('nickname', '.', configNickname);\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"Clear nickname and use username\">Remove</span><input id=\"botnameinput\" class=\"form-control\" onkeydown=\"if(event.keyCode==13){config('nickname', this.value, configNickname)}else if(event.keyCode==27){configNickname()}\" value=\"" + botData.botnm + "\"></input></div>";
+        document.getElementById("botname").onclick = "";
+        document.getElementById("botnameinput").focus();
+    } else {
+        document.getElementById("botname").innerHTML = botData.botnm;
+        document.getElementById("botname").onclick = configNickname;
+    }
 }
 
 function switchAdmins() {
@@ -489,7 +501,7 @@ function configCA(type) {
             if(err) {
                 richModal("Error trying to " + type + " messages");
             } else {
-                richModal((type=="clean" ? "Cleaned" : "Purged") + " " + parseInt(document.getElementById("cainput").value) + " messages in " + document.getElementById("caentry-" + document.getElementById("caselector").value).innerHTML, "Info");
+                richModal((type=="clean" ? "Cleaned" : "Purged") + " " + parseInt(document.getElementById("cainput").value) + " messages", "Info");
             }
         });
     } else if(type=="archive") {
@@ -546,7 +558,7 @@ function switchExtensions() {
     var extensionstablebody = "";
     for(var i=0; i<botData.configs.extensions.length; i++) {
         var info = "<tr id=\"extensionsentry-" + encodeURI(botData.configs.extensions[i][0]) + "\"><td>" + botData.configs.extensions[i][0] + "</td><td>" + botData.configs.extensions[i][1] + "</td><td>";
-        if(botData.configs.extensions[i][2]) {
+        if(botData.configs.extensions[i][2] && botData.configs.extensions[i][2].length>0) {
             var chinfo = "";
             for(var j=0; j<botData.configs.extensions[i][2].length; j++) {
                 chinfo += "#" + botData.configs.extensions[i][2][j] + ", ";
