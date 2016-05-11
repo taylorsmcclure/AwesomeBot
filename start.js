@@ -62,7 +62,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.18p1";
+var version = "3.3.18p2";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2900,8 +2900,6 @@ bot.on("serverCreated", function(svr) {
 });
 
 function readyServer(svr) {
-    bot.startTyping(svr.defaultChannel);
-    
     // Populate stats file
     populateStats(svr);
     
@@ -2921,8 +2919,6 @@ function readyServer(svr) {
     
     // Run timer extensions
     domain.run(runTimerExtensions);
-    
-    bot.stopTyping(svr.defaultChannel);
 }
 
 function newServer(svr) {
