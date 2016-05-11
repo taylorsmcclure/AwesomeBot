@@ -45,7 +45,7 @@ function showStatus() {
     getJSON("https://awesomebot-botmakersinc.rhcloud.com/data?section=list&type=bot", function(data) {
         if(data) {
             document.getElementById("addtoserverlink").href = data.oauthurl;
-            document.getElementById("awesomestatus").innerHTML = "Serving on " + data.servers + " servers and " + data.users + " users. Uptime: " + data.uptime;
+            document.getElementById("awesomestatus").innerHTML = "Serving " + data.servers + " servers and " + data.users + " users. Uptime: " + data.uptime;
         }
         document.getElementById("awesomeloader").style.display = "none";
     });
