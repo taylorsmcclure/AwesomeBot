@@ -1,225 +1,692 @@
-<!doctype html>
-<html>
-  <head>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>AwesomeBot by BitQuote</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="AwesomeBot: the best Discord bot!">
+    <meta name="author" content="BitQuote">
     <link rel="shortcut icon" type="image/png" href="http://i.imgur.com/cCDyBv8.png"/>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/github-light.css">
-    <meta name="viewport" content="width=device-width">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <script type="text/javascript">
-    var h1c = "#222";
-    var h2c = "#393939";
-    var h3c = "#494949";
-    function setup() {
-        window.addEventListener('keypress', keypress, false);
-        if(localStorage.getItem("theme")=="light") {
-            colorLight();
-        } else {
-            colorDark();
-        }
-        showStatus();
-    }
-    function showStatus() {
-        document.getElementById("awesomeloader").style.display = "";
-        getJSON("https://awesomebot-botmakersinc.rhcloud.com/data?section=list&type=bot", function(data) {
-            if(data) {
-                document.getElementById("addtoserverlink").href = data.oauthurl;
-                document.getElementById("awesomestatus").innerHTML = '<img id="awesomepic" src="" /><span id="awesomeup"></span><span class="awesomeimp" id="awesomename"></span> v<span id="awesomeversion"></span><br><span class="awesomeimp" id="awesomeservers"></span> servers, <span class="awesomeimp" id="awesomeusers"></span> users';
-                document.getElementById("awesomepic").src = data.avatar;
-                document.getElementById("awesomeup").innerHTML = data.uptime.substring(0, data.uptime.indexOf(" ")+2);
-                document.getElementById("awesomename").innerHTML = data.username;
-                document.getElementById("awesomeversion").innerHTML = data.version;
-                document.getElementById("awesomeservers").innerHTML = data.servers;
-                document.getElementById("awesomeusers").innerHTML = data.users;
-                document.getElementById("awesomestatus").onclick = awesomestatus;
-            }
-            document.getElementById("awesomeloader").style.display = "none";
-        });
-        setTimeout(function() {
-            showStatus();
-        }, 900000);
-    }
-    function getJSON(url, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("get", url, true);
-        xhr.responseType = "json";
-        xhr.onload = function() {
-            var status = xhr.status;
-            callback(xhr.response);
-        };
-        xhr.send();
-    };
-    function showTextbox(sect) {
-        if(document.getElementById(sect + "-text").style.maxHeight=="300px") {
-            document.getElementById(sect + "-text").style.maxHeight = "0px";
-        } else {
-            document.getElementById(sect + "-text").style.maxHeight = "300px";
-        }
-    }
-    function keypress(e) {
-        if([32, 43, 45, 13, 61].indexOf(e.keyCode)>-1) {
-            var h2s = document.getElementsByTagName("h2");
-            iterateAll(h2s, 0);
-        } else if([98, 100].indexOf(e.keyCode)>-1) {
-            colorDark();
-        } else if([119, 108].indexOf(e.keyCode)>-1) {
-            colorLight();
-        }
-    }
-    function colorDark() {
-        document.getElementById("themetoggle").innerHTML = "Light Theme";
-        document.getElementById("themetoggle").href = "javascript:colorLight();";
-        localStorage.setItem("theme", "dark");
-        whitetheme = false;
-        document.body.style.backgroundColor = "#222";
-        document.body.style.color = "#8D8D8D";
-        colorElements("#DDDDDD", "#C6C6C6", "#B6B6B6");
-    }
-    function colorLight() {
-        document.getElementById("themetoggle").innerHTML = "Dark Theme";
-        document.getElementById("themetoggle").href = "javascript:colorDark();";
-        localStorage.setItem("theme", "light");
-        whitetheme = true;
-        document.body.style.backgroundColor = "#fff";
-        colorElements("#222", "#393939", "#494949");
-    }
-    function colorElements(c1, c2, c3) {
-        h1c = c1;
-        h2c = c2;
-        h3c = c3;
-        var elements = document.getElementsByTagName("h1");
-        for(var i=0; i<elements.length; i++) {
-            elements[i].style.color = c1;
-        }
-        elements = document.getElementsByTagName("h2");
-        for(var i=0; i<elements.length; i++) {
-            elements[i].style.color = c2;
-        }
-        elements = document.getElementsByTagName("h3");
-        for(var i=0; i<elements.length; i++) {
-            elements[i].style.color = c3;
-        }
-    }
-    function iterateAll(h2s, i) {
-        if(i<h2s.length) {
-            showTextbox(h2s[i].id);
-            setTimeout(function() {
-                iterateAll(h2s, i+1);
-            }, 100);
-        }
-    }
-    function headerHover(e) {
-        e.style.color = "#009688";
-    }
-    function headerOut(e) {
-        switch(e.tagName.toLowerCase()) {
-            case "h1":
-                e.style.color = h1c;
-                break;
-            case "h2":
-                e.style.color = h2c;
-                break;
-            case "h3":
-                e.style.color = h3c;
-                break;
-        }
-    }
-    function showLogo() {
-        if(document.getElementById("logo").style.display=="block") {
-            document.getElementById("logo").style.opacity = 0;
-            setTimeout(function() {
-                document.getElementById("logo").style.display = "none";
-                document.getElementById("headings").style.display = "block";
-                setTimeout(function() {
-                    document.getElementById("headings").style.opacity = 1;
-                }, 150);
-            }, 250);
-        } else {
-            var imgs = ["http://i.imgur.com/cCDyBv8.png", "http://i.imgur.com/9TX0Y6N.png", "http://i.imgur.com/HUr5kDj.png", "http://i.imgur.com/OZFme5u.png", "http://i.imgur.com/rqHjr6a.png"];
-            document.getElementById("logoimg").src = imgs[getRandomInt(0, imgs.length-1)];
-            document.getElementById("logo").style.display = "block";
-            document.getElementById("headings").style.opacity = 0;
-            setTimeout(function() {
-                document.getElementById("headings").style.display = "none";
-                document.getElementById("logo").style.opacity = 1;
-            }, 250);
-        }
-    }
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-    function awesomestatus() {
-        var u = window.open("http://awesomebot-botmakersinc.rhcloud.com/");
-        if(u) {
-            u.focus();
-        } else {
-            window.location.href = "http://awesomebot-botmakersinc.rhcloud.com/";
-        }
-    }
-    </script>
-  </head>
-  <body onload="javascript:setup();">
-    <div class="wrapper">
-      <header>
-        <h1 onclick="javascript:showLogo();" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);">AwesomeBot <div id="awesomeloader" class="uil-ring-css"" style="transform:scale(0.18);height:50px;width:50px;float:right;"><div></h1>
-        <h3>The best Discord bot!</h3>
+    <title>AwesomeBot for Discord</title>
 
-        <ul>
-          <li id="addtoserver"><a id="addtoserverlink" href="https://discordapp.com/oauth2/authorize?&client_id=168130366450827264&scope=bot&permissions=0" target="_blank">Add To <strong>Server</strong></a></li>
-          <li><a href="https://discord.gg/0pRFCTcG2aIY53Jk" target="_blank">Join Server <strong>Support</strong></a></li>
-          <li><a href="https://github.com/BitQuote/AwesomeBot">View On <strong>GitHub</strong></a></li>
-        </ul>
-        
-        <div id="awesomestatus">
-            <div id="awesomedown">AwesomeBot is currently down :(</div>
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/agency.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top" class="index" onload="showStatus()">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">AwesomeBot</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#about">About</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#portfolio">Features</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#compare">Compare</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#links">Links</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#team">Team</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="https://github.com/BitQuote/AwesomeBot">GitHub &raquo;</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
         </div>
-        <br>
-      </header>
-      <section>
-        <div id="headings">
-            <h2 id="media" onclick="javascript:showTextbox(this.id);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);"><span class="material-icons">image</span>&nbsp;Media Fetching: YouTube, Images, GIFs</h2>
-            <div class="textbox" id="media-text">Find memes or random images with Google Image Search. Get your daily dose of glorious GIFs on Giphy. View channels, playlists, and videos on YouTube. Brought to you by AwesomeBot.<br><br></div> 
-            <h2 id="rssr" onclick="javascript:showTextbox(this.id);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);"><span class="material-icons">refresh</span>&nbsp;RSS Articles and Reddit posts</h2>
-            <div class="textbox" id="rssr-text">Reddit and RSS can become integral to the Discord experience with AwesomeBot. We allow server mods to set custom RSS feeds, and our Reddit viewer includes data beyond just the link. Fetching is fast and simple with our streamlined command processing.<br><br></div>
-            <h2 id="profiles" onclick="javascript:showTextbox(this.id);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);"><span class="material-icons">person</span>&nbsp;Discord User Profiles</h2>
-            <div class="textbox" id="profiles-text">Often, you want everyone to know something about you. With AwesomeBot, you can add information to your user profile across Discord to express yourself. Even if you don't use this, the capable profile command shows information about each user's account and activity on the server.<br><br></div>
-            <h2 id="stats" onclick="javascript:showTextbox(this.id);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);"><span class="material-icons">poll</span>&nbsp;Full-Featured Per-Server Stats</h2>
-            <div class="textbox" id="stats-text">One of the best features of AwesomeBot is our full-featured, per-server stats system that logs every message sent and game played. You can view up-to-date information about the most popular members and games.<br><br></div>
-            <h2 id="messages" onclick="javascript:showTextbox(this.id);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);"><span class="material-icons">chat</span>&nbsp;Mention Logging and PM Option</h2>
-            <div class="textbox" id="messages-text">Discord provides some great notification options, but when you're mentioned, there's no way to quickly scroll to the messages in which you were tagged. AwesomeBot solves this problem by allowing you to view all of your mentions on each server in the past week. There's also the option to be private messaged by the bot when you're mentioned in the main chat.<br><br></div>
-            <h2 id="pollt" onclick="javascript:showTextbox(this.id);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);"><span class="material-icons">play_circle_filled</span>&nbsp;In-Chat Polls and Trivia Game</h2>
-            <div class="textbox" id="pollt-text">Have you ever wanted to easily ask the server a question? AwesomeBot provides live, in-chat polls that can be rapidly created and tallied. In addition, there's a fun group trivia game that even allows for custom question sets per-server. 
-            <br><br></div>
-            <h2 id="awesome" onclick="javascript:showTextbox(this.id);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);"><span class="material-icons">card_giftcard</span>&nbsp;AwesomePoints: Karma for Discord</h2>
-            <div class="textbox" id="awesome-text">Sometimes, you just want to show your agreement without having to send a long message. AwesomePoints allow you to quickly upvote users, accepting a wide range of syntaxes. This system is integrated throughout the bot: you'll lose points for breaking the rules, get rewards for being the most active on the server, and you can even buy lottery tickets!<br><br></div>
-            <h2 id="searchd" onclick="javascript:showTextbox(this.id);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);"><span class="material-icons">import_contacts</span>&nbsp;Utility Commands Galore</h2>
-            <div class="textbox" id="searchd-text">Urban Dictionary? Wikipedia? Google Search? Reminders? Unit and currency conversions? Full Wolfram|Alpha data? Random number generator? Tag database? Weather info? Joke telling? Say command? Year countdown? Games list? Stock market data? Yep, it's all here - AwesomeBot is packed with commands for everything you could possibly want.<br><br></div>
-            <h2 id="config" onclick="javascript:showTextbox(this.id);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);"><span class="material-icons">settings</span>&nbsp;Configurable Per-Server with Mod Tools</h2>
-            <div class="textbox" id="config-text">Don't like a feature in AwesomeBot? Disable it. Our powerful admin console allows server mods to control every aspect of the bot per-server, as well as gain access to our comprehensive mod tools. This includes a spam filter, NSFW content filter, blocklist, role management, and strikes system to keep track of when users break the rules.<br><br></div>
-            <h2 id="extensions" onclick="javascript:showTextbox(this.id);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);"><span class="material-icons">extension</span>&nbsp;Easily Extensible with JavaScript</h2>
-            <div class="textbox" id="extensions-text">The possibilities with AwesomeBot are endless. Maybe you want to add a live score tracker. Or a Spotify search command. Our robust extension system allows you to write a little JavaScript code to enrich the bot's functionality without worrying about breaking it.<br><br></div>
-            <h2 id="free" onclick="javascript:showTextbox(this.id);" onmouseover="javascript:headerHover(this);" onmouseout="javascript:headerOut(this);"><span class="material-icons">favorite</span>&nbsp;Free, Open-Source, Reliable</h2>
-            <div class="textbox" id="free-text">AwesomeBot is made with love by BitQuote and our entire team of committed volunteers. It'll always be open-source and free to use. It's hosted reliably in the cloud with frequest and tested updates. For tinkerers, we provide exhaustive documentation on setting up and modifying the AwesomeBot base.<br><br></div>
-            
-            <p><a href="https://github.com/BitQuote/AwesomeBot/wiki">Head to our wiki to learn more »</a></p>
+        <!-- /.container-fluid -->
+    </nav>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="intro-text">
+                <div class="intro-lead-in">AwesomeBot for Discord</div>
+                <div class="intro-heading">The Best Discord Bot</div>
+                <a id="addtoserverlink" href="https://discordapp.com/oauth2/authorize?&client_id=168130366450827264&scope=bot&permissions=0" class="page-scroll btn btn-xl">Add To Server</a>
+                <div><br><br><h4 id="awesomestatus"></h4></div>
+            </div>
         </div>
-        <div id="logo" onclick="javascript:showLogo();">
-            <img id="logoimg" src="http://i.imgur.com/cCDyBv8.png" />
+    </header>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">About</h2>
+                    <h3 class="section-subheading text-muted">The principles behind the bot.</h3>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="service-heading">Awesome Features</h4>
+                    <p class="text-muted">Our bot offers a plethora of genuinely useful, robust commands for just about anything you could want on Discord. This is how bots were always meant to be: easy to use, integrated with the platform, and connected to the web.</p>
+                </div>
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fa fa-cog fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="service-heading">Customizable and Extensible</h4>
+                    <p class="text-muted">AwesomeBot's comprehensive control panel allows server admins to use the bot's moderation tools, individually configure features, and add custom content. We also support a powerful extension system that allows developers to addon to the bot.</p>
+                </div>
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fa fa-heart fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="service-heading">Free and Open-Source</h4>
+                    <p class="text-muted">We believe a Discord bot should be free, forever. That's why AwesomeBot is hosted on a public server with reliable uptime and frequent updates. For tinkerers and developers, we've fully open-sourced the code under the CCPL.</p>
+                </div>
+            </div>
         </div>
-      </section>
-      <footer>
-        <p>AwesomeBot is maintained by <a href="https://github.com/BitQuote">BitQuote</a></p>
-        <p>This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product.</p><br>
-        <p>Page Options: <a id="themetoggle" href="javascript:colorDark();">Dark Theme</a>, <a id="headtoggle" href="javascript:keypress({keyCode: 32});">Toggle Text</a></p>
-      </footer>
-    </div>
-    <script src="javascripts/scale.fix.js"></script>
+    </section>
+
+    <!-- Features Grid Section -->
+    <section id="portfolio" class="bg-light-gray">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">Features</h2>
+                    <h3 class="section-subheading text-muted">A closer look at our coolest stuff.</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#portfolioModal1" class="portfolio-link" data-toggle="modal">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+                        </div>
+                        <img src="img/features/media.png" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Images, YouTube, GIFs</h4>
+                        <p class="text-muted">And memes, RSS, Reddit, and more. Yeah, that's right, memes. <b>Awesome media fetching</b></p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#portfolioModal2" class="portfolio-link" data-toggle="modal">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+                        </div>
+                        <img src="img/features/utility.jpg" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Utility Commands</h4>
+                        <p class="text-muted">Too much to list here</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#portfolioModal3" class="portfolio-link" data-toggle="modal">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+                        </div>
+                        <img src="img/features/config.png" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Configurability</h4>
+                        <p class="text-muted">You can change <b>everything</b></p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#portfolioModal4" class="portfolio-link" data-toggle="modal">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+                        </div>
+                        <img src="img/features/polls.jpg" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Polls and Trivia</h4>
+                        <p class="text-muted">Convenient or fun. Or both.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#portfolioModal5" class="portfolio-link" data-toggle="modal">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+                        </div>
+                        <img src="img/features/stats.jpg" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Full Stats System</h4>
+                        <p class="text-muted">Data for every server</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#portfolioModal6" class="portfolio-link" data-toggle="modal">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+                        </div>
+                        <img src="img/features/mentions.jpg" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Mention Logging</h4>
+                        <p class="text-muted">Get a PM when you're tagged</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     
-  </body>
+    <!-- Compare Table Section -->
+    <section id="compare">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">Compare</h2>
+                    <h3 class="section-subheading text-muted">AwesomeBot holds its own.</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-10 text-center">
+                    <div class="table-responsive">
+                        <table id="comparetable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th><h4><center>Feature</center></h4></th>
+                                    <th><h2 style="color:#009688;"><center>AwesomeBot</center></h2></th>
+                                    <th><h4><center>Mee6</center></h4></th>
+                                    <th><h4><center>BooBot</center></h4></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Reddit and RSS feeds</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Discord user profiles</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                    <td>Not customizable</td>
+                                </tr>
+                                <tr>
+                                    <td>Full stats system</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                    <td><i class="fa fa-check"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Mention logging and PM</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>In-chat polls and trivia</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                    <td><i class="fa fa-check"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Karma for Discord</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td>XP system</td>
+                                    <td><i class="fa fa-times"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Images, YouTube, GIFs</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Tons of utility commands</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                    <td>Weather only</td>
+                                </tr>
+                                <tr>
+                                    <td>Powerful tag database</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                    <td>Not customizable</td>
+                                </tr>
+                                <tr>
+                                    <td>Fully configurable per-server</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td><i class="fa fa-check"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Spam/NSFW/word filter</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>User strikes system</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Powerful extensions system</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td>Commands only</td>
+                                    <td><i class="fa fa-check"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Web interface</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td>Limited</td>
+                                    <td><i class="fa fa-times"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Open-source</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td><i class="fa fa-check"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Welcome/leave messages</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td>Limited</td>
+                                    <td><i class="fa fa-times"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Server logs</td>
+                                    <td><i class="bigicon fa fa-check"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                    <td><i class="fa fa-times"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Links Section -->
+    <section id="links" class="bg-light-gray">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">Links</h2>
+                    <h3 class="section-subheading text-muted">Check this out.</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="timeline">
+                        <li>
+                            <div class="timeline-image">
+                                <a href="https://discord.gg/0pRFCTcG2aIv7Mr1"><img class="img-circle img-responsive" src="img/links/discord.png" alt=""></a>
+                            </div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <h4>Discord Server</h4>
+                                    <h4 class="subheading">BotMakers, Inc.</h4>
+                                </div>
+                                <div class="timeline-body">
+                                    <p class="text-muted">Join our server to watch us test new stuff or just have a conversation with the contributors. <i>Wait, that doesn't sound interesting.</i> You can suggest new features, get help with the bot on your server, or learn how to deploy it yourself.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="timeline-inverted">
+                            <div class="timeline-image">
+                                <a href="https://github.com/BitQuote/AwesomeBot/wiki"><img class="img-circle img-responsive" src="img/links/wiki.ico" alt=""></a>
+                            </div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <h4>#ReadTheWiki</h4>
+                                    <h4 class="subheading">Documentation for everything.</h4>
+                                </div>
+                                <div class="timeline-body">
+                                    <p class="text-muted">We've spent a lot of time setting up an <b>awesome wiki</b>. You'll find documentation for each command, the admin console, and a detailed setup guide. We're always updating the wiki to be up-to-date with each release.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="timeline-image">
+                                <a href="http://awesomebot-botmakersinc.rhcloud.com/"><img class="img-circle img-responsive" src="img/links/status.png" alt=""></a>
+                            </div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <h4>Status Page</h4>
+                                    <h4 class="subheading">How are you, AwesomeBot?</h4>
+                                </div>
+                                <div class="timeline-body">
+                                    <p class="text-muted">The status page shows you a list of server the official bot is on as well as some server stats and the bot's log. We've made it easy to filter the activity log by server, user, or level for simple readability.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="timeline-inverted">
+                            <div class="timeline-image">
+                                <a href="http://awesome-botmakersinc.rhcloud.com/"><img class="img-circle img-responsive" src="img/links/version.png" alt=""></a>
+                            </div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <h4>Version History</h4>
+                                    <h4 class="subheading">Every. Single. One.*</h4>
+                                </div>
+                                <div class="timeline-body">
+                                    <p class="text-muted">Our update server provides a list of each past release with its changelog so you can see how the bot has grown and changed over time.<br><br><i>* Well, not every single one. It starts from v3.1.1</i></p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="timeline-inverted">
+                            <div onclick="switchNames();" class="timeline-image">
+                                <h4>Click
+                                    <br>These<br>
+                                    Circles</h4>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">Our Team</h2>
+                    <h3 class="section-subheading text-muted">Ignore the robot on the left.</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-1"></div>
+                <div class="col-sm-5">
+                    <div class="team-member">
+                        <img width=200 src="img/team/bitquote.png" class="img-responsive img-circle" alt="">
+                        <h4>BitQuote</h4>
+                        <p class="text-muted">Creator, Developer</p>
+                    </div>
+                </div>
+                <div class="col-sm-5">
+                    <div class="team-member">
+                        <img width=200 src="img/team/tinytaco.jpg" class="img-responsive img-circle" alt="">
+                        <h4>tinytaco</h4>
+                        <p class="text-muted">Missionary, Wiki Contributor</p>
+                    </div>
+                </div>
+                <div class="col-sm-1"></div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <p class="large text-muted">
+                        Other team members:
+                        <br><b>rydgeback:</b> Wiki Contributor
+                        <br><b>Enchanted13:</b> Code Contributor
+                        <br><b>Shuttle099:</b> Code Contributor
+                        <br><b>NanoDrive:</b> Wiki Contributor
+                        <br><i>And everyone else</i>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-light-gray">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5">
+                    <span class="copyright">Copyright &copy; BitQuote 2016</span>
+                </div>
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-5">
+                    <i>This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product.</i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Features Modal 1 -->
+    <div class="portfolio-modal modal fade" id="portfolioModal1" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>Images, YouTube, and GIFs</h2>
+                            <p class="item-intro text-muted"><b>+</b> memes, RSS, Reddit, and more</p>
+                            <img class="img-responsive img-centered" src="img/features/media.png" alt="">
+                            <p>Google Image Search. YouTube videos, channels, and playlists. GIF search from Giphy. Customizable RSS feeds. Reddit integration. Dank meme generation. <strong>Brought to you by AwesomeBot</strong></p>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Modal 2 -->
+    <div class="portfolio-modal modal fade" id="portfolioModal2" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>Utility Commands</h2>
+                            <p class="item-intro text-muted">Get ready for a giant list.</p>
+                            <p>
+                                <ul class="list-inline">
+                                    <li>Urban Dictionary</li>
+                                    <li>Full Wikipedia articles</li>
+                                    <li>Google Search</li>
+                                    <li>Wolfram|Alpha data</li>
+                                    <li>Random number generator</li>
+                                    <li>Choose for me</li>
+                                    <li>Me command</li>
+                                    <li>Say command</li>
+                                    <li>Joke teller</li>
+                                    <li>Stock market data</li>
+                                    <li>Year countdown</li>
+                                    <li>Games list</li>
+                                    <li>Weather info</li>
+                                    <li>Reminders</li>
+                                    <li>Currency and unit conversions</li>
+                                    <li>Twitter viewer</li>
+                                    <li>URL shortener</li>
+                                    <li>Live chatterbot</li>
+                                </ul>
+                            </p>
+                            <p>There's a lot more, too. AwesomeBot supports customizable user profiles, a karma system for Discord, an awesome tag database, and the ability to turn the bot on/off per-channel.</p>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Modal 3 -->
+    <div class="portfolio-modal modal fade" id="portfolioModal3" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>Configurability</h2>
+                            <p class="item-intro text-muted">You can change <b>everything</b>.</p>
+                            <p>With the AwesomeBot <a href="https://github.com/BitQuote/AwesomeBot/wiki/Configuration#admin-console">admin console</a>, there's nothing a server owner can't change about the bot. From adding other admins to managing strikes for users to joined/left messages to building an extension, we've included everything. This is how our bot adapts to each and every server it joins.</p>
+                            <img class="img-responsive img-centered" src="img/features/config-example.png" alt="">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Modal 4 -->
+    <div class="portfolio-modal modal fade" id="portfolioModal4" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>Polls and Trivia</h2>
+                            <p class="item-intro text-muted">Live and completely in-chat</p>
+                            <img class="img-responsive img-centered" src="img/features/polls.jpg" alt="">
+                            <p>Have you ever wanted to do a quick poll in the server? Sure, you can use Strawpoll, but you'd have to leave Discord and post a link. It's not integrated into the Discord experience. With AwesomeBot, we've built thoughtfully integrated polls with live results and easy setup.</p>
+                            <p>In the days of IRC, members of a server would play fun trivia games together. We're bringing that experience back with AwesomeBot. An exhaustive, Jeopardy-style trivia set is included by default with support for custom trivia sets in the JSON syntax. It's very easy to start a game, and users are awarded AwesomePoints for correct answers. It's fun for the whole server!</p>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Modal 5 -->
+    <div class="portfolio-modal modal fade" id="portfolioModal5" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>Full-Featured Stats System</h2>
+                            <p class="item-intro text-muted">Data for every server.</p>
+                            <p>Our full-featured stats system logs useful usage data for every server about popular games, member activity, and command usage. They can be viewed at any time with the <code>stats</code> command and are reset weekly.</p>
+                            <img class="img-responsive img-centered" src="img/features/stats-example.png" alt="">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Modal 6 -->
+    <div class="portfolio-modal modal fade" id="portfolioModal6" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>Mention Logging</h2>
+                            <p class="item-intro text-muted">PMs and history. This is useful.</p>
+                            <img class="img-responsive img-centered" src="img/features/mentions.jpg" alt="">
+                            <p>We've all had the infamous "mentions issue". You're gone for a few hours and you have a ton of mentions when you get back. Our mention logging engine allows you to view messages in which you were tagged in a convenient list for each server. There's even the option to be PM'd if you're mentioned when you're offline. This simple utility is where AwesomeBot shines: providing integrated features when you need them.</p>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/cbpAnimatedHeader.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/agency.js"></script>
+
+</body>
+
 </html>
