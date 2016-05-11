@@ -19,6 +19,10 @@ try {
     })();
 
     // Misc. modules to make everything work
+    var domainRoot = require("domain");
+    var domain = domainRoot.create();
+    var express = require("express");
+    var bodyParser = require("body-parser");
     const writeFileAtomic = require("write-file-atomic");
     const youtube_node = require("youtube-node");
     const unirest = require("unirest");
@@ -43,7 +47,8 @@ try {
     const searcher = require("google-search-scraper");
     const urlInfo = require("url-info-scraper");
     const itunes = require("searchitunes");
-    var googl = require("goo.gl");
+    const googl = require("goo.gl");
+    const removeMd = require("remove-markdown");
     const jokesearch = require("jokesearch");
     const bingTranslate = require("bing-translate").init({
         client_id: AuthDetails.microsoft_client_id,
@@ -57,7 +62,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.18";
+var version = "3.3.18p1";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -1185,7 +1190,7 @@ var commands = {
                 for(var usrid in stats[msg.channel.server.id].members) {
                     usr = msg.channel.server.members.get("id", usrid);
                     if(usr) { 
-                        memberMessages.push([(msg.channel.server.detailsOfUser(usr).nick || usr.username), stats[msg.channel.server.id].members[usrid].messages]); 
+                        memberMessages.push([removeMd(msg.channel.server.detailsOfUser(usr).nick || usr.username), stats[msg.channel.server.id].members[usrid].messages]); 
                     }
                 }
                 memberMessages.sort(function(a, b) {
@@ -1222,7 +1227,7 @@ var commands = {
                         strikes: []
                     };
                 }
-                bot.sendMessage(msg.channel, "**@" + (msg.channel.server.detailsOfUser(usr).nick || usr.username) + "** has sent `" + stats[msg.channel.server.id].members[usr.id].messages + "` message" + (stats[msg.channel.server.id].members[usr.id].messages==1 ? "" : "s") + " on this server this week");
+                bot.sendMessage(msg.channel, "**@" + removeMd(msg.channel.server.detailsOfUser(usr).nick || usr.username) + "** has sent `" + stats[msg.channel.server.id].members[usr.id].messages + "` message" + (stats[msg.channel.server.id].members[usr.id].messages==1 ? "" : "s") + " on this server this week");
             } else {
                 logMsg(new Date().getTime(), "WARN", msg.channel.server.id, msg.channel.id, "Requested member does not exist so number of messages cannot be shown");
                 bot.sendMessage(msg.channel, "That user doesn't exist :/");
@@ -1240,7 +1245,7 @@ var commands = {
                 for(var usrid in profileData) {
                     usr = msg.channel.server.members.get("id", usrid);
                     if(usr && profileData[usr.id].points>0) { 
-                        memberPoints.push([(msg.channel.server.detailsOfUser(usr).nick || usr.username), profileData[usr.id].points]); 
+                        memberPoints.push([removeMd(msg.channel.server.detailsOfUser(usr).nick || usr.username), profileData[usr.id].points]); 
                     }
                 }
                 memberPoints.sort(function(a, b) {
@@ -1320,7 +1325,7 @@ var commands = {
                         }
                     });
                 }
-                bot.sendMessage(msg.channel, "**@" + (msg.channel.server.detailsOfUser(usr).nick || usr.username) + "** has `" + profileData[usr.id].points + "` AwesomePoint" + (profileData[usr.id].points==1 ? "" : "s"));
+                bot.sendMessage(msg.channel, "**@" + removeMd(msg.channel.server.detailsOfUser(usr).nick || usr.username) + "** has `" + profileData[usr.id].points + "` AwesomePoint" + (profileData[usr.id].points==1 ? "" : "s"));
             } else {
                 logMsg(new Date().getTime(), "WARN", msg.channel.server.id, msg.channel.id, "Requested member does not exist so profile cannot be shown");
                 bot.sendMessage(msg.channel, "That user doesn't exist :confused:");
@@ -1900,8 +1905,6 @@ bot.on("ready", function() {
     }
 
     // Set up webserver for online bot status, optimized for RedHat OpenShift deployment
-    var express = require("express");
-    var bodyParser = require("body-parser");
     var app = express();
     app.use(bodyParser.urlencoded({extended: true}));
     app.use(bodyParser.json());
@@ -2349,6 +2352,7 @@ bot.on("ready", function() {
     logMsg(new Date().getTime(), "INFO", "General", null, "This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product.");
 });
 
+domain.run(function() {
 bot.on("message", function(msg) {
     try {
         // Stop responding if the sender is another bot or botblocked
@@ -2404,10 +2408,12 @@ bot.on("message", function(msg) {
             }
             var cmd = pmcommands[cmdTxt];
             if(cmd) {
+                bot.startTyping(msg.channel);
                 if(cmdTxt!="config" || suffix) {
                     logMsg(new Date().getTime(), "INFO", null, msg.author.id, "Treating '" + msg.cleanContent + "' from as a PM command");
                 }
                 cmd.process(bot, msg, suffix);
+                bot.stopTyping(msg.channel);
                 return;
             }
         }
@@ -2434,6 +2440,11 @@ bot.on("message", function(msg) {
             if(profileData[msg.author.id] && profileData[msg.author.id].AFK) {
                 delete profileData[msg.author.id].AFK;
                 logMsg(new Date().getTime(), "INFO", null, msg.author.id, "Auto-removed AFK message");
+                saveData("./data/profiles.json", function(err) {
+                    if(err) {
+                        logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to save profile data for " + msg.author.username);
+                    }
+                });
             }
             
             // If start statement is issued, say hello and begin listening
@@ -2554,15 +2565,15 @@ bot.on("message", function(msg) {
                     var mentions = stats[msg.channel.server.id].members[usr.id].mentions;
                     mentions.stream.push({
                         timestamp: new Date().getTime(),
-                        author: (msg.channel.server.detailsOfUser(msg.author).nick || msg.author.username),
+                        author: removeMd(msg.channel.server.detailsOfUser(msg.author).nick || msg.author.username),
                         message: msg.cleanContent
                     });
                     if(mentions.pm && usr.status!="online") {
-                        bot.sendMessage(usr, "__You were mentioned by @" + (msg.channel.server.detailsOfUser(msg.author).nick || msg.author.username) + " on **" + msg.channel.server.name + "**:__\n" + msg.cleanContent);
+                        bot.sendMessage(usr, "__You were mentioned by @" + removeMd(msg.channel.server.detailsOfUser(msg.author).nick || msg.author.username) + " on **" + msg.channel.server.name + "**:__\n" + msg.cleanContent);
                     }
                     if(profileData[usr.id]) {
                         if(profileData[usr.id].AFK && configs.servers[msg.channel.server.id].afk) {
-                            bot.sendMessage(msg.channel, "**@" + (msg.channel.server.detailsOfUser(usr).nick || usr.username) + "** is currently AFK: " + profileData[usr.id].AFK);
+                            bot.sendMessage(msg.channel, "**@" + removeMd(msg.channel.server.detailsOfUser(usr).nick || usr.username) + "** is currently AFK: " + profileData[usr.id].AFK);
                         }
                     }
                     
@@ -2667,24 +2678,12 @@ bot.on("message", function(msg) {
                         var context = new vm.createContext(params);
                         var script = new vm.Script(configs.servers[msg.channel.server.id].extensions[ext].process);
                         script.runInContext(context);
-                        var wait = function(count) {
-                            if(params.send=="" || !params.send) {
-                                setTimeout(function() {
-                                    wait(count);
-                                }, 100);
-                            } else if(count>30) {
-                                logMsg(new Date().getTime(), "WARN", msg.channel.server.id, msg.channel.id, "Extension " + configs.servers[msg.channel.server.id].extensions[ext].name + " produced no output");
-                            } else {
-                                bot.sendMessage(msg.channel, params.send);
-                                configs.servers[msg.channel.server.id].extensions[ext].store = params.store;
-                                saveData("./data/config.json", function(err) {
-                                    if(err) {
-                                        logMsg(new Date().getTime(), "ERROR", msg.channel.server.id, msg.channel.id, "Could not save updated store for extension " + configs.servers[msg.channel.server.id].extensions[ext].name);
-                                    }
-                                });
+                        configs.servers[msg.channel.server.id].extensions[ext].store = params.store;
+                        saveData("./data/config.json", function(err) {
+                            if(err) {
+                                logMsg(new Date().getTime(), "ERROR", msg.channel.server.id, msg.channel.id, "Could not save updated store for extension " + configs.servers[msg.channel.server.id].extensions[ext].name);
                             }
-                        };
-                        wait(0);
+                        });
                     } catch(runError) {
                         logMsg(new Date().getTime(), "ERROR", msg.channel.server.id, msg.channel.id, "Failed to run extension " + configs.servers[msg.channel.server.id].extensions[ext].type + ": " + runError);
                     }
@@ -2831,13 +2830,15 @@ bot.on("message", function(msg) {
                 prompt = prompt.substring(prompt.indexOf(" ")+1);
                 if(prompt.toLowerCase().indexOf("help")==0) {
                     bot.sendMessage(msg.channel, "Use `" + getPrefix(msg.channel.server) + "help` for info about how to use me on this server :smiley:");
+                    bot.stopTyping(msg.channel);
                     return;
                 }
                 clever = cleverOn[msg.channel.server.id];
             } else {
                 prompt = msg.cleanContent;
                 if([0, 1].indexOf(prompt.toLowerCase().indexOf("help"))>-1) {
-                    bot.sendMessage(msg.author, "Use `@" + (msg.channel.server.detailsOfUser(bot.user).nick || bot.user.username) + " help` in the public chat to get help, or head over to the wiki: https://git.io/vwhGe");
+                    bot.sendMessage(msg.author, "Use `@" + bot.user.username + " help` in the public chat to get help, or head over to the wiki: https://git.io/vwhGe");
+                    bot.stopTyping(msg.channel);
                     return;
                 }
             }
@@ -2849,7 +2850,7 @@ bot.on("message", function(msg) {
                 var ai = bots[msg.author.id];
                 ai.send(prompt)
                     .then(function(response) {
-                        var res = response.replace("Mitsuku", (msg.channel.server.detailsOfUser(bot.user).nick || bot.user.username));
+                        var res = response.replace("Mitsuku", msg.channel.isPrivate ? bot.user.username : (msg.channel.server.detailsOfUser(bot.user).nick || bot.user.username));
                         if(!msg.channel.isPrivate) {
                             res = res.replace("Mousebreaker", bot.users.get("id", configs.maintainer) ? bot.users.get("id", configs.maintainer).username : bot.users.get("id", configs.servers[msg.channel.server.id].admins[0]).username);
                         }
@@ -2891,7 +2892,7 @@ bot.on("message", function(msg) {
             logMsg(new Date().getTime(), "ERROR", msg.channel.server.id, msg.channel.id, "Failed to process new message: " + mainError);
         }
     }
-});
+})});
 
 // Add server if joined outside of bot
 bot.on("serverCreated", function(svr) {
@@ -2919,7 +2920,7 @@ function readyServer(svr) {
     filterviolations[svr.id] = {};
     
     // Run timer extensions
-    runTimerExtensions();
+    domain.run(runTimerExtensions);
     
     bot.stopTyping(svr.defaultChannel);
 }
@@ -2979,6 +2980,7 @@ function deleteServerData(svrid) {
 }
 
 // New server member handling
+domain.run(function() {
 bot.on("serverMemberUpdate", function(svr, usr) {
     if(svr.rolesOfUser(usr)) {
         for(var j=0; j<svr.rolesOfUser(usr).length; j++) {
@@ -3001,7 +3003,7 @@ bot.on("serverMemberUpdate", function(svr, usr) {
             }
         }
     }
-});
+})});
 
 bot.on("serverNewMember", function(svr, usr) {
     // Check if this has been enabled in admin console and the bot is listening
@@ -3051,11 +3053,12 @@ bot.on("serverMemberRemoved", function(svr, usr) {
     }
     if(configs.servers[svr.id].servermod && configs.servers[svr.id].rmmembermsg[0] && stats[svr.id].botOn[svr.defaultChannel.id]) {
         logMsg(new Date().getTime(), "INFO", svr.id, null, "Member removed: " + usr.username);
-        bot.sendMessage(svr.channels.get("id", configs.servers[svr.id].rmmembermsg[2]), configs.servers[svr.id].rmmembermsg[1][getRandomInt(0, configs.servers[svr.id].rmmembermsg[1].length-1)].replace("++", "**@" + (svr.detailsOfUser(usr).nick || usr.username) + "**"));
+        bot.sendMessage(svr.channels.get("id", configs.servers[svr.id].rmmembermsg[2]), configs.servers[svr.id].rmmembermsg[1][getRandomInt(0, configs.servers[svr.id].rmmembermsg[1].length-1)].replace("++", "**@" + removeMd(svr.detailsOfUser(usr).nick || usr.username) + "**"));
     }
 });
 
 // Reduces activity score when message is publicly deleted
+domain.run(function() {
 bot.on("messageDeleted", function(msg) {
     if(msg) {
         if(!msg.channel.isPrivate) {
@@ -3083,13 +3086,13 @@ bot.on("messageDeleted", function(msg) {
             }
         }
     }
-});
+})});
 
 // Message on user banned
 bot.on("userBanned", function(usr, svr) {
     if(configs.servers[svr.id].servermod && configs.servers[svr.id].banmembermsg[0] && stats[svr.id].botOn[svr.defaultChannel.id]) {
         logMsg(new Date().getTime(), "INFO", svr.id, null, "User " + usr.username + " has been banned");
-        bot.sendMessage(svr.channels.get("id", configs.servers[svr.id].banmembermsg[2]), configs.servers[svr.id].banmembermsg[1][getRandomInt(0, configs.servers[svr.id].banmembermsg[1].length-1)].replace("++", "**@" + (svr.detailsOfUser(usr).nick || usr.username) + "**"));
+        bot.sendMessage(svr.channels.get("id", configs.servers[svr.id].banmembermsg[2]), configs.servers[svr.id].banmembermsg[1][getRandomInt(0, configs.servers[svr.id].banmembermsg[1].length-1)].replace("++", "**@" + removeMd(svr.detailsOfUser(usr).nick || usr.username) + "**"));
     }
 });
 
@@ -3097,11 +3100,12 @@ bot.on("userBanned", function(usr, svr) {
 bot.on("userUnbanned", function(usr, svr) {
     if(configs.servers[svr.id].servermod && configs.servers[svr.id].unbanmembermsg[0] && stats[svr.id].botOn[svr.defaultChannel.id]) {
         logMsg(new Date().getTime(), "INFO", svr.id, null, "User " + usr.username + " has been unbanned");
-        bot.sendMessage(svr.channels.get("id", configs.servers[svr.id].unbanmembermsg[2]), configs.servers[svr.id].unbanmembermsg[1][getRandomInt(0, configs.servers[svr.id].unbanmembermsg[1].length-1)].replace("++", "**@" + (svr.detailsOfUser(usr).nick || usr.username) + "**"));
+        bot.sendMessage(svr.channels.get("id", configs.servers[svr.id].unbanmembermsg[2]), configs.servers[svr.id].unbanmembermsg[1][getRandomInt(0, configs.servers[svr.id].unbanmembermsg[1].length-1)].replace("++", "**@" + removeMd(svr.detailsOfUser(usr).nick || usr.username) + "**"));
     }
 });
 
 // Update lastSeen status on presence change and messages
+domain.run(function() {
 bot.on("presence", function(oldusr, newusr) {
     if(newusr.id!=bot.user.id) {
         for(var i=0; i<bot.servers.length; i++) {
@@ -3158,7 +3162,7 @@ bot.on("presence", function(oldusr, newusr) {
             }
         }
     }
-});
+})});
 
 // Attempt authentication if disconnected
 bot.on("disconnected", function() {
@@ -3195,12 +3199,12 @@ function getRSS(svrid, site, count, callback) {
                 }
                 callback(err, articles);
             } catch(error) {
-                logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to process RSS feed request");
+                logMsg(new Date().getTime(), "ERROR", svrid, null, "Failed to process RSS feed request");
                 return;
             }
         });
     } catch(err) {
-        logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to process RSS feed request");
+        logMsg(new Date().getTime(), "ERROR", svrid, null, "Failed to process RSS feed request");
         return;
     }
 }
@@ -3592,7 +3596,13 @@ function getExtensionParams(extension, svr, ch, msg, keywordcontains, suffix) {
             username: bot.user.username,
             nick: svr.detailsOfUser(bot.user).nick,
             id: bot.user.id,
-            avatar: bot.user.avatarURL
+            avatar: bot.user.avatarURL,
+            sendMessage: function(message) {
+                bot.sendMessage(ch, message);
+            },
+            sendAuthor: function(usrid, message) {
+                bot.sendMessage(svr.members.get("id", usrid), message);
+            }
         },
         svr: {
             name: svr.name,
@@ -3635,9 +3645,8 @@ function getExtensionParams(extension, svr, ch, msg, keywordcontains, suffix) {
             if(["INFO", "WARN", "ERROR"].indexOf(level.toUpperCase())>-1) {
                 logMsg(new Date().getTime(), level.toUpperCase(), svr.id, ch.id, "Extension log: " + message);
             }
-        },
-        send: ""
-    }
+        }
+    };
     if(msg && ["keyword", "command"].indexOf(extension.type)>-1) {
         var mentions = msg.mentions;
         if(mentions) {
@@ -3701,32 +3710,15 @@ function runTimerExtension(svrid, extnm) {
                     var context = new vm.createContext(params);
                     var script = new vm.Script(extension.process);
                     script.runInContext(context);
-                    var wait = function(count) {
-                        if(params.send=="" || !params.send) {
-                            setTimeout(function() {
-                                wait(count);
-                            }, 100);
-                        } else if(count>30) {
-                            logMsg(new Date().getTime(), "WARN", svr.id, null, "Timer extension " + extension.type + " produced no output");
-                        } else {
-                            for(var i=0; i<extension.channels.length; i++) {
-                                var ch = svr.channels.get("name", extension.channels[i]);
-                                if(ch) {
-                                    bot.sendMessage(ch, params.send);
-                                    logMsg(new Date().getTime(), "INFO", svr.id, ch.id, "Timer extension " + extension.type + " executed successfully");
-                                }
-                            }
-                            extension.store = params.store;
-                            saveData("./data/config.json", function(err) {
-                                if(err) {
-                                    logMsg(new Date().getTime(), "ERROR", svr.id, null, "Could not save updated store for extension " + extension.name);
-                                }
-                            });
+                    logMsg(new Date().getTime(), "INFO", svr.id, ch.id, "Timer extension " + extension.type + " executed     successfully");
+                    extension.store = params.store;
+                    saveData("./data/config.json", function(err) {
+                        if(err) {
+                            logMsg(new Date().getTime(), "ERROR", svr.id, null, "Could not save updated store for extension " + extension.name);
                         }
-                    };
-                    wait(0);
+                    });
                 } catch(runError) {
-                    logMsg(new Date().getTime(), "ERROR", svr.id, null, "Failed to run timer extension " + extension.type + ": " + runError);
+                    logMsg(new Date().getTime(), "ERROR", svr.id, null, "Failed to run timer extension " + extnm + ": " + runError);
                 }
             }
         }
@@ -4479,24 +4471,6 @@ function addExtension(extension, svr, consoleid, callback) {
             validity = "case sensitivity not specified";
         } else if(configs.servers[svr.id].extensions[extension.name]) {
             validity = "extension already exists";
-        } else {
-            var params = getExtensionParams(extension, svr, svr.defaultChannel, extension.type!="timer" ? {
-                content: bot.user.mention() + " " + (extension.type=="command" ? extension.key : extension.key[0]) + " test",
-                cleancontent: bot.user.mention() + " " + (extension.type=="command" ? extension.key : extension.key[0]) + " test",
-                author: bot.user
-            } : null, extension.type=="keyword" ? extension.key[0] : null, extension.type=="command" ? "test" : null);
-            try {
-                var context = new vm.createContext(params);
-                var script = new vm.Script(extension.process);
-                script.runInContext(context);
-                setTimeout(function() {
-                    if(params.send=="" || !params.send) {
-                        validity = "no output";   
-                    }
-                }, 3000);
-            } catch(runError) {
-                validity = runError;
-            }
         }
         
         if(validity) {
@@ -4844,24 +4818,24 @@ function giSearch(query, num, svrid, chid, callback) {
                 var data = response.body;
                 
                 if(!data) {
-                    logMsg(new Date().getTime(), "ERROR", "General", null, "Could not connect to Google Images");
+                    logMsg(new Date().getTime(), "ERROR", svrid, chid, "Could not connect to Google Images");
                     callback(null);
                 } else if(data.error) {
                     if(data.error.code==403) {
-                        logMsg(new Date().getTime(), "WARN", "General", null, "Hit daily Google Images API rate limit");
+                        logMsg(new Date().getTime(), "WARN", svrid, chid, "Hit daily Google Images API rate limit");
                         callback(false);
                     } else {
-                        logMsg(new Date().getTime(), "ERROR", "General", null, "Google Images API error");
+                        logMsg(new Date().getTime(), "ERROR", svrid, chid, "Google Images API error");
                         callback(null);
                     }
                 } else if(!data.items || data.items.length == 0 || query.indexOf("<#")>-1) {
-                    logMsg(new Date().getTime(), "WARN", "General", null, "No image results for " + query);
+                    logMsg(new Date().getTime(), "WARN", svrid, chid, "No image results for " + query);
                     callback(null);
                 } else {
                     callback(data.items[0].link);
                 }
             } catch(error) {
-                logMsg(new Date().getTime(), "ERROR", "General", null, "Failed to process image search request");
+                logMsg(new Date().getTime(), "ERROR", svrid, chid, "Failed to process image search request");
                 return;
             }
         });	
@@ -5010,7 +4984,7 @@ function getStats(svr) {
         }
         var usr = svr.members.get("id", sortedMembers[i][0]);
         if(usr && sortedMembers[i][1]>0) {
-            info["Most active members"].push((svr.detailsOfUser(usr).nick || usr.username) + ": " + sortedMembers[i][1] + " message" + (sortedMembers[i][1]==1 ? "" : "s"));
+            info["Most active members"].push(removeMd(svr.detailsOfUser(usr).nick || usr.username) + ": " + sortedMembers[i][1] + " message" + (sortedMembers[i][1]==1 ? "" : "s"));
         }
     }
     for(var i=sortedRichest.length-1; i>sortedRichest.length-6; i--) {
@@ -5019,7 +4993,7 @@ function getStats(svr) {
         }
         var usr = svr.members.get("id", sortedRichest[i][0]);
         if(usr && sortedRichest[i][1]>0) {
-            info["Richest members"].push((svr.detailsOfUser(usr).nick || usr.username) + ": " + sortedRichest[i][1] + " point" + (sortedRichest[i][1]==1 ? "" : "s"));
+            info["Richest members"].push(removeMd(svr.detailsOfUser(usr).nick || usr.username) + ": " + sortedRichest[i][1] + " point" + (sortedRichest[i][1]==1 ? "" : "s"));
         }
     }
     for(var i=sortedGames.length-1; i>sortedGames.length-6; i--) {
@@ -5136,7 +5110,7 @@ function getProfile(usr, svr) {
     }
     svrinfo["Strikes"] = stats[svr.id].members[usr.id].strikes.length + " so far";
     var info = {};
-    info["User profile: @" + (svr.detailsOfUser(usr).nick || usr.username)] = usrinfo;
+    info["User profile: @" + removeMd(svr.detailsOfUser(usr).nick || usr.username)] = usrinfo;
     info["On " + svr.name] = svrinfo;
     return info;
 }
@@ -5145,13 +5119,15 @@ function getProfile(usr, svr) {
 function getSvrMembers(svr) {
     var members = {};
     for(var i=0; i<svr.members.length; i++) {
-        var rolesOfUser = svr.rolesOfUser(svr.members[i]);
-        for(var i=0; i<rolesOfUser.length; i++) {
-            rolesOfUser[i] = rolesOfUser[i].id;
+        var rolesOfUser = [];
+        for(var j=0; j<svr.rolesOfUser(svr.members[i]).length; j++) {
+            if(svr.rolesOfUser(svr.members[i])[j]) {
+                rolesOfUser.push(svr.rolesOfUser(svr.members[i])[j].id);
+            }
         }
         members[svr.members[i].id] = {
             username: svr.members[i].username,
-            nick: svr.detailsOfUser(usr).nick,
+            nick: svr.detailsOfUser(svr.members[i]).nick,
             id: svr.members[i].id,
             avatar: svr.members[i].avatarURL,
             roles: rolesOfUser,
@@ -5182,8 +5158,8 @@ function getSvrRoles(svr) {
     for(var i=0; i<svr.roles.length; i++) {
         if(svr.roles[i].name!="@everyone" && svr.roles[i].name.indexOf("color-")!=0) {
             var membersWithRole = svr.usersWithRole(svr.roles[i]);
-            for(var i=0; i<membersWithRole.length; i++) {
-                membersWithRole[i] = membersWithRole[i].id;
+            for(var j=0; j<membersWithRole.length; j++) {
+                membersWithRole[j] = membersWithRole[j].id;
             }
             roles[svr.roles[i].id] = {
                 name: svr.roles[i].name,
@@ -5877,6 +5853,7 @@ function setup(i) {
 }
 setup(0);
 
-process.on("uncaughtException", function(err) {
+domain.on("error", function(err) {
+    console.error(err.stack);
     logMsg(new Date().getTime(), "ERROR", "General", null, "Something went seriously wrong: " + err);
 });

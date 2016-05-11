@@ -47,7 +47,9 @@
     "node-base64-image": "*",
     "goo.gl": "*",
     "jokesearch": "*",
-    "bing-translate": "*"
+    "bing-translate": "*",
+    "domain": "*",
+    "remove-markdown": "*"
   },
   "scripts": {
     "start": "node start.js"

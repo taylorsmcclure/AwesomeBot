@@ -1,6 +1,7 @@
 var authtoken;
 var authtype;
 var botData;
+var consoletimer;
 
 function getHelp() {
     var u = window.open("https://github.com/BitQuote/AwesomeBot/wiki/Configuration#" + authtype + "-console");
@@ -45,13 +46,17 @@ function checkAuth(extend) {
             }
         });
     } else {
-        setTimeout(function() {
-            $("#extender-modal").modal("show");
-            setTimeout(function() {
-                checkAuth();
-            }, 30000);
-        }, 150000);
+        setAuthTimer();
     }
+}
+
+function setAuthTimer() {
+    consoletimer = setTimeout(function() {
+        $("#extender-modal").modal("show");
+        setTimeout(function() {
+            checkAuth();
+        }, 30000);
+    }, 150000);
 }
 
 function leaveConsole(msg) {
@@ -91,6 +96,8 @@ function config(key, value, callback) {
         if(response==200) {
             getJSON("/data/?auth=" + authtoken + "&type=" + authtype, function(mData) {
                 if(Object.keys(mData).length>0) {
+                    clearTimeout(consoletimer);
+                    setAuthTimer();
                     botData = mData;
                     if(authtype=="admin") {
                         document.getElementById("rssrow").style.display = botData.configs.rss[0] ? "" : "none";
