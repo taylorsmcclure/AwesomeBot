@@ -60,7 +60,7 @@ function switchAdmins() {
     filterMembers(blacklist, function(possibleAdmins) {
         var adminsselector = "<option value=\"\">Select Member</option>";
         for(var i=0; i<possibleAdmins.data.length; i++) {
-            adminsselector += "<option value=\"" + possibleAdmins.data[i][1] + "\">" + possibleAdmins.data[i][0] + "</option>";
+            adminsselector += "<option value=\"" + possibleAdmins.data[i][1] + "\"" + (possibleAdmins.data[i][2] ? (" data-tokens=\"" + possibleAdmins.data[i][2] + "\"") : "" ) + ">" + possibleAdmins.data[i][0] + "</option>";
         }
         document.getElementById("adminsselector").innerHTML = adminsselector;
         $("#adminsselector").selectpicker("refresh");
@@ -107,7 +107,7 @@ function switchBlocked() {
     filterMembers(blacklist, function(possibleBlocked) {
         var blockedselector = "<option value=\"\">Select Member</option>";
         for(var i=0; i<possibleBlocked.data.length; i++) {
-            blockedselector += "<option value=\"" + possibleBlocked.data[i][1] + "\">" + possibleBlocked.data[i][0] + "</option>";
+            blockedselector += "<option value=\"" + possibleBlocked.data[i][1] + "\"" + (possibleBlocked.data[i][2] ? (" data-tokens=\"" + possibleBlocked.data[i][2] + "\"") : "" ) + ">" + possibleBlocked.data[i][0] + "</option>";
         }
         document.getElementById("blockedselector").innerHTML = blockedselector;
         $("#blockedselector").selectpicker("refresh");
@@ -174,7 +174,7 @@ function switchStrikes() {
     filterMembers(blacklist, function(possibleStrikes) {
         var strikesselector = "<option value=\"\">Select Member</option>";
         for(var i=0; i<possibleStrikes.data.length; i++) {
-            strikesselector += "<option value=\"" + possibleStrikes.data[i][1] + "\">" + possibleStrikes.data[i][0] + "</option>";
+            strikesselector += "<option value=\"" + possibleStrikes.data[i][1] + "\"" + (possibleStrikes.data[i][2] ? (" data-tokens=\"" + possibleStrikes.data[i][2] + "\"") : "" ) + ">" + possibleStrikes.data[i][0] + "</option>";
         }
         document.getElementById("strikesselector").innerHTML = strikesselector;
         $("#strikesselector").selectpicker("refresh");
@@ -273,10 +273,10 @@ function switchTranslated() {
     for(var i=0; i<botData.configs.blocked.length; i++) {
         blacklist.push(botData.configs.blocked[i][2]);
     }
-    filterMembers(blacklist, function(possibletranslated) {
+    filterMembers(blacklist, function(possibleTranslated) {
         var translatedselector = "<option value=\"\">Select Member</option>";
-        for(var i=0; i<possibletranslated.data.length; i++) {
-            translatedselector += "<option value=\"" + possibletranslated.data[i][1] + "\">" + possibletranslated.data[i][0] + "</option>";
+        for(var i=0; i<possibleTranslated.data.length; i++) {
+            translatedselector += "<option value=\"" + possibleTranslated.data[i][1] + "\"" + (possibleTranslated.data[i][2] ? (" data-tokens=\"" + possibleTranslated.data[i][2] + "\"") : "" ) + ">" + possibleTranslated.data[i][0] + "</option>";
         }
         document.getElementById("translatedselector").innerHTML = translatedselector;
         $("#translatedselector").selectpicker("refresh");

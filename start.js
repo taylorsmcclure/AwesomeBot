@@ -62,7 +62,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.18p5";
+var version = "3.3.18p6";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2128,7 +2128,7 @@ bot.on("ready", function() {
                     var members = [];
                     for(var i=0; i<svr.members.length; i++) {
                         if(configs.botblocked.indexOf(svr.members[i].id)==-1 && svr.members[i].id!=bot.user.id && svr.members[i].username && svr.members[i].id) {
-                            members.push([svr.members[i].username, svr.members[i].id]);
+                            members.push([svr.members[i].username, svr.members[i].id, svr.detailsOfUser(svr.members[i]).nick]);
                         }
                     }
                     members.sort(function(a, b) {
