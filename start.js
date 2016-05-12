@@ -62,7 +62,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.18p4";
+var version = "3.3.18p5";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -1537,7 +1537,7 @@ var pmcommands = {
                             points: 0
                         };
                     }
-                    info = "Alright, got it! PM me `" + key + ",.` to delete that.";
+                    info = "Alright, got it! PM me `profile " + key + ",.` to delete that.";
                     profileData[msg.author.id][key] = value;
                 }
                 saveData("./data/profiles.json", function(err) {
@@ -2160,6 +2160,19 @@ bot.on("ready", function() {
                                 b = b[1].toUpperCase();
                                 return a < b ? -1 : a > b ? 1 : 0;
                             });
+                        } else if(key=="translated") {
+                            currentConfig[key] = [];
+                            for(var i=0; i<configs.servers[svr.id][key].list.length; i++) {
+                                var usr = svr.members.get("id", configs.servers[svr.id][key].list[i]);
+                                if(usr && configs.botblocked.indexOf(usr.id)==-1) {
+                                    currentConfig[key].push([usr.avatarURL || "http://i.imgur.com/fU70HJK.png", usr.username, usr.id, configs.servers[svr.id][key].langs[i]]);
+                                }
+                            }
+                            currentConfig[key].sort(function(a, b) {
+                                a = a[1].toUpperCase();
+                                b = b[1].toUpperCase();
+                                return a < b ? -1 : a > b ? 1 : 0;
+                            });
                         } else if(key=="triviasets") {
                             currentConfig[key] = [];
                             for(var tset in configs.servers[svr.id][key]) {
@@ -2538,6 +2551,17 @@ bot.on("message", function(msg) {
             // Stop responding if the author is a blocked user
             if(configs.servers[msg.channel.server.id].blocked.indexOf(msg.author.id)>-1) {
                 return;
+            }
+            
+            // Translate message from certain users
+            if(configs.servers[msg.channel.server.id].translated.list.indexOf(msg.author.id)>-1) {
+                bingTranslate.translate(msg.cleanContent, configs.servers[msg.channel.server.id].translated.langs[configs.servers[msg.channel.server.id].translated.list.indexOf(msg.author.id)], "EN", function(err, result) {
+                    if(err) {
+                        logMsg(new Date().getTime(), "ERROR", msg.channel.server.id, msg.channel.id, "Failed to auto-translate '" + msg.cleanContent + "' from " + msg.author.username);
+                    } else {
+                        bot.sendMessage(msg.channel, "**@" + removeMd(msg.channel.server.detailsOfUser(msg.author).nick || msg.author.username) + "** said `" + result.translated_text + "`");
+                    }
+                });
             }
             
             // Check if message includes a tag or attempted tag
@@ -3996,6 +4020,31 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                 } else {
                     callback(true);
                     return;
+                }
+                break;
+            case "translated":
+                if(!Array.isArray(delta[key])) {
+                    callback(true);
+                    return;
+                } else {
+                    var usr = svr.members.get("id", delta[key][0]);
+                    if(usr) {
+                        if(configs.servers[svr.id][key].list.indexOf(usr.id)>-1) {
+                            logMsg(new Date().getTime(), "INFO", svr.id, null, "Removed " + usr.username + " from " + key + " list (@" + consoleusr.username + ")");
+                            configs.servers[svr.id][key].list.splice(configs.servers[svr.id][key].list.indexOf(usr.id), 1);
+                            configs.servers[svr.id][key].langs.splice(configs.servers[svr.id][key].list.indexOf(usr.id), 1);
+                        } else if(delta[key][1]) {
+                            logMsg(new Date().getTime(), "INFO", svr.id, null, "Added " + usr.username + " to " + key + " list (@" + consoleusr.username + ")");
+                            configs.servers[svr.id][key].list.push(usr.id);
+                            configs.servers[svr.id][key].langs.push(delta[key][1]);
+                        } else {
+                            callback(true);
+                            return;
+                        }
+                    } else {
+                        callback(true);
+                        return;
+                    }
                 }
                 break;
             case "mute":

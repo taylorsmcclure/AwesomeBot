@@ -2,6 +2,10 @@
     "default": {
         "admins": [],
         "blocked": [],
+        "translated": {
+            "list": [],
+            "langs": []
+        },
         "newgreeting": "",
         "rss": [
             true,

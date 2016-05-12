@@ -15,6 +15,8 @@ function doAdminSetup() {
     $("#strikes-body").collapse("show");
     switchRss();
     $("#rss-body").collapse("show");
+    switchTranslated();
+    $("#translated-body").collapse("show");
     switchCommands();
     $("#commands-body").collapse("show");
     switchManage();
@@ -251,6 +253,48 @@ function newRss() {
             document.getElementById("rssnewurl").value = "";
             switchRss();
         });
+    }
+}
+
+function switchTranslated() {
+    document.getElementById("translatedtable").style.display = "";
+    
+    var blacklist = [];
+    var translatedtablebody = "";
+    for(var i=0; i<botData.configs.translated.length; i++) {
+        blacklist.push(botData.configs.translated[i][2]);
+        translatedtablebody += "<tr id=\"translatedentry-" + botData.configs.translated[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.configs.translated[i][0] + "\" /></td><td>" + botData.configs.translated[i][1] + "</td><td>" + botData.configs.translated[i][3] + "</td><td><button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:config('translated', [this.parentNode.parentNode.id.substring(16)], switchTranslated);\">Remove</button></td></tr>";
+    }
+    document.getElementById("translatedtablebody").innerHTML = translatedtablebody;
+    if(botData.configs.translated.length==0) {
+        document.getElementById("translatedtable").style.display = "none";
+    }
+    
+    for(var i=0; i<botData.configs.blocked.length; i++) {
+        blacklist.push(botData.configs.blocked[i][2]);
+    }
+    filterMembers(blacklist, function(possibletranslated) {
+        var translatedselector = "<option value=\"\">Select Member</option>";
+        for(var i=0; i<possibletranslated.data.length; i++) {
+            translatedselector += "<option value=\"" + possibletranslated.data[i][1] + "\">" + possibletranslated.data[i][0] + "</option>";
+        }
+        document.getElementById("translatedselector").innerHTML = translatedselector;
+        $("#translatedselector").selectpicker("refresh");
+    });
+    document.getElementById("translatedinput").value = "";
+}
+
+function newTranslate() {
+    if(!document.getElementById("translatedselector").value || !document.getElementById("translatedinput").value) {
+        if(!document.getElementById("translatedselector").value) {
+            richModal("Select a member");
+        }
+        if(!document.getElementById("translatedinput").value) {
+            $("#translatedinput-block").addClass("has-error");
+        }
+    } else {
+        $("#translatedinput-block").removeClass("has-error");
+        config("translated", [document.getElementById("translatedselector").value, document.getElementById("translatedinput").value], switchTranslated);
     }
 }
 

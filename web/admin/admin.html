@@ -52,6 +52,9 @@
                     <a href="#rss">RSS Feeds</a>
                 </li>
                 <li>
+                    <a href="#translated">Auto-Translation</a>
+                </li>
+                <li>
                     <a href="#commands">Commands</a>
                 </li>
                 <li>
@@ -139,7 +142,7 @@
                                             <th>Avatar</th>
                                             <th>Username</th>
                                             <th>ID</th>
-                                            <th>Action</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="blockedtablebody"></tbody>
@@ -173,7 +176,7 @@
                                     <select id="strikesselector" class="selectpicker" data-width="fit" data-live-search="true" title="Select Member"></select>
                                 </div>
                                 <div id="strikesinput-block" style="display:inline-block;">
-                                    <input type="text" class="form-control" id="strikesinput" style="width:300px;"maxlength="200" placeholder="Reason for strike">
+                                    <input type="text" class="form-control" id="strikesinput" style="width:300px;" maxlength="200" placeholder="Reason for strike">
                                 </div>
                                 <input type="submit" class="btn btn-default" value="Add">
                             </form>
@@ -243,6 +246,37 @@
                                 </div>
                                 <div id="rssnewurl-block" style="display:inline-block;">
                                     <input type="text" class="form-control" id="rssnewurl" style="width:350px;" placeholder="RSS URL">
+                                </div>
+                                <input type="submit" class="btn btn-default" value="Add">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="translatedrow" class="row">
+                    <div class="col-lg-12">
+                        <h2 id="translated" data-toggle="collapse" data-target="#translated-body" aria-expanded="false" aria-controls="collapsetranslated">Auto-Translation</h2>
+                        <div id="translated-body" class="collapse">
+                            <p class="help-block">Message from these users will be automatically translated into English.</p>
+                            <div class="table-responsive">
+                                <table id="translatedtable" class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Avatar</th>
+                                            <th>Username</th>
+                                            <th>Language</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="translatedtablebody"></tbody>
+                                </table>
+                            </div>
+                            <form class="form-inline" id="newtranslateform">
+                                <div id="translatedselector-block" style="display:inline-block;">
+                                    <select id="translatedselector" class="selectpicker" data-width="fit" data-live-search="true" title="Select Member"></select>
+                                </div>
+                                <div id="translatedinput-block" style="display:inline-block;">
+                                    <input type="text" class="form-control" id="translatedinput" style="width:200px;" maxlength="2" placeholder="Source language">
                                 </div>
                                 <input type="submit" class="btn btn-default" value="Add">
                             </form>
@@ -624,6 +658,10 @@
     });
     $("#newrssform").submit(function() {
         newRss();
+        return false;
+    });
+    $("#newtranslateform").submit(function() {
+        newTranslate();
         return false;
     });
     $("#caform").submit(function() {
