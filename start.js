@@ -62,7 +62,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.18p3";
+var version = "3.3.18p4";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -3596,7 +3596,7 @@ function getExtensionParams(extension, svr, ch, msg, keywordcontains, suffix) {
             sendMessage: function(message) {
                 bot.sendMessage(ch, message);
             },
-            sendAuthor: function(usrid, message) {
+            sendUser: function(usrid, message) {
                 bot.sendMessage(svr.members.get("id", usrid), message);
             }
         },
