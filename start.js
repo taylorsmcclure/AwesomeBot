@@ -62,7 +62,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.18p2";
+var version = "3.3.18p3";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -470,14 +470,14 @@ var commands = {
             if(!configs.servers[msg.channel.server.id].nsfwfilter[0] || configs.servers[msg.channel.server.id].nsfwfilter[1].indexOf(msg.channel.id)>-1 || !configs.servers[msg.channel.server.id].servermod) {
                 rating = "r";
             }
-		    getGIF(tags, function(id) {
+		    getGIF(tags, rating, function(id) {
                 if(typeof id!=="undefined") {
                     bot.sendMessage(msg.channel, "http://media.giphy.com/media/" + id + "/giphy.gif");
                 } else {
                     logMsg(new Date().getTime(), "WARN", msg.channel.server.id, msg.channel.id, "GIF not found for " + suffix);
                     bot.sendMessage(msg.channel, "The Internet has run out of memes :/");
                 }
-		    }, rating);
+		    });
 		}
 	},
     // Defines word from Urban Dictionary
@@ -3417,7 +3417,7 @@ function clearLogCounter() {
     if(dayDiff(new Date(logs.timestamp), new Date())>=2) {
         logs.stream = [];
         logs.timestamp = new Date().getTime();
-        logMsg(new Date().getTime(), "INFO", "General", null, "Cleared logs for this week");
+        logMsg(new Date().getTime(), "INFO", "General", null, "Cleared logs for this pair of days");
     }
     saveData("./data/logs.json", function(err) {
         if(err) {
@@ -4876,7 +4876,7 @@ function scrapeSearch(data) {
 }
 
 // Searches Giphy for matching GIFs
-function getGIF(tags, callback, rating) {
+function getGIF(tags, rating, callback) {
     try {
         var params = {
             "api_key": AuthDetails.giphy_api_key,
@@ -5125,6 +5125,7 @@ function getSvrMembers(svr) {
             username: svr.members[i].username,
             nick: svr.detailsOfUser(svr.members[i]).nick,
             id: svr.members[i].id,
+            mention: svr.members[i].mention(),
             avatar: svr.members[i].avatarURL,
             roles: rolesOfUser,
             profileData: profileData[svr.members[i].id] || {},
