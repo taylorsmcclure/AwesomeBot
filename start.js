@@ -62,7 +62,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.18p7";
+var version = "3.3.18p8";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -1940,7 +1940,7 @@ bot.on("ready", function() {
                         data.stream = [];
                         for(var i=0; i<svr.members.length; i++) {
                             if(svr.members[i].username && svr.members[i].id && svr.members[i].id!=bot.user.id) {
-                                data.stream.push([svr.members[i].username, svr.members[i].id]);
+                                data.stream.push([svr.members[i].username, svr.members[i].id, svr.detailsOfUser(svr.members[i]).nick]);
                             }
                         }
                         data.stream.sort(function(a, b) {

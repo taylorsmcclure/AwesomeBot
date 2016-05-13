@@ -164,7 +164,7 @@ function switchStats(n, nodestroy) {
                 getJSON("/data?section=list&type=members&svrid=" + n, function(data) {
                     var profileselect = "<option value=\"null-" + n + "\" selected>View Profile</option>";
                     for(var i=0; i<data.stream.length; i++) {
-                        profileselect += "<option value=\"" + data.stream[i][1] + "-" + n + "\">" + data.stream[i][0] + "</option>";
+                        profileselect += "<option value=\"" + data.stream[i][1] + "-" + n + "\"" + (data.stream[i][2] ? (" data-toggles=\"" + data.stream[i][2] + "\"") : "") + ">" + data.stream[i][0] + "</option>";
                     }
                     document.getElementById("profileselect").innerHTML = profileselect;
                     $("#profileselect").selectpicker("refresh");
