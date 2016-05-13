@@ -471,12 +471,14 @@ function switchManage() {
         document.getElementById("manageentry-trivia").style.display = "none";
     }
     
-    var caselector = ""; 
-    for(var i=0; i<botData.channels.length; i++) {
-        caselector += "<option id=\"caentry-" + botData.channels[i][1] + "\" value=\"" + botData.channels[i][1] + "\">#" + botData.channels[i][0] + "</option>";
+    if(!document.getElementById("caselector").innerHTML) {
+        var caselector = ""; 
+        for(var i=0; i<botData.channels.length; i++) {
+            caselector += "<option id=\"caentry-" + botData.channels[i][1] + "\" value=\"" + botData.channels[i][1] + "\">#" + botData.channels[i][0] + "</option>";
+        }
+        document.getElementById("caselector").innerHTML = caselector;
+        $("#caselector").selectpicker("refresh");
     }
-    document.getElementById("caselector").innerHTML = caselector;
-    $("#caselector").selectpicker("refresh");
     
     document.getElementById("manageentry-showpub").checked = botData.configs.showpub;
 }
@@ -545,7 +547,7 @@ function configCA(type) {
             if(err) {
                 richModal("Error trying to " + type + " messages");
             } else {
-                richModal((type=="clean" ? "Cleaned" : "Purged") + " " + parseInt(document.getElementById("cainput").value) + " messages", "Info");
+                richModal((type=="clean" ? "Cleaned" : "Purged") + " " + parseInt(document.getElementById("cainput").value) + " messages in " + document.getElementById("caentry-" + document.getElementById("caselector").value).innerHTML, "Info");
             }
         });
     } else if(type=="archive") {

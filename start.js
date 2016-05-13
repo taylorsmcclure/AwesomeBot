@@ -62,7 +62,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.18p8";
+var version = "3.3.18p9";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2367,7 +2367,8 @@ bot.on("ready", function() {
 
 domain.run(function() {
 bot.on("message", function(msg) {
-    try {
+    // TODO: re-enable try/catch
+    //try {
         // Stop responding if the sender is another bot or botblocked
         if(configs.botblocked.indexOf(msg.author.id)>-1 || msg.author.bot || msg.author.id==bot.user.id || !openedweb) {
             return;
@@ -2407,7 +2408,7 @@ bot.on("message", function(msg) {
                 for(var i=0; i<polls[msg.author.id].options.length; i++) {
                     info += "\n\t" + i + ": " + polls[msg.author.id].options[i];
                 }
-                info += "\nYou can vote by typing `" + getPrefix(ch.server.id) + "vote <no. of choice>`. If you don't include a number, I'll just show results";
+                info += "\nYou can vote by typing `" + getPrefix(ch.server) + "vote <no. of choice>`. If you don't include a number, I'll just show results";
                 bot.sendMessage(ch, info);
                 return;
             }
@@ -2908,14 +2909,14 @@ bot.on("message", function(msg) {
                 bot.sendMessage(msg.channel,msg.author + ", you called?");
             }
         }
-    } catch(mainError) {
+    /*} catch(mainError) {
         bot.stopTyping(msg.channel);
         if(msg.channel.isPrivate) {
             logMsg(new Date().getTime(), "ERROR", null, msg.author.id, "Failed to process new message: " + mainError);
         } else {
             logMsg(new Date().getTime(), "ERROR", msg.channel.server.id, msg.channel.id, "Failed to process new message: " + mainError);
         }
-    }
+    }*/
 })});
 
 // Add server if joined outside of bot
@@ -5268,22 +5269,29 @@ function cleanMessages(ch, count, option, purging, callback) {
                 if(messages[i].author.id!=bot.user.id && !purging) {
                     continue;
                 }
+                if(count==0) {
+                    break;
+                }
                 toDelete.push(messages[i]);
                 count--;
-                if(count==0) {
-                    bot.deleteMessages(toDelete, function(err) {
-                        if(err) {
-                            logMsg(new Date().getTime(), "ERROR", ch.server.id, ch.id, "Failed to " + (purging ? "purge" : "clean") + " messages");
-                        } else {
-                            logMsg(new Date().getTime(), "INFO", ch.server.id, ch.id, "Finished " + (purging ? "purging" : "cleaning") + " messages");
-                        }
+            }
+            if(toDelete.length>1) {
+                bot.deleteMessages(toDelete, function(err) {
+                    if(err) {
+                        logMsg(new Date().getTime(), "ERROR", ch.server.id, ch.id, "Failed to " + (purging ? "purge" : "clean") + " messages");
                         callback(err);
-                    });
-                    return;
-                }
+                        return;
+                    } else if(count==0) {
+                        logMsg(new Date().getTime(), "INFO", ch.server.id, ch.id, "Finished " + (purging ? "purging" : "cleaning") + " messages");
+                        callback();
+                        return;
+                    }
+                });
+            } else {
+                callback();
             }
             if(count>0) {
-                cleanMessages(ch, count, {before: messages[messages.length-1]});
+                cleanMessages(ch, count, {before: messages[messages.length-1]}, purging, callback);
             }
         } else {
             logMsg(new Date().getTime(), "ERROR", ch.server.id, ch.id, "Failed to fetch old messages for " + (purging ? "purging" : "cleaning"));
