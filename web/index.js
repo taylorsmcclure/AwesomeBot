@@ -247,14 +247,16 @@ function switchLog(nodestroy) {
         
         getJSON("/data?section=log" + (logID ? "&id=" + encodeURI(logID) : "") + (logLevel ? "&level=" + encodeURI(logLevel) : ""), function(data) {
             if(data.stream.length>0) {
-                for(var i=0; i<data.stream.length; i++) {
-                    html += data.stream[i] + "<br>";
+                for(var i=data.stream.length-1; i>=(data.stream.length>150 ? data.stream.length-150 : 0); i--) {
+                    html = data.stream[i] + "<br>" + html;
                 }
             }
             
             document.getElementById("console").innerHTML = html || "<i>Nothing here</i>";
             document.getElementById("console").scrollTop = document.getElementById("console").scrollHeight;
-            $("#loading-modal").modal("hide");
+            if(!nodestroy) {
+                $("#loading-modal").modal("hide");
+            }
         });    
     }, 125);
 }
