@@ -56,7 +56,7 @@ function setAuthTimer() {
         setTimeout(function() {
             checkAuth();
         }, 30000);
-    }, 150000);
+    }, 270000);
 }
 
 function leaveConsole(msg) {

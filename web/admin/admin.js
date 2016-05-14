@@ -309,6 +309,19 @@ function switchCommands() {
     document.getElementById("commandtag-tag").innerHTML = "@" + botData.botnm;
     document.getElementById("commandtag-selector").value = botData.configs.cmdtag;
     $("#commandtag-selector").selectpicker("refresh");
+    
+    document.getElementById("api-google-input").value = botData.configs.customkeys.google_api_key;
+    if(!botData.configs.customkeys.google_api_key) {
+        document.getElementById("api-google-default").style.display = "none";
+    } else {
+        document.getElementById("api-google-default").style.display = "";
+    }
+    document.getElementById("api-custom-input").value = botData.configs.customkeys.custom_search_id;
+    if(!botData.configs.customkeys.custom_search_id) {
+        document.getElementById("api-custom-default").style.display = "none";
+    } else {
+        document.getElementById("api-custom-default").style.display = "";
+    }
 }
 
 function resetConfigs() {

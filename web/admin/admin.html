@@ -209,6 +209,7 @@
                             </select>
                             
                             <br>
+                            <h3 id="command-list">Command List</h3>
                             <span id="commands-container"></span>
                             
                             Apply Preset:
@@ -218,6 +219,25 @@
                                 <button type="button" class="btn btn-default btn-sm" id="presetentry-lite" onclick="javascript:config('preset', 'lite', switchCommands);" data-toggle="tooltip" data-placement="bottom" title="Lightweight and easy to understand">Lite</button>
                                 <button type="button" class="btn btn-default btn-sm" id="presetentry-sense" onclick="javascript:config('preset', 'sense', switchCommands);" data-toggle="tooltip" data-placement="bottom" title="Just Right&trade;">Sense</button>
                                 <button type="button" class="btn btn-danger btn-sm" id="presetentry-default" onclick="javascript:resetConfigs();" data-toggle="tooltip" data-placement="bottom" title="Resets all configs">Default</button>
+                            </div>
+                            
+                            <br>
+                            <h3 id="api-keys">API Keys</h3>
+                            <p class="help-block">Sometimes we get rate limited for the image search and YouTube commands. Use this area to set a custom Google API key for your server so the global bot rate limit doesn't affect the bot on your server. Follow <a href="https://github.com/BitQuote/AwesomeBot/wiki/Setup#google_api_key">the wiki</a> for instructions.</p>
+                            
+                            Google API key:
+                            <div class="input-group col-xs-5">
+                                <span class="input-group-addon btn btn-danger" id="api-google-default" onclick="javascript:config('customkeys', ['google_api_key', 'default'], switchCommands);" data-toggle="tooltip" data-placement="bottom" title="Use bot's global API key">Default</span>
+                                <input type="text" id="api-google-input" class="form-control" onkeydown="if(event.keyCode==13){config('customkey', ['google_api_key], this.value], switchCommands);" style="min-width:200px;">
+                                <span class="input-group-addon btn btn-primary" onclick="javascript:config('customkeys', ['google_api_key', $('#api-google-input').val()], switchCommands);">Set</span>
+                            </div>
+                            
+                            <br>
+                            Custom search ID:
+                            <div class="input-group col-xs-5">
+                                <span class="input-group-addon btn btn-danger" id="api-custom-default" onclick="javascript:config('customkeys', ['custom_search_id', 'default'], switchCommands);" data-toggle="tooltip" data-placement="bottom" title="Use bot's global API key">Default</span>
+                                <input type="text" id="api-custom-input" class="form-control" onkeydown="if(event.keyCode==13){config('customkey', ['custom_search_id], this.value], switchCommands);" style="min-width:200px;">
+                                <span class="input-group-addon btn btn-primary" onclick="javascript:config('customkeys', ['custom_search_id', $('#api-custom-input').val()], switchCommands);">Set</span>
                             </div>
                         </div>
                     </div>
@@ -295,7 +315,7 @@
                                 </label>
                             </div>
                             
-                            <br>
+                            <h3 id="member-messages">Member Messages</h3>
                             <span id="manageentry-servermod-block">
                                 <div class="checkbox">
                                     <input id="manageentry-newmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
@@ -419,6 +439,7 @@
                                 </div>
                                 
                                 <br>
+                                <h3 id="filters">Filters</h3>
                                 <div class="checkbox">
                                     <input id="manageentry-spamfilter" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
                                     <label for="manageentry-spamfilter">
@@ -455,6 +476,7 @@
                             </span>
                             
                             <br>
+                            <h3 id="other">Other</h3>
                             <div class="checkbox">
                                 <input id="manageentry-customcolors" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
                                 <label for="manageentry-customcolors">
@@ -591,7 +613,7 @@
                         <h4 class="modal-title">Session</h4>
                     </div>
                     <div class="modal-body">
-                        It's been nearly 3 minutes. Would you like to extend your session?
+                        It's been nearly 5 minutes. Would you like to extend your session?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">No</button>

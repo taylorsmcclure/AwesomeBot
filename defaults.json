@@ -103,7 +103,11 @@
             null
         ],
         "muted": {},
-        "filter": []
+        "filter": [],
+        "customkeys": {
+            "google_api_key": "",
+            "custom_search_id": ""
+        }
     },
     "full": {
         "servermod": true,

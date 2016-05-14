@@ -62,7 +62,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.18p10";
+var version = "3.3.19";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -129,7 +129,7 @@ var commands = {
     },
     // About AwesomeBot!
     "about": {
-        usage: "[\"bug\" or \"suggestion\"]",
+        usage: "[<\"bug\" or \"suggestion\">]",
         process: function(bot, msg, suffix) {
             if(["bug", "suggestion", "feature", "issue"].indexOf(suffix.toLowerCase())>-1) {
                 bot.sendMessage(msg.channel, "Please file your " + suffix.toLowerCase() + " here: https://github.com/BitQuote/AwesomeBot/issues/new");
@@ -373,7 +373,7 @@ var commands = {
                 bot.sendMessage(msg.channel, msg.author + " What should I search YouTube for?");
                 return;
             }
-            ytSearch(suffix, function(link) {
+            ytSearch(suffix, msg.channel.server.id, function(link) {
                 bot.sendMessage(msg.channel, link);
             });
         }
@@ -589,6 +589,14 @@ var commands = {
                             return;
                         }
                     }
+                    if(unit=="c" && end=="f") {
+                        bot.sendMessage(msg.channel, (Math.round((num * 9 / 5 + 32) * 1000) / 1000) + "°" + end.toUpperCase());
+                        return;
+                    }
+                    if(unit=="f" && end=="c") {
+                        bot.sendMessage(msg.channel, (Math.round(((num - 32) * 5 / 9) * 1000) / 1000) + "°" + end.toUpperCase());
+                        return;
+                    }
                     try {
                         bot.sendMessage(msg.channel, (Math.round(fx.convert(num, {from: unit.toUpperCase(), to: end.toUpperCase()}) * 100) / 100) + " " + end.toUpperCase());
                     } catch(error) {
@@ -650,6 +658,7 @@ var commands = {
             if(!location) {
                 logMsg(new Date().getTime(), "WARN", msg.channel.server.id, msg.channel.id, "Weather location not provided");
                 bot.sendMessage(msg.channel, msg.author + " I don't have a default location set for you. PM me `profile location,<your city>` to set one.");
+                return;
             }
             
             weather.find({search: location, degreeType: unit}, function(err, data) {
@@ -1401,7 +1410,7 @@ var pmcommands = {
                             timer: setTimeout(function() {
                                 logMsg(new Date().getTime(), "INFO", "General", null, "Timeout on online maintainer console");
                                 delete onlineconsole[msg.author.id];
-                            }, 180000)
+                            }, 300000)
                         };
                     } else if(onlineconsole[msg.author.id]) {
                         bot.sendMessage(msg.channel, "You already have an online console session open. Logout of that first or wait 3 minutes...");
@@ -1442,7 +1451,7 @@ var pmcommands = {
                                     logMsg(new Date().getTime(), "INFO", null, msg.author.id, "Timeout on online admin console for " + svr.name);
                                     delete adminconsole[msg.author.id];
                                     delete onlineconsole[msg.author.id];
-                                }, 180000)
+                                }, 300000)
                             };
                             
                             var url = (configs.hosting.charAt(configs.hosting.length-1)=='/' ? configs.hosting.substring(0, configs.hosting.length-1) : configs.hosting) + "?auth=" + onlineconsole[msg.author.id].token;
@@ -2041,7 +2050,7 @@ bot.on("ready", function() {
                 onlineconsole[data.usrid].timer = setTimeout(function() {
                     logMsg(new Date().getTime(), "INFO", "General", null, "Timeout on online maintainer console");
                     delete onlineconsole[consoleid];
-                }, 180000);
+                }, 300000);
                 
                 var servers = [];
                 for(var i=0; i<bot.servers.length; i++) {
@@ -2102,7 +2111,7 @@ bot.on("ready", function() {
                         logMsg(new Date().getTime(), "INFO", null, consoleid, "Timeout on online admin console for " + svr.name);
                         delete adminconsole[consoleid];
                         delete onlineconsole[consoleid];
-                    }, 180000);
+                    }, 300000);
                     data = {};
                     
                     var channels = [];
@@ -2287,7 +2296,7 @@ bot.on("ready", function() {
                     onlineconsole[consoleid].timer = setTimeout(function() {
                         logMsg(new Date().getTime(), "INFO", "General", null, "Timeout on online maintainer console");
                         delete onlineconsole[consoleid];
-                    }, 180000);
+                    }, 300000);
                     
                     parseMaintainerConfig(req.body, consoleid, function(err) {
                         res.sendStatus(err ? 400 : 200);
@@ -2297,7 +2306,7 @@ bot.on("ready", function() {
                         logMsg(new Date().getTime(), "INFO", null, consoleid, "Timeout on online admin console for " + svr.name);
                         delete adminconsole[consoleid];
                         delete onlineconsole[consoleid];
-                    }, 180000);
+                    }, 300000);
                     
                     svr = bot.servers.get("id", req.query.svrid);
                     if(svr) {
@@ -2367,8 +2376,7 @@ bot.on("ready", function() {
 
 domain.run(function() {
 bot.on("message", function(msg) {
-    // TODO: re-enable try/catch
-    //try {
+    try {
         // Stop responding if the sender is another bot or botblocked
         if(configs.botblocked.indexOf(msg.author.id)>-1 || msg.author.bot || msg.author.id==bot.user.id || !openedweb) {
             return;
@@ -2824,7 +2832,7 @@ bot.on("message", function(msg) {
                 }
             }
             bot.startTyping(msg.channel);
-            if(checkFiltered(msg, true, false) && configs.servers[msg.channel.server.id].admins.indexOf(msg.author.id)==-1 && configs.servers[msg.channel.server.id].servermod && configs.servers[msg.channel.server.id].nsfwfilter[0] && configs.servers[msg.channel.server.id].nsfwfilter[1].indexOf(msg.channel.id)==-1 && ["image", "youtube", "gif", "rss", "search", "twitter", "urban", "wiki"].indexOf(cmdTxt)>-1) {
+            if(checkFiltered(msg, true, false) && configs.servers[msg.channel.server.id].admins.indexOf(msg.author.id)==-1 && configs.servers[msg.channel.server.id].servermod && configs.servers[msg.channel.server.id].nsfwfilter[0] && configs.servers[msg.channel.server.id].nsfwfilter[1].indexOf(msg.channel.id)==-1 && ["image", "youtube", "gif", "search"].indexOf(cmdTxt)>-1) {
                 handleFiltered(msg, "NSFW");
             } else if(stats[msg.channel.server.id].botOn[msg.channel.id]) {
                 logMsg(new Date().getTime(), "INFO", msg.channel.server.id, msg.channel.id, "Treating '" + msg.cleanContent + "' from " + msg.author.username + " as a command");
@@ -2909,14 +2917,14 @@ bot.on("message", function(msg) {
                 bot.sendMessage(msg.channel,msg.author + ", you called?");
             }
         }
-    /*} catch(mainError) {
+    } catch(mainError) {
         bot.stopTyping(msg.channel);
         if(msg.channel.isPrivate) {
             logMsg(new Date().getTime(), "ERROR", null, msg.author.id, "Failed to process new message: " + mainError);
         } else {
             logMsg(new Date().getTime(), "ERROR", msg.channel.server.id, msg.channel.id, "Failed to process new message: " + mainError);
         }
-    }*/
+    }
 })});
 
 // Add server if joined outside of bot
@@ -2950,6 +2958,24 @@ function newServer(svr) {
     defaultConfig(svr);
     adminMsg(false, svr, {username: bot.user.username}, " (me) has been added to " + svr.name + ". You're one of my admins. You can manage me in this server by PMing me `config " + svr.name + "`. Check out https://git.io/vaa2F to learn more.");
     bot.sendMessage(svr.defaultChannel, "Hi, I'm " + (svr.detailsOfUser(bot.user).nick || bot.user.username) + "! Use `" + getPrefix(svr) + "help` to learn more or check out https://git.io/vaa2F");
+    postCarbon();
+}
+
+function postCarbon() {
+    if(AuthDetails.carbon_key) {
+        unirest.post("https://www.carbonitex.net/discord/data/botdata.php")
+        .headers({
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        }).send({
+            "key": AuthDetails.carbon_key, 
+            "servercount": bot.servers.length
+        }).end(function(response) {
+            if(response.status==200) {
+                logMsg(new Date().getTime(), "INFO", "General", null, "Successfully POSTed to Carbonitex");
+            }
+        });
+    }
 }
 
 // Turn bot on in a new channel
@@ -2969,6 +2995,7 @@ bot.on("channelCreated", function(ch) {
 bot.on("serverDeleted", function(svr) {
     deleteServerData(svr.id);
     logMsg(new Date().getTime(), "INFO", "General", null, "Server " + svr.name + " removed, left server");
+    postCarbon();
 });
 
 // Checks for old servers
@@ -3947,7 +3974,7 @@ function parseMaintainerConfig(delta, consoleid, callback) {
                 onlineconsole[consoleid].timer = setTimeout(function() {
                     logMsg(new Date().getTime(), "INFO", "General", null, "Timeout on online maintainer console");
                     delete onlineconsole[consoleid];
-                }, 180000);
+                }, 300000);
                 logMsg(new Date().getTime(), "INFO", "General", null, "Extended maintainer console session");
                 callback();
                 return;
@@ -3978,6 +4005,18 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                     callback(err);
                 });
                 return;
+            case "customkeys": 
+                if(Array.isArray(delta[key]) && delta[key].length==2 && ["google_api_key", "custom_search_id"].indexOf(delta[key][0])>-1) {
+                    if(delta[key][1]=="default") {
+                        configs.servers[svr.id].customkeys[delta[key][0]] = "";
+                    } else {
+                        configs.servers[svr.id].customkeys[delta[key][0]] = delta[key][1];
+                    }
+                } else {
+                    callback(true);
+                    return;
+                }
+            break;
             case "preset":
                 delta[key] = delta[key].toLowerCase();
                 if(configDefaults[delta[key]] && delta[key]!="default") {
@@ -4399,7 +4438,7 @@ function parseAdminConfig(delta, svr, consoleid, callback) {
                     logMsg(new Date().getTime(), "INFO", svr.id, null, "Timeout on online admin console (@" + consoleusr.username + ")");
                     delete adminconsole[consoleid];
                     delete onlineconsole[consoleid];
-                }, 180000);
+                }, 300000);
                 logMsg(new Date().getTime(), "INFO", null, consoleid, "Extended admin console session for " + svr.name);
                 callback();
                 return;
@@ -4568,7 +4607,7 @@ function defaultConfig(svr, override) {
         for(var i=0; i<svr.members.length; i++) {
             if(svr.rolesOfUser(svr.members[i])) {
                 for(var j=0; j<svr.rolesOfUser(svr.members[i]).length; j++) {
-                    if(svr.rolesOfUser(svr.members[i])[j].hasPermission("banMembers") && adminList.indexOf(svr.members[i].id)==-1 && configs.botblocked.indexOf(svr.members[i].id)==-1 && svr.members[i].id!=bot.user.id) {
+                    if(svr.rolesOfUser(svr.members[i])[j] && svr.rolesOfUser(svr.members[i])[j].hasPermission("banMembers") && adminList.indexOf(svr.members[i].id)==-1 && configs.botblocked.indexOf(svr.members[i].id)==-1 && svr.members[i].id!=bot.user.id) {
                         adminList.push(svr.members[i].id);
                     }
                 }
@@ -4856,7 +4895,7 @@ function getPrefix(svr) {
 // Searches Google Images for keyword(s)
 function giSearch(query, num, svrid, chid, callback) {
     try {
-        var url = "https://www.googleapis.com/customsearch/v1?key=" + AuthDetails.google_api_key + "&cx=" + AuthDetails.custom_search_id + ((configs.servers[svrid].nsfwfilter[0] && configs.servers[svrid].nsfwfilter[1].indexOf(chid)==-1) ? "&safe=high" : "") + "&q=" + (query.replace(/\s/g, '+').replace(/&/g, '')) + "&alt=json&searchType=image" + (num ? ("&start=" + num) : "");
+        var url = "https://www.googleapis.com/customsearch/v1?key=" + (configs.servers[svrid].customkeys.google_api_key || AuthDetails.google_api_key) + "&cx=" + (configs.servers[svrid].customkeys.custom_search_id || AuthDetails.custom_search_id) + ((configs.servers[svrid].nsfwfilter[0] && configs.servers[svrid].nsfwfilter[1].indexOf(chid)==-1) ? "&safe=high" : "") + "&q=" + (query.replace(/\s/g, '+').replace(/&/g, '')) + "&alt=json&searchType=image" + (num ? ("&start=" + num) : "");
         unirest.get(url)
         .header("Accept", "application/json")
         .end(function(response) {
@@ -4956,9 +4995,9 @@ function getGIF(tags, rating, callback) {
 }
 
 // Get YouTube URL given tags as query
-function ytSearch(query, callback) {
+function ytSearch(query, svrid, callback) {
     var youtube = new youtube_node();
-    youtube.setKey(AuthDetails.google_api_key);
+    youtube.setKey(configs.servers[svr.id].customkeys.google_api_key || AuthDetails.google_api_key);
     var q;
 	youtube.search(query, 1, function(error, result) {
         if(error) {
