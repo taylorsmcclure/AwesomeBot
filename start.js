@@ -63,7 +63,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.20";
+var version = "3.3.20p1";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -4819,7 +4819,7 @@ function saveData(file, callback) {
             object = logs;
             break;
     }
-    writeFileAtomic(file, JSON.stringify(object, null, 4), function(error) {
+    writeFileAtomic(file, JSON.stringify(object, null, 4), {chown:{uid: 100, gid: 50}}, function(error) {
         if(error) {
             fs.writeFile(file, JSON.stringify(object, null, 4), function(err) {
                 callback(err);
@@ -5070,7 +5070,7 @@ function getGIF(tags, rating, callback) {
 // Get YouTube URL given tags as query
 function ytSearch(query, svrid, callback) {
     var youtube = new youtube_node();
-    youtube.setKey(configs.servers[svr.id].customkeys.google_api_key || AuthDetails.google_api_key);
+    youtube.setKey(configs.servers[svrid].customkeys.google_api_key || AuthDetails.google_api_key);
     var q;
 	youtube.search(query, 1, function(error, result) {
         if(error) {
