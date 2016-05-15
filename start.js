@@ -63,7 +63,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.20p6-M";
+var version = "3.3.20p7";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2561,8 +2561,10 @@ function messageHandler(msg) {
                 spams[msg.channel.server.id][msg.author.id] = [];
                 spams[msg.channel.server.id][msg.author.id].push(msg.content);
                 setTimeout(function() {
-                    if(msg.author && msg.author.id) {
+                    try {
                         delete spams[msg.channel.server.id][msg.author.id];
+                    } catch(err) {
+                        ;
                     }
                 }, 45000);
             // Add a message to the user's spam list if it is similar to the last one
@@ -3162,6 +3164,12 @@ bot.on("serverMemberRemoved", function(svr, usr) {
 });
 function serverMemberRemovedHandler(svr, usr) {
     delete stats[svr.id].members[usr.id];
+    try {
+        delete filterviolations[svr.id][usr.id];
+        delete spams[svr.id][usr.id];
+    } catch(err) {
+        ;
+    }
     if(configs.servers[svr.id].admins.indexOf(usr.id)>-1) {
         configs.servers[svr.id].admins.splice(configs.servers[svr.id].admins.indexOf(usr.id), 1);
     }
