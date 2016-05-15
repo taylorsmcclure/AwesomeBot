@@ -63,7 +63,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.20p5";
+var version = "3.3.20p6-M";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -573,7 +573,7 @@ var commands = {
     // Provides OAuth URL for adding new server
     "join": {
         process: function(bot, msg) {
-            bot.sendMessage(msg.channel, "https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=0")
+            bot.sendMessage(msg.channel, "https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=0");
         }
     },
     // About AwesomeBot!
@@ -2224,7 +2224,7 @@ var pmcommands = {
                 var svr = bot.servers.get("name", msg.content.substring(9));
                 if(!svr) {
                     logMsg(new Date().getTime(), "WARN", null, msg.author.id, "Invalid server provided for mentions");
-                    bot.sendMessage(msg.channel, "I'm not on that server. Use `" + getPrefix(svr) + "join` in the main chat to add me.");
+                    bot.sendMessage(msg.channel, "I'm not on that server. Use `@AwesomeBot join` in the main chat to add me.");
                     return;
                 } else if(!svr.members.get("id", msg.author.id)) {
                     logMsg(new Date().getTime(), "WARN", null, msg.author.id, "User is not on " + svr.name + ", so mentions cannot be retreived");
@@ -2926,11 +2926,21 @@ function messageHandler(msg) {
                 bot.stopTyping(msg.channel);
                 return;
             }
+            if(prompt.toLowerCase().indexOf("join")==0) {
+                bot.sendMessage(msg.channel, "https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=0");
+                bot.stopTyping(msg.channel);
+                return;
+            }
             clever = cleverOn[msg.channel.server.id];
         } else {
             prompt = msg.cleanContent;
             if([0, 1].indexOf(prompt.toLowerCase().indexOf("help"))>-1) {
                 bot.sendMessage(msg.author, "Use `@" + bot.user.username + " help` in the public chat to get help, or head over to the wiki: https://git.io/vwhGe");
+                bot.stopTyping(msg.channel);
+                return;
+            }
+            if([0, 1].indexOf(prompt.toLowerCase().indexOf("join"))>-1) {
+                bot.sendMessage(msg.channel, "https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=0");
                 bot.stopTyping(msg.channel);
                 return;
             }
