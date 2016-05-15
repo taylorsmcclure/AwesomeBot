@@ -335,6 +335,16 @@ function resetConfigs() {
 function switchManage() {
     document.getElementById("manageentry-servermod").checked = botData.configs.servermod;
     
+    document.getElementById("manageentry-autoprune").checked = botData.configs.autoprune[0];
+    document.getElementById("manageentry-select-autoprune").value = botData.configs.autoprune[1];
+    if(!botData.configs.autoprune[0] || !botData.configs.servermod) {
+        document.getElementById("manageentry-select-autoprune").setAttribute("disabled", "disable");
+        $("#manageentry-select-autoprune").selectpicker("refresh");
+    } else {
+        document.getElementById("manageentry-select-autoprune").removeAttribute("disabled");
+        $("#manageentry-select-autoprune").selectpicker("refresh");
+    }
+    
     var membermsg = ["newmembermsg", "onmembermsg", "offmembermsg", "changemembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg"];
     for(var i=0; i<membermsg.length; i++) {
         document.getElementById("manageentry-" + membermsg[i]).checked = botData.configs[membermsg[i]][0];

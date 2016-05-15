@@ -107,7 +107,11 @@
         "customkeys": {
             "google_api_key": "",
             "custom_search_id": ""
-        }
+        },
+        "autoprune": [
+            false,
+            172800
+        ]
     },
     "full": {
         "servermod": true,
@@ -159,6 +163,8 @@
         "joke": true,
         "translate": true,
         "shorten": true,
+        "emoji": true,
+        "time": true,
         "showpub": true
     },
     "lite": {
@@ -211,6 +217,8 @@
         "joke": false,
         "translate": false,
         "shorten": false,
+        "emoji": false,
+        "time": false,
         "showpub": false
     },
     "sense": {
@@ -263,6 +271,8 @@
         "joke": false,
         "translate": false,
         "shorten": false,
+        "emoji": false,
+        "time": true,
         "showpub": false
     }  
 }

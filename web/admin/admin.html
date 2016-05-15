@@ -315,6 +315,22 @@
                                 </label>
                             </div>
                             
+                            <div class="checkbox">
+                                <input id="manageentry-autoprune" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
+                                <label for="manageentry-autoprune">
+                                    Automatically kick inactive members after
+                                </label>
+                                <select id="manageentry-select-autoprune" onchange="javascript:config(this.id.substring(19), this.value, function() {});" class="selectpicker" data-width="fit">
+                                    <option value="21600">6 hours</option>
+                                    <option value="43200">12 hours</option>
+                                    <option value="86400">1 day</option>
+                                    <option value="172800">2 days</option>
+                                    <option value="604800">7 days</option>
+                                    <option value="1209600">14 days</option>
+                                    <option value="2592000">30 days</option>
+                                </select>
+                            </div>
+                            
                             <h3 id="member-messages">Member Messages</h3>
                             <span id="manageentry-servermod-block">
                                 <div class="checkbox">
