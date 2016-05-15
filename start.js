@@ -63,7 +63,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.20p1";
+var version = "3.3.20p2";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -3049,7 +3049,9 @@ bot.on("channelCreated", function(ch) {
 
 // Leave server if deleted
 bot.on("serverDeleted", function(svr) {
-    deleteServerData(svr.id);
+    domain.run(function() {
+        deleteServerData(svr.id);
+    });
     logMsg(new Date().getTime(), "INFO", "General", null, "Server " + svr.name + " removed, left server");
     postCarbon();
 });
@@ -3148,6 +3150,11 @@ bot.on("serverNewMember", function(svr, usr) {
 
 // Deletes stats when member leaves
 bot.on("serverMemberRemoved", function(svr, usr) {
+    domain.run(function() {
+        serverMemberRemovedHandler(svr, usr);
+    });
+});
+function serverMemberRemovedHandler(svr, usr) {
     delete stats[svr.id].members[usr.id];
     delete spams[svr.id].members[usr.id];
     delete filterviolations[svr.id].members[usr.id];
@@ -3161,7 +3168,7 @@ bot.on("serverMemberRemoved", function(svr, usr) {
         logMsg(new Date().getTime(), "INFO", svr.id, null, "Member removed: " + usr.username);
         bot.sendMessage(svr.channels.get("id", configs.servers[svr.id].rmmembermsg[2]), configs.servers[svr.id].rmmembermsg[1][getRandomInt(0, configs.servers[svr.id].rmmembermsg[1].length-1)].replace("++", "**@" + removeMd(svr.detailsOfUser(usr).nick || usr.username) + "**"));
     }
-});
+};
 
 // Reduces activity score when message is publicly deleted
 bot.on("messageDeleted", function(msg) {
