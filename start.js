@@ -63,7 +63,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.20p2";
+var version = "3.3.20p3";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -2567,7 +2567,9 @@ function messageHandler(msg) {
                 spams[msg.channel.server.id][msg.author.id] = [];
                 spams[msg.channel.server.id][msg.author.id].push(msg.content);
                 setTimeout(function() {
-                    delete spams[msg.channel.server.id][msg.author.id];
+                    if(msg.author && msg.author.id) {
+                        delete spams[msg.channel.server.id][msg.author.id];
+                    }
                 }, 45000);
             // Add a message to the user's spam list if it is similar to the last one
             } else if(levenshtein.get(spams[msg.channel.server.id][msg.author.id][spams[msg.channel.server.id][msg.author.id].length-1], msg.content)<3) {
@@ -3156,7 +3158,9 @@ bot.on("serverMemberRemoved", function(svr, usr) {
 });
 function serverMemberRemovedHandler(svr, usr) {
     delete stats[svr.id].members[usr.id];
-    delete spams[svr.id].members[usr.id];
+    if(usr && usr.id) {
+        delete spams[svr.id].members[usr.id];
+    }
     delete filterviolations[svr.id].members[usr.id];
     if(configs.servers[svr.id].admins.indexOf(usr.id)>-1) {
         configs.servers[svr.id].admins.splice(configs.servers[svr.id].admins.indexOf(usr.id), 1);
