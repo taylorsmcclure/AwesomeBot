@@ -63,7 +63,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.20p3";
+var version = "3.3.20p4";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -3158,10 +3158,6 @@ bot.on("serverMemberRemoved", function(svr, usr) {
 });
 function serverMemberRemovedHandler(svr, usr) {
     delete stats[svr.id].members[usr.id];
-    if(usr && usr.id) {
-        delete spams[svr.id].members[usr.id];
-    }
-    delete filterviolations[svr.id].members[usr.id];
     if(configs.servers[svr.id].admins.indexOf(usr.id)>-1) {
         configs.servers[svr.id].admins.splice(configs.servers[svr.id].admins.indexOf(usr.id), 1);
     }
