@@ -63,7 +63,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.20p4";
+var version = "3.3.20p5";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -621,15 +621,9 @@ var commands = {
         usage: "<city>",
         process: function(bot, msg, suffix) {
             var location = suffix;
-            if(profileData[msg.author.id]) {
-                for(var key in profileData[msg.author.id]) {
-                    if(key.toLowerCase()=="location") {
-                        location = profileData[msg.author.id][key];
-                        break;
-                    }
-                }
-            } else if(!suffix) {
+            if(!suffix) {
                 bot.sendMessage(msg.channel, "It's " + prettyDate(new Date()) + " for me");
+                return;
             }
             unirest.get("http://maps.googleapis.com/maps/api/geocode/json?address=" + encodeURI(location))
             .header("Accept", "application/json")
