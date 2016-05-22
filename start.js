@@ -43,7 +43,6 @@ try {
     const cheerio = require("cheerio");
     const util = require("util");
     const vm = require("vm");
-    const quotable = require("forbes-quote");
     const readline = require("readline");
     const searcher = require("google-search-scraper");
     const urlInfo = require("url-info-scraper");
@@ -64,7 +63,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.21";
+var version = "3.3.21p1";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
