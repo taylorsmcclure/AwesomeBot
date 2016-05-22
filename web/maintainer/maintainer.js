@@ -12,6 +12,7 @@ function doMaintainerSetup() {
     $("#servers-body").collapse("show");
     switchBotBlocked();
     $("#botblocked-body").collapse("show");
+    switchProfiles();
     $("#files-body").collapse("show");
     $("#bigmessage-body").collapse("show");
     
@@ -45,7 +46,7 @@ function switchUsage() {
 function switchServers() {
     var servertablebody = "";
     for(var i=0; i<botData.servers.length; i++) {
-        servertablebody += "<tr id=\"serverentry-" + botData.servers[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.servers[i][0] + "\" class=\"img-responsive img-circle\" /></td><td>" + botData.servers[i][1] + "</td><td>" + botData.servers[i][2] + "</td><td>" + botData.servers[i][3] + "</td><td><button type=\"button\" id=\"serverentry-" + i + "-msg\" class=\"btn btn-primary btn-xs servermsg\">Message</button>&nbsp;<button type=\"button\" class=\"btn btn-warning btn-xs\" onclick=\"javascript:config('clearstats', this.parentNode.parentNode.id.substring(12), function(err) {if(!err) {switchUsage()}});\">Clear Stats</button>&nbsp;<button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:removeServer(this.parentNode.parentNode.id)\">Leave</button></td></tr>";
+        servertablebody += "<tr id=\"serverentry-" + botData.servers[i][2] + "\"><td><img class=\"profilepic\" width=25 src=\"" + botData.servers[i][0] + "\" class=\"img-responsive img-circle\" /></td><td>" + botData.servers[i][1] + "</td><td>" + botData.servers[i][2] + "</td><td>" + botData.servers[i][3] + "</td><td><button type=\"button\" id=\"serverentry-" + i + "-msg\" class=\"btn btn-primary btn-xs servermsg\">Message</button>&nbsp;<button type=\"button\" class=\"btn btn-warning btn-xs\" onclick=\"javascript:config('clearstats', this.parentNode.parentNode.id.substring(12), function(err) {if(!err) {switchUsage()}});\">Clear Stats</button>&nbsp;<button type=\"button\" class=\"btn btn-warning btn-xs\" onclick=\"javascript:config('resetconfigs', this.parentNode.parentNode.id.substring(12), function() {});\">Reset Configs</button>&nbsp;<button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:removeServer(this.parentNode.parentNode.id)\">Leave</button></td></tr>";
     }
     
     $("#servertablebody").popover({
@@ -154,7 +155,25 @@ function configAvatar() {
 }
 
 function getFile(name) {
-    window.location.href = "/file?auth=" + authtoken + "&type=" + name;
+    window.location.href = "file?auth=" + authtoken + "&type=" + name;
+}
+
+function switchProfiles() {
+    filterMembers([], function(possibleProfiles) {
+        var profilesselector = "";
+        for(var i=0; i<possibleProfiles.data.length; i++) {
+            profilesselector += "<option value=" + i + ">" + possibleProfiles.data[i][0] + "</option>";
+        }
+        $("#profilesselector").html(profilesselector).selectpicker("refresh");
+    });
+}
+
+function configProfiles(i) {
+    if(i) {
+        document.getElementById("profilesinput").value = botData.members[parseInt(i)][2];
+    } else {
+        config("points", [botData.members[parseInt(document.getElementById("profilesselector").value)][1], document.getElementById("profilesinput").value], function() {});
+    }
 }
 
 function newBigmessage() {

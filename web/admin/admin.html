@@ -220,6 +220,14 @@
                                 <button type="button" class="btn btn-default btn-sm" id="presetentry-sense" onclick="javascript:config('preset', 'sense', switchCommands);" data-toggle="tooltip" data-placement="bottom" title="Just Right&trade;">Sense</button>
                                 <button type="button" class="btn btn-danger btn-sm" id="presetentry-default" onclick="javascript:resetConfigs();" data-toggle="tooltip" data-placement="bottom" title="Resets all configs">Default</button>
                             </div>
+                            <br><br>
+
+                            Default number of items to fetch:
+                            &nbsp;&nbsp;
+                            <div class="input-group form-inline col-xs-2">
+                                <input type="number" id="commands-defaultcount" class="form-control" min="1" max="100" onkeydown="if(event.keyCode==13){config('defaultcount', this.value, switchCommands);">
+                                <span class="input-group-addon btn btn-primary" onclick="javascript:config('defaultcount', $('#commands-defaultcount').val(), switchCommands);">Set</span>
+                            </div>
                             
                             <br>
                             <h3 id="api-keys">API Keys</h3>
@@ -676,19 +684,6 @@
     });
     $(function() {
         $('[data-toggle="popover"]').popover();
-    });
-    $(document).ready(function(){
-        $('a[href^="#"]').click(function(e) {
-            e.preventDefault();
-            if(this.hash!="#menu-toggle") {
-                var target = this.hash, $target = $(target);
-                $('html, body').stop().animate({
-                    'scrollTop': $target.offset().top
-                }, 900, 'swing', function() {
-                    window.location.hash = target;
-                });
-            }
-        });
     });
     $("#newstrikeform").submit(function() {
         newStrike();

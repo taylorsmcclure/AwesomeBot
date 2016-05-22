@@ -38,7 +38,7 @@ function getQueryParams(qs) {
 function writeInterface() {
     $("#loading-modal").modal("show");
     
-    getJSON("/data?section=list&type=bot", function(data) {
+    getJSON("data?section=list&type=bot", function(data) {
         document.title = data.username + " Status";
         document.getElementById("botname").innerHTML = data.username;
         document.getElementById("profilepic").src = data.avatar;
@@ -46,7 +46,7 @@ function writeInterface() {
         document.getElementById("addserverlink").href = data.oauthurl;
         document.getElementById("servers-badge").innerHTML = data.servers;
         
-        getJSON("/data?section=list&type=servers", function(data) {
+        getJSON("data?section=list&type=servers", function(data) {
             var statsselect = "";
             for(var i=0; i<data.stream.length; i++) {
                 statsselect += "<option value=\"" + data.stream[i][1] + "\">" + data.stream[i][0] + "</option>";
@@ -56,7 +56,7 @@ function writeInterface() {
             
             switchStats("null", true);
                 
-            getJSON("/data?section=list&type=logids", function(data) {
+            getJSON("data?section=list&type=logids", function(data) {
                 var idselector = "";
                 for(var i=0; i<data.stream.length; i++) {
                     idselector += "<option id=\"id-" + (data.stream[i][0] ? ("server-" + data.stream[i][0][0]) : ("author-"+ data.stream[i][1][0])) + "\" value=\"" + (data.stream[i][0] ? ("server-" + data.stream[i][0][0]) : ("author-"+ data.stream[i][1][0])) + "\">";
@@ -81,7 +81,7 @@ function writeInterface() {
 }
 
 function switchServers(sort, callback) {
-    getJSON("/data?section=servers&sort=" + sort, function(data) {
+    getJSON("data?section=servers&sort=" + sort, function(data) {
         var servertablebody = "";
         for(var i=0; i<data.stream.length; i++) {
              servertablebody += "<tr><td><img class=\"profilepic\" width=25 src=\"" + data.stream[i][0] + "\" /></td><td>" + data.stream[i][1] + "</td><td>" + data.stream[i][2] + "</td><td>" + data.stream[i][3] + "</td><td>" + data.stream[i][4] + "</td></tr>";
@@ -130,7 +130,7 @@ function switchStats(n, nodestroy) {
         if(n=="null") {
             document.getElementById("profileselect").setAttribute("disabled", "disable");
             $("#profileselect").selectpicker("refresh");
-            getJSON("/data?section=list&type=bot", function(data) {
+            getJSON("data?section=list&type=bot", function(data) {
                 html = "<b>Status:</b> Online<br><b>Bot ID:</b> " + data.id + "<br><b>Version:</b> v" + data.version + "<br><b>Uptime:</b> " + (data.uptime || "<i>None, how are you viewing this?</i>") + "<br><b>Disconnections:</b> " + data.disconnects + " so far";
                 
                 document.getElementById("stats-body").innerHTML = html || "<i>Nothing here</i>";
@@ -142,7 +142,7 @@ function switchStats(n, nodestroy) {
             document.getElementById("profileselect").removeAttribute("disabled");
             $("#profileselect").selectpicker("refresh");
             
-            getJSON("/data?section=stats&type=server&svrid=" + n, function(data) {
+            getJSON("data?section=stats&type=server&svrid=" + n, function(data) {
                 html = "<div class=\"col-xs-9\"><h4 style=\"margin-top:0px;margin-bottom:0px;\">" + data.name + " (this week)</h4>" + (Object.keys(data).length>1 ? "" : "<br><i>Nothing here</i>");
                 if(Object.keys(data).length>1) {
                     var icon = ""
@@ -161,7 +161,7 @@ function switchStats(n, nodestroy) {
                 }
                 html += "</div><div class=\"col-xs-3\"><img style=\"float:right;\" src=\"" + icon + "\" width=\"100\" height=\"100\" class=\"img-responsive\" alt=\"Server Icon\"></div>";
                 
-                getJSON("/data?section=list&type=members&svrid=" + n, function(data) {
+                getJSON("data?section=list&type=members&svrid=" + n, function(data) {
                     var profileselect = "<option value=\"null-" + n + "\" selected>View Profile</option>";
                     for(var i=0; i<data.stream.length; i++) {
                         profileselect += "<option value=\"" + data.stream[i][1] + "-" + n + "\"" + (data.stream[i][2] ? (" data-tokens=\"" + data.stream[i][2] + "\"") : "") + ">" + data.stream[i][0] + "</option>";
@@ -193,7 +193,7 @@ function switchProfile(n) {
         if(usrid=="null") {
             switchStats(svrid);
         } else {
-            getJSON("/data?section=stats&type=profile&usrid=" + usrid + "&svrid=" + svrid, function(data) {
+            getJSON("data?section=stats&type=profile&usrid=" + usrid + "&svrid=" + svrid, function(data) {
                 var html = "<div class=\"col-xs-9\">";
                 var avatar = "";
                 for(var sect in data) {
@@ -245,7 +245,7 @@ function switchLog(nodestroy) {
     setTimeout(function() {
         var html = "";
         
-        getJSON("/data?section=log" + (logID ? "&id=" + encodeURI(logID) : "") + (logLevel ? "&level=" + encodeURI(logLevel) : ""), function(data) {
+        getJSON("data?section=log" + (logID ? "&id=" + encodeURI(logID) : "") + (logLevel ? "&level=" + encodeURI(logLevel) : ""), function(data) {
             if(data.stream.length>0) {
                 for(var i=data.stream.length-1; i>=(data.stream.length>150 ? data.stream.length-150 : 0); i--) {
                     html = data.stream[i] + "<br>" + html;
@@ -264,14 +264,14 @@ function switchLog(nodestroy) {
 function checkAuth(token, write) {
     if(token) {
         $("#nav-auth").popover("hide");
-        getJSON("/data?auth=" + token, function(data) {
+        getJSON("data?auth=" + token, function(data) {
             if(Object.keys(data).length>0) {
                 localStorage.setItem("auth", JSON.stringify(data));
                 setTimeout(function() {
                     if(data.type=="maintainer") {
-                        window.location.replace("/maintainer");
+                        window.location.replace("maintainer");
                     } else if(data.type=="admin") {
-                        window.location.replace("/admin");
+                        window.location.replace("admin");
                     }
                 }, 250);
             } else {

@@ -19,7 +19,7 @@ function doAuth() {
         var auth = JSON.parse(localStorage.getItem("auth"));
         authtoken = auth.token;
         authtype = auth.type;
-        getJSON("/data/?auth=" + authtoken + "&type=" + auth.type, function(data) {
+        getJSON("data/?auth=" + authtoken + "&type=" + auth.type, function(data) {
             if(Object.keys(data).length>0 && (location.pathname+location.search).substr(1)==authtype) {
                 checkAuth();
                 botData = data;
@@ -63,7 +63,7 @@ function leaveConsole(msg) {
     richModal(msg);
     $("#error-modal").on("hidden.bs.modal", function(e) {
         localStorage.removeItem("auth");
-        document.location.replace("/");
+        document.location.replace("");
     });
 }
 
@@ -76,7 +76,7 @@ function filterMembers(toRemove, callback) {
 
 function postJSON(data, callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open("post", "/config?auth=" + authtoken + "&type=" + authtype + (authtype=="admin" ? ("&svrid=" + JSON.parse(localStorage.getItem("auth")).svrid + "&usrid=" + JSON.parse(localStorage.getItem("auth")).usrid) : ""), true);
+    xhr.open("post", "config?auth=" + authtoken + "&type=" + authtype + (authtype=="admin" ? ("&svrid=" + JSON.parse(localStorage.getItem("auth")).svrid + "&usrid=" + JSON.parse(localStorage.getItem("auth")).usrid) : ""), true);
     xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
     xhr.send(JSON.stringify(data));
     xhr.onloadend = function() {
@@ -94,7 +94,7 @@ function config(key, value, callback) {
     data[key] = value;
     postJSON(data, function(response) {
         if(response==200) {
-            getJSON("/data/?auth=" + authtoken + "&type=" + authtype, function(mData) {
+            getJSON("data/?auth=" + authtoken + "&type=" + authtype, function(mData) {
                 if(Object.keys(mData).length>0) {
                     clearTimeout(consoletimer);
                     setAuthTimer();

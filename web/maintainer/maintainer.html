@@ -189,7 +189,17 @@
                                     <br>
                                     <code>profiles.json</code> contains mostly point totals for each member (independent of server) as well as any custom profile fields they have added.
                                     <br><br>
-                                    <a class="btn btn-default" onclick="getFile('profiles');" role="button">Download profiles.json</a>
+                                    <form class="form-inline" id="profilesform">
+                                        <a class="btn btn-default" onclick="getFile('profiles');" role="button">Download profiles.json</a>
+                                        &nbsp;
+                                        <div id="profilesselector-block" style="display:inline-block;">
+                                            <select id="profilesselector" class="selectpicker" data-width="fit" data-live-search="true" title="Edit Points for Member" onchange="configProfiles(this.value);"></select>
+                                        </div>
+                                        <div id="profilesinput-block" style="display:inline-block;">
+                                            <input type="number" id="profilesinput" class="form-control">
+                                        </div>
+                                        <input type="submit" class="btn btn-default" value="Set">
+                                    </form>
                                 </div>
                                 <div role="tabpanel" class="tab-pane fade" id="files-logs">
                                     <br>
@@ -331,6 +341,10 @@
         placement: "left",
         container: "body",
         trigger: "click"
+    });
+    $("#profilesform").submit(function() {
+        configProfiles();
+        return false;
     });
     </script>
 </body>

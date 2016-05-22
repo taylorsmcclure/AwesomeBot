@@ -298,17 +298,71 @@ function newTranslate() {
     }
 }
 
+var descs = {}
 function switchCommands() {
-    var commands = "";
+    var descs = {
+        "rss": "Fetches entries from an <a href='#rss'>RSS feed</a>",
+        "tag": "Quick snippet respnse system", 
+        "stats": "Shows the most active members, richest users, most played games, and most used commands on the server for this week", 
+        "points": "A quick way to get the number of points for a user", 
+        "lottery": "Hourly point giveaways in the <code>points</code> command", 
+        "chatterbot": "Fun chatbot, provided by Mitsuku", 
+        "linkme": "Searches the Google Play Store for one or more apps", 
+        "appstore": "Searches the Apple App Store for one or more apps", 
+        "say": "Says something in the chat", 
+        "me": "Command that emulates the /me command in other bots", 
+        "convert": "Converts between units of measurement and currencies", 
+        "twitter": "Fetches the Twitter timeline for a given user", 
+        "youtube": "Gets a YouTube link with the given query, including channels, videos, and playlists", 
+        "image": "Searches Google Images with the given query and returns the first or a random result", 
+        "gif": "Gets a GIF from Giphy with the given tags", 
+        "wolfram": "Displays an entire Wolfram|Alpha knowledge page about a given topic or person", 
+        "wiki": "Shows the first three paragraphs of the Wikipedia article matching the given search query", 
+        "weather": "Gets the current weather and forecast for the given location from MSN Weather", 
+        "stock": "Fetches basic information about a stock symbol from Yahoo! Finance", 
+        "reddit": "Gets the top HOT posts from a given sub on Reddit", 
+        "roll": "Generates a random number or rolls a die", 
+        "games": "Lists the games being played on this server in descending order", 
+        "profile": "An all-in-one command to view or set information about users", 
+        "tagreaction": "Responds when tagged without a command", 
+        "poll": "Allows users to create live, in-chat polls", 
+        "trivia": "AwesomeTrivia, a fun question-and-answer group quiz game", 
+        "meme": "Generates a dank new meme", 
+        "urban": "Defines the given word from Urban Dictionary", 
+        "choose": "Randomly chooses from a set of options", 
+        "afk": "Display AFK message for users when tagged", 
+        "shorten": "Uses goo.gl to shorten or decode a URL", 
+        "messages": "Shows the number of messages a user has sent in the past week", 
+        "joke": "Tells a random joke!", 
+        "translate": "Uses Microsoft Translate to translate a word/phrase into another language", 
+        "emoji": "Fetches the large version of an emoji", 
+        "time": "Gets the time in a city or country"
+    }
+    var commands = [];
     for(var cmd in botData.configs) {
-        if(["admins", "blocked", "extensions", "newgreeting", "nsfwfilter", "servermod", "spamfilter", "customroles", "customcolors","cmdtag", "newmembermsg", "onmembermsg", "offmembermsg", "changemembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg", "triviasets", "newrole", "showpub"].indexOf(cmd)==-1) {
-            commands += "<div class=\"checkbox\"><input style=\"height: auto;\" id=\"commandsentry-" + cmd + "\" type=\"checkbox\" onclick=\"javascript:config(this.id.substring(14), this.checked, switchCommands);\" " + ((cmd=="rss" ? botData.configs[cmd][0] : botData.configs[cmd]) ? "checked " : "") + "/><label for=\"commandsentry-" + cmd + "\">" + cmd + "</label></div>";
+        if(["admins", "blocked", "extensions", "newgreeting", "nsfwfilter", "servermod", "spamfilter", "customroles", "customcolors", "customkeys", "cmdtag", "newmembermsg", "onmembermsg", "offmembermsg", "changemembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg", "triviasets", "newrole", "showpub", "defaultcount", "autoprune", "translated", "filter"].indexOf(cmd)==-1) {
+            commands.push("<div class=\"checkbox\"><input style=\"height: auto;\" id=\"commandsentry-" + cmd + "\" type=\"checkbox\" onclick=\"javascript:config(this.id.substring(14), this.checked, switchCommands);\" " + ((cmd=="rss" ? botData.configs[cmd][0] : botData.configs[cmd]) ? "checked " : "") + "/><label for=\"commandsentry-" + cmd + "\">" + cmd + "&nbsp;&nbsp;<p class=\"help-block\" style=\"display:inline\">" + descs[cmd] + "</p></label></div>");
         }
     }
-    $("#commands-container").html(commands);
+    commands.sort();
+    $("#commands-container").html(commands.join(''));
     document.getElementById("commandtag-tag").innerHTML = "@" + botData.botnm;
     document.getElementById("commandtag-selector").value = botData.configs.cmdtag;
     $("#commandtag-selector").selectpicker("refresh");
+
+    $('a[href^="#"]').click(function(e) {
+        e.preventDefault();
+        if(this.hash!="#menu-toggle") {
+            var target = this.hash, $target = $(target);
+            $('html, body').stop().animate({
+                'scrollTop': $target.offset().top
+            }, 900, 'swing', function() {
+                window.location.hash = target;
+            });
+        }
+    });
+
+    document.getElementById("commands-defaultcount").value = botData.configs.defaultcount
     
     document.getElementById("api-google-input").value = botData.configs.customkeys.google_api_key;
     if(!botData.configs.customkeys.google_api_key) {
@@ -575,7 +629,7 @@ function configCA(type) {
         });
     } else if(type=="archive") {
         $("#loading-modal").modal("show");
-        getJSON("/archive?auth=" + authtoken + "&type=" + authtype + "&svrid=" + JSON.parse(localStorage.getItem("auth")).svrid + "&chid=" + document.getElementById("caselector").value + "&num=" + parseInt(document.getElementById("cainput").value), function(archive) {
+        getJSON("archive?auth=" + authtoken + "&type=" + authtype + "&svrid=" + JSON.parse(localStorage.getItem("auth")).svrid + "&chid=" + document.getElementById("caselector").value + "&num=" + parseInt(document.getElementById("cainput").value), function(archive) {
             window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(archive)));
             $("#loading-modal").modal("hide");
         });
@@ -587,12 +641,16 @@ function switchTriviaSets() {
     
     var triviasetstablebody = "";
     for(var i=0; i<botData.configs.triviasets.length; i++) {
-        triviasetstablebody += "<tr id=\"triviasetsentry-" + encodeURI(botData.configs.triviasets[i][0]) + "\"><td>" + botData.configs.triviasets[i][0] + "</td><td>" + botData.configs.triviasets[i][1] + "</td><td><button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:config('triviasets', this.parentNode.parentNode.id.substring(16), switchTriviaSets);\">Remove</button></td></tr>";
+        triviasetstablebody += "<tr id=\"triviasetsentry-" + encodeURI(botData.configs.triviasets[i][0]) + "\"><td>" + botData.configs.triviasets[i][0] + "</td><td>" + botData.configs.triviasets[i][1] + "</td><td><button type=\"button\" class=\"btn btn-default btn-xs\" onclick=\"javascript:showTriviaSet(" + i + ");\">View</button>&nbsp;<button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:config('triviasets', this.parentNode.parentNode.id.substring(16), switchTriviaSets);\">Remove</button></td></tr>";
     }
     document.getElementById("triviasetstablebody").innerHTML = triviasetstablebody;
     if(botData.configs.triviasets.length==0) {
         document.getElementById("triviasetstable").style.display = "none";
     }
+}
+
+function showTriviaSet(i) {
+    window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(botData.configs.triviasets[i][2], null, 2)));
 }
 
 function newTriviaSet(uploads) {
@@ -678,6 +736,6 @@ function newExtension(uploads) {
 function leaveServer() {
     config("leave", true, function(err) {
         localStorage.removeItem("auth");
-        document.location.replace("/");
+        document.location.replace("");
     });
 }
