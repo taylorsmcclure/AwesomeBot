@@ -63,7 +63,7 @@ try {
 }
 
 // Bot setup
-var version = "3.3.21p1";
+var version = "3.3.21p2";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -3111,20 +3111,22 @@ bot.on("serverNewMember", function(svr, usr) {
 
 // Updates message counter when user joins voice channel
 bot.on("voiceJoin", function(usr, svr) {
-    if(!stats[svr.id].members[usr.id]) {
-        stats[svr.id].members[usr.id] = {
-            messages: 0,
-            active: new Date().getTime(),
-            seen: new Date().getTime(),
-            mentions: {
-                pm: false,
-                stream: []
-            },
-            strikes: []
-        };
+    if(stats[svr.id]) {
+        if(!stats[svr.id].members[usr.id]) {
+            stats[svr.id].members[usr.id] = {
+                messages: 0,
+                active: new Date().getTime(),
+                seen: new Date().getTime(),
+                mentions: {
+                    pm: false,
+                    stream: []
+                },
+                strikes: []
+            };
+        }
+        stats[svr.id].members[usr.id].messages++;
+        stats[svr.id].members[usr.id].active = new Date().getTime();
     }
-    stats[svr.id].members[usr.id].messages++;
-    stats[svr.id].members[usr.id].active = new Date().getTime();
 });
 
 // Deletes stats when member leaves
