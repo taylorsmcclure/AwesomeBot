@@ -31,12 +31,13 @@ $('.navbar-collapse ul li a').click(function() {
 });
 
 function showStatus() {
-    getJSON("https://awesomebot-botmakersinc.rhcloud.com/data?section=list&type=bot", function(data) {
-        if(data) {
-            document.getElementById("addtoserverlink").href = data.oauthurl;
-            document.getElementById("awesomestatus").innerHTML = "Serving " + data.servers + " servers and " + data.users + " users. Uptime: " + data.uptime;
-        }
-        document.getElementById("awesomeloader").style.display = "none";
+    getJSON("http://awesome-botmakersinc.rhcloud.com/botdata", function(totals) {
+        getJSON("https://awesomebot-botmakersinc.rhcloud.com/data?section=list&type=bot", function(data) {
+            if(data && totals) {
+                document.getElementById("addtoserverlink").href = data.oauthurl;
+                document.getElementById("awesomestatus").innerHTML = "Serving " + totals.svrcount + " servers and " + totals.usrcount + " users. Uptime: " + data.uptime;
+            }
+        });
     });
     setTimeout(function() {
         showStatus();
