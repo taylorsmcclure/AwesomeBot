@@ -30,6 +30,10 @@ $('.navbar-collapse ul li a').click(function() {
     $('.navbar-toggle:visible').click();
 });
 
+function loadBackground() {
+    document.getElementById("bigheader").style.backgroundImage = "url('img/header-bg-" + (Math.floor(Math.random() * (53)) + 1) + ".jpg')";
+}
+
 function showStatus() {
     getJSON("http://awesome-botmakersinc.rhcloud.com/botdata", function(totals) {
         getJSON("https://awesomebot-botmakersinc.rhcloud.com/data?section=list&type=bot", function(data) {
