@@ -8,7 +8,7 @@
   },
   "license": "CCPL",
   "dependencies": {
-    "discord.js": "hydrabolt/discord.js#indev",
+    "discord.js": ">=8.0.0",
     "request": ">=2.58.0",
     "querystring": "*",
     "underscore": "1.8.x",
@@ -20,7 +20,6 @@
     "google-images": "0.1.x",
     "wikijs": "*",
     "cheerio": "*",
-    "mitsuku-api": "*",
     "fs": "*",
     "express": "*",
     "body-parser": "*",
@@ -48,10 +47,13 @@
     "bing-translate": "*",
     "domain": "*",
     "remove-markdown": "*",
-    "emoji-dictionary": "*"
+    "emoji-dictionary": "*",
+    "wiki-infobox-parser": "*",
+    "mathjs": "*",
+    "xml-parser": "*"
   },
   "scripts": {
-    "start": "node start.js"
+    "start": "node --max_old_space_size=450 bot.js --production"
   },
-  "main": "start.js"
+  "main": "bot.js"
 }
