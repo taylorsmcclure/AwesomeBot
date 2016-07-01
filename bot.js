@@ -67,7 +67,7 @@ try {
 }
 
 // Bot setup
-var version = "3.4";
+var version = "3.4-M";
 var outOfDate = 0;
 var readyToGo = false;
 var disconnects = 0;
@@ -3984,67 +3984,67 @@ var pmcommands = {
 // Initializes bot and outputs to console
 var bot = new Discord.Client({forceFetchUsers: true});
 bot.on("ready", function() {
-    checkVersion();
+    if(disconnects==0 || !openedweb) {
+        checkVersion();
 
-    // Set avatar if necessary
-    if(AuthDetails.avatar_url) {
-        base64.encode(AuthDetails.avatar_url, {filename: "avatar"}, function(error, image) {
-            if(!error) {
-                bot.setAvatar(image, function(err) {
-                    if(err) {
-                        logMsg(Date.now(), "ERROR", "General", null, "Failed to set bot avatar");
-                    }
-                });
-            } else {
-                logMsg(Date.now(), "ERROR", "General", null, "Failed to set bot avatar");
-            }
-        });
-    }
+        // Set avatar if necessary
+        if(AuthDetails.avatar_url) {
+            base64.encode(AuthDetails.avatar_url, {filename: "avatar"}, function(error, image) {
+                if(!error) {
+                    bot.setAvatar(image, function(err) {
+                        if(err) {
+                            logMsg(Date.now(), "ERROR", "General", null, "Failed to set bot avatar");
+                        }
+                    });
+                } else {
+                    logMsg(Date.now(), "ERROR", "General", null, "Failed to set bot avatar");
+                }
+            });
+        }
 
-    // Set existing reminders
-    for(var i=0; i<reminders.length; i++) {
-        setReminder(i);
-    }
+        // Set existing reminders
+        for(var i=0; i<reminders.length; i++) {
+            setReminder(i);
+        }
 
-    // Prune old server data sometimes
-    if(Math.random()>0.95) {
-        pruneServerData();
-    }
+        // Prune old server data sometimes
+        if(Math.random()>0.95) {
+            pruneServerData();
+        }
 
-    // Start message and stat tallies
-    if(!stats.timestamp) {
-        stats.timestamp = Date.now();
+        // Start message and stat tallies
+        if(!stats.timestamp) {
+            stats.timestamp = Date.now();
+        }
+        clearMessageCounter();
+        clearLogCounter();
+        clearStatCounter();
+
+        // Run timer extensions
+        domain.run(runTimerExtensions);
+
+        // Start MOTD timer
+        domain.run(motdTimer);
+
+        // Start RSS update timer
+        domain.run(rssTimer);
+
+        // Start listening for web interface
+        try {
+            app.listen(server_port, server_ip_address, function() {
+                openedweb = true;
+                logMsg(Date.now(), "INFO", "General", null, "Opened web interface on " + server_ip_address + ", server port " + server_port);
+            });
+        } catch(err) {
+            logMsg(Date.now(), "ERROR", "General", null, "Failed to open web interface");
+        }
     }
-    clearMessageCounter();
-    clearLogCounter();
-    clearStatCounter();
 
     // Set playing game if applicable
     if(configs.game && configs.game!="") {
         bot.setStatus("online", configs.game);
     }
     defaultGame(0);
-
-    // Run timer extensions
-    domain.run(runTimerExtensions);
-
-    // Start MOTD timer
-    domain.run(motdTimer);
-
-    // Start RSS update timer
-    domain.run(rssTimer);
-
-    // Start listening for web interface
-    try {
-        if(disconnects==0 || !openedweb) {
-            app.listen(server_port, server_ip_address, function() {
-                openedweb = true;
-                logMsg(Date.now(), "INFO", "General", null, "Opened web interface on " + server_ip_address + ", server port " + server_port);
-            });
-        }
-    } catch(err) {
-        logMsg(Date.now(), "ERROR", "General", null, "Failed to open web interface");
-    }
 
     // Give 50,000 maintainer points :P
     if(configs.maintainer) {
@@ -9030,7 +9030,7 @@ function checkVersion() {
                         send += response.body[i][1];
                     }
                 }
-                send += "\nLearn more at http://awesomebot.xyz/";
+                send += "\nLearn more at http://awesome.awesomebot.xyz/";
 
                 if(configs.maintainer && configs.maintainer!="") {
                     var usr = bot.users.get("id", configs.maintainer);
