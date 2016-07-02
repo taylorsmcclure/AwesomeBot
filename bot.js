@@ -999,7 +999,7 @@ var commands = {
                         if(data.gender_rate==-1) {
                             info += "**Genderless**\n";
                         } else {
-                            info += "**Gender Ratio:** " + (data.gender_rate * 12.5) + "% female and " + (100 - data.gender_rate) * 12.5 + "% male\n";
+                            info += "**Gender Ratio:** " + (data.gender_rate / 8) * 100 + "% female and " + ((8 - data.gender_rate) / 8) * 100 + "% male\n";
                         }
                         info += "**Capture Rate:** " + data.capture_rate + " of 255 (higher is better)\n**Base Happiness:** " + data.base_happiness + "\n**Base Steps to Hatch:** " + (data.hatch_counter * 255 + 1) + "\n**Growth Rate:** " + data.growth_rate.name + "\n**Color/Shape:** " + data.color.name + " " + data.shape.name + "\n**Habitat:** " + (data.habitat ? data.habitat.name : "None") + "\n**First Seen in Generation:** " + data.generation.name.substring(data.generation.name.indexOf("-")+1).toUpperCase();
                         bot.sendMessage(msg.channel, info);
@@ -1102,7 +1102,7 @@ var commands = {
                         .header("Accept", "application/json")
                         .end(function(result) {
                             if(result.status==200) {
-                                bot.sendMessage(msg.channel, "__**" + result.body.title + "**__```" + result.body.description.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;") + "```**Chapters:** " + result.body.chapters_len + "\n**Author:** " + result.body.author + "\n**Artist:** " + result.body.artist + "\n**Released:** " + result.body.released + "\n**Genres:**\n\t" + result.body.categories.join("\n\t") + "\n" + result.body.url);
+                                bot.sendMessage(msg.channel, "__**" + result.body.title + "**__```" + result.body.description.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;") + "```**Chapters:** " + result.body.chapters_len + "\n**Author:** " + result.body.author + "\n**Artist:** " + result.body.artist + "\n**Released:** " + result.body.released + "\n**Genres:**\n\t" + result.body.categories.join("\n\t") + "\n" + (result.body.url || ""));
                             } else {
                                 logMsg(Date.now(), "ERROR", msg.channel.server.id, msg.channel.id, "Failed to fetch manga " + results[i][0]);
                                 bot.sendMessage(msg.channel, "Uh-oh, something is wrong with this mango.");
@@ -8998,12 +8998,7 @@ function checkVersion() {
 
             var info;
             var change = "";
-            var v = "";
-            if(version.indexOf("-M")==version.length-2) {
-                v = version.substring(0, version.length-2)
-            } else {
-                v = version.slice(0);
-            }
+            var v = version.slice(0);
             if(response.body[0][0]!=v && response.body.indexOf(version)!=outOfDate) {
                 if(version.indexOf("-M")==version.length-2 && response.body[0][0].indexOf("-M")!=response.body[0][0].length-2) {
                     return;
