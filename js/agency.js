@@ -36,7 +36,7 @@ function loadBackground() {
 
 function showStatus() {
     getJSON("http://awesome-botmakersinc.rhcloud.com/botdata", function(totals) {
-        getJSON("https://awesomebot-botmakersinc.rhcloud.com/data?section=list&type=bot", function(data) {
+        getJSON("https://bot.awesomebot.xyz/data?section=list&type=bot", function(data) {
             if(data && totals) {
                 document.getElementById("addtoserverlink").href = data.oauthurl;
                 document.getElementById("awesomestatus").innerHTML = "Serving " + totals.svrcount + " servers and " + totals.usrcount + " users. Uptime: " + data.uptime;
