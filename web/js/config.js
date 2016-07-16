@@ -90,7 +90,7 @@ function setAuthTimer() {
                 }
             }, 30000);
         }
-    }, 270000);
+    }, 870000);
 }
 
 function leaveConsole(msg, header) {
@@ -119,7 +119,7 @@ function postJSON(data, callback) {
 }
 
 function config(key, value, callback) {
-    if((typeof value=="string" && value=="" && ["newgreeting", "rmgreeting", "motd"].indexOf(key)==-1) || (key=="chrestrict" && value[1].length==0) || (key=="statsexclude" && value.length==0)) {
+    if((typeof value=="string" && value=="" && ["newgreeting", "rmgreeting", "motd"].indexOf(key)==-1) || (key=="chrestrict" && value[1].length==0) || (key=="statsexclude" && value.length==0) || (key=="motd" && value=="time-")) {
         return;
     }
     

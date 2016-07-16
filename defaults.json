@@ -48,7 +48,7 @@
             "",
             86400,
             "",
-            ""
+            "1 day"
         ],
         "tagcommands": [],
         "listing": {
@@ -168,7 +168,8 @@
             "nuke",
             "quiet",
             "cool",
-            "strikes"
+            "strikes",
+            "mute"
         ],
         "chrestrict": {},
         "quiet": true,
@@ -233,7 +234,8 @@
         "removetagcommandadmin": true,
         "deletecommands": false,
         "statsexclude": [],
-        "voicetext": []
+        "voicetext": [],
+        "counts": {}
     },
     "full": {
         "servermod": true,
@@ -325,7 +327,9 @@
         "alert": true,
         "pokedex": true,
         "cool": true,
-        "strikes": true
+        "strikes": true,
+        "mute": true,
+        "count": true
     },
     "lite": {
         "servermod": true,
@@ -413,7 +417,9 @@
         "alert": false,
         "pokedex": false,
         "cool": false,
-        "strikes": false
+        "strikes": false,
+        "mute": false,
+        "count": false
     },
     "sense": {
         "servermod": true,
@@ -501,6 +507,8 @@
         "alert": true,
         "pokedex": false,
         "cool": true,
-        "strikes": false
+        "strikes": false,
+        "mute": true,
+        "count": false
     }  
 }

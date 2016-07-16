@@ -34,7 +34,37 @@
         margin: 0; 
         overflow-y: auto;
     }
+    .navbar {
+        border-width: 0px;
+        background-color:rgba(255, 255, 255, 0);
+        transition: all 0.5s ease;
+        color: white !important;
+    }
+    .navbar-nav>li>.dropdown-menu {
+        background-color: rgba(34, 34, 34, 1);
+    }
+    .navbar-default, .navbar-nav, .navbar-brand, .nav, .navbar-default .navbar-nav>li>a, .navbar-default .navbar-text, .navbar-default .navbar-nav .open .dropdown-menu>li>a {
+        color: white !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:focus, .navbar-default .navbar-nav>.open>a:hover, .dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover, .navbar-default .navbar-toggle:hover,.navbar-default .navbar-toggle:focus {
+        background-color: #009688;
+    }
+    .navbar-default .navbar-toggle{
+        background-color:#009688;
+        border-color:#009688;
+    }
+    .navbar-default .navbar-toggle .icon-bar{
+        background-color:#fff;
+    }
     </style>
+    <script type="text/javascript">
+    window.onscroll = function(e) {
+        document.getElementById("mainnav").style.boxShadow = window.scrollY>25 ? "0 6px 12px rgba(0,0,0,.175)" : "";
+        document.getElementById("mainnav").style.backgroundColor = window.scrollY<25 ? "rgba(255, 255, 255, 0)" : "rgba(34, 34, 34, 1)";
+    };
+    </script>
     <script src="./js/jquery.min.js"></script>
     <script src="./js/bootstrap.min.js"></script>
     <script src="./js/bootstrap-select.min.js"></script>
@@ -42,9 +72,9 @@
     <script src="./js/micromarkdown.min.js"></script>
     <script src="./js/index.js"></script>
 </head>
-<body onload="switchColors();doSetup();" data-spy="scroll" data-target="#navbar">
+<body onload="switchColors();doSetup();" data-spy="scroll" data-target="#mainnav">
     <!-- Navbar -->
-    <nav class="navbar navbar-default navbar-fixed-top" style="font-family:Montserrat,'Helvetica Neue',Helvetica,Arial">
+    <nav class="navbar navbar-default navbar-fixed-top" id="mainnav" style="font-family:Montserrat,'Helvetica Neue',Helvetica,Arial">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" style="float:left;margin-left:10px;">
@@ -53,7 +83,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#" style="padding-left:0px">Bot Info</a>
+                <a class="navbar-brand" href="#" style="padding-left:0px;text-transform:none !important;letter-spacing:normal !important;">AwesomeBot</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -84,16 +114,7 @@
                     <li>
                         <a id="nav-auth" href="#"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Config</a>
                         <div id="nav-auth-popover-content" class="hide">
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="nav-authinput" onkeydown="if(event.keyCode==13){checkAuth(this.value);}" placeholder="Auth code">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default" onclick="checkAuth($('.popover-content').find('#nav-authinput').val());" type="button">Go</button>
-                                </span>
-                                </input>
-                            </div>
-                            <script type="text/javascript">
-                            document.getElementById("nav-authinput").focus();
-                            </script>
+                            PM the bot <code>config &lt;server name&gt;</code> on Discord
                         </div>
                     </li>
                 </ul>
@@ -103,7 +124,7 @@
 
     <!-- Header -->
     <div id="header" ondblclick="loadBackground();"><center>
-        <br><br><br>
+        <br><br><br><br><br>
         <img alt="Icon" id="profilepic" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" class="img-responsive img-circle">
         <h1 id="botname" style="color:white;">
             BotName
@@ -116,7 +137,7 @@
             <div class="col-lg-12">
                 <h2 id="servers">Servers <span id="servers-badge" class="badge"></span></h2>
                 <div id="servers-body">
-                    <p class="help-block col-xs-9" style="margin-left: -15px;">Some servers excluded for privacy. Message count is only for the past 24 hours. <span class="label label-info newlabel">New</span></p>
+                    <p class="help-block col-xs-9" style="margin-left: -15px;">Some servers excluded for privacy. Message count is only for the past 24 hours.</p>
                     <div class="input-group col-xs-3">
                         <input type="text" id="server-search" class="form-control" onkeydown="if(event.keyCode==13){switchServers('messages', this.value);}" style="min-width:200px;" placeholder="Search">
                         <span class="input-group-addon btn btn-primary" onclick="switchServers('messages', document.getElementById('server-search').value);"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></span>
@@ -179,7 +200,7 @@
         
         <div class="row">
             <div class="col-lg-12">
-                <br><i>Created by @BitQuote, <a href="http://awesomebot.xyz">http://awesomebot.xyz</a>. This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product.</i> Themes provided by <a href="https://bootswatch.com/">Bootswatch</a><br><br>
+                <br>Created by @BitQuote, <a href="http://awesomebot.xyz">http://awesomebot.xyz</a>. This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product. Themes provided by <a href="https://bootswatch.com/">Bootswatch</a>.<br><br>
             </div>
         </div>
     </div>

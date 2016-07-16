@@ -52,13 +52,13 @@
                     <a href="javascript:goToSection('blocked')">Blocklist</a>
                 </li>
                 <li id="muted-entry">
-                    <a href="javascript:goToSection('muted')">Muted <span class="label label-info newlabel">New</span></a>
+                    <a href="javascript:goToSection('muted')">Muted</a>
                 </li>
                 <li id="strikes-entry">
                     <a href="javascript:goToSection('strikes')">Strikes</a>
                 </li>
                 <li id="statspoints-entry">
-                    <a href="javascript:goToSection('statspoints')">Stats &amp; Points <span class="label label-info newlabel">New</span></a>
+                    <a href="javascript:goToSection('statspoints')">Stats &amp; Points</a>
                 </li>
                 <li id="commands-entry">
                     <a href="javascript:goToSection('commands')">Commands</a>
@@ -67,13 +67,13 @@
                     <a href="javascript:goToSection('rss')">RSS Feeds</a>
                 </li>
                 <li id="tags-entry">
-                    <a href="javascript:goToSection('tags')">Tags <span class="label label-info newlabel">New</span></a>
+                    <a href="javascript:goToSection('tags')">Tags</a>
                 </li>
                 <li id="translated-entry">
                     <a href="javascript:goToSection('translated')">Auto-Translation</a>
                 </li>
                 <li id="public-entry">
-                    <a href="javascript:goToSection('public')">Public Data <span class="label label-info newlabel">New</span></a>
+                    <a href="javascript:goToSection('public')">Public Data</a>
                 </li>
                 <li id="manage-entry">
                     <a href="javascript:goToSection('manage')">Management</a>
@@ -83,6 +83,10 @@
                 </li>
                 <li id="extensions-entry">
                     <a href="javascript:goToSection('extensions')">Extensions</a>
+                </li>
+                <br>
+                <li id="export-entry">
+                    <a href="javascript:exportConfigs();">Export Configs</a>
                 </li>
             </ul>
         </div>
@@ -135,7 +139,7 @@
                     <div class="col-lg-12">
                         <h2 class="section-head" id="admins" data-toggle="collapse" data-target="#admins-body" aria-expanded="false" aria-controls="collapseadmins">Bot Admins</h2>
                         <div id="admins-body" class="collapse">
-                            <p class="help-block">Admins can access this admin console, silence the bot, and make the bot say things discreetly.</p>
+                            <p class="help-block">Admins can access this admin console, silence the bot, make the bot say things discreetly, use admin-only commands, and more.</p>
                             <div class="table-responsive">
                                 <table id="adminstable" class="table table-striped">
                                     <thead>
@@ -159,7 +163,7 @@
                     <div class="col-lg-12">
                         <h2 class="section-head" id="blocked" data-toggle="collapse" data-target="#blocked-body" aria-expanded="false" aria-controls="collapseblocked">Blocklist</h2>
                         <div id="blocked-body" class="collapse">
-                            <p class="help-block">Blocked members will not be able to use the bot anywhere on the server. Entries marked with <code>(global)</code> have been blocked by the bot maintainer.</p>
+                            <p class="help-block">Blocked members will not be able to use the bot anywhere on the server. Users marked with <code>(global)</code> have been blocked by the bot maintainer.</p>
                             <div class="table-responsive">
                                 <table id="blockedtable" class="table table-striped">
                                     <thead>
@@ -181,7 +185,7 @@
 
                 <div class="row">
                     <div class="col-lg-12">
-                        <h2 class="section-head" id="muted" data-toggle="collapse" data-target="#muted-body" aria-expanded="false" aria-controls="collapsemuted">Muted <span class="label label-info newlabel">New</span></h2>
+                        <h2 class="section-head" id="muted" data-toggle="collapse" data-target="#muted-body" aria-expanded="false" aria-controls="collapsemuted">Muted</h2>
                         <div id="muted-body" class="collapse">
                             <p class="help-block">Muted members cannot send messages in the channels you select.</p>
                             <div class="table-responsive">
@@ -197,7 +201,7 @@
                                     <tbody id="mutedtablebody"></tbody>
                                 </table>
                             </div>
-                            <select id="mutedselector" class="selectpicker show-tick" data-width="fit" data-live-search="true" title="Select Member to Block" onChange="javascript:config('mute', [this.value, 'all'], switchMuted);"></select>
+                            <select id="mutedselector" class="selectpicker show-tick" data-width="fit" data-live-search="true" title="Select Member to Mute" onChange="javascript:config('mute', [this.value, 'all'], switchMuted);"></select>
                         </div>
                     </div>
                 </div>
@@ -235,7 +239,7 @@
 
                 <div class="row">
                     <div class="col-lg-12">
-                        <h2 class="section-head" id="statspoints" data-toggle="collapse" data-target="#statspoints-body" aria-expanded="false" aria-controls="collapsestatspoints">Stats &amp; Points <span class="label label-info newlabel">New</span></h2>
+                        <h2 class="section-head" id="statspoints" data-toggle="collapse" data-target="#statspoints-body" aria-expanded="false" aria-controls="collapsestatspoints">Stats &amp; Points</h2>
                         <div id="statspoints-body" class="collapse">
                             <div class="checkbox">
                                 <input id="statspoints-stats" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, switchStatspoints);">
@@ -297,6 +301,7 @@
                                     </div>
                                     <select id="ranksselect" class="selectpicker show-tick" data-width="fit" title="Select Role"></select>
                                     <input type="submit" class="btn btn-default" value="Add">
+                                    <button type="button" class="btn btn-danger" id="ranksreset" onclick="javascript:config('rankslist', 'reset', switchStatspoints);" data-toggle="tooltip" data-placement="bottom" title="Give all members the lowest rank"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>  Reset All</button>
                                 </form>
                             </span>
                             <br>
@@ -359,7 +364,7 @@
                                 <button type="button" class="btn btn-default" id="presetentry-full" onclick="javascript:config('preset', 'full', switchCommands);" data-toggle="tooltip" data-placement="bottom" title="The whole 9 yards">Full</button>
                                 <button type="button" class="btn btn-default" id="presetentry-lite" onclick="javascript:config('preset', 'lite', switchCommands);" data-toggle="tooltip" data-placement="bottom" title="Lightweight and easy to understand">Lite</button>
                                 <button type="button" class="btn btn-default" id="presetentry-sense" onclick="javascript:config('preset', 'sense', switchCommands);" data-toggle="tooltip" data-placement="bottom" title="Just Right&trade;">Sense</button>
-                                <button type="button" class="btn btn-danger" id="presetentry-default" onclick="javascript:resetConfigs();" data-toggle="tooltip" data-placement="bottom" title="Resets all configs"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>  Default</button>
+                                <button type="button" class="btn btn-danger" id="presetentry-default" onclick="javascript:resetConfigs();" data-toggle="tooltip" data-placement="bottom" title="Resets ALL configs, use with extreme caution"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>  Default</button>
                             </div>
                             <br><br>
 
@@ -394,7 +399,6 @@
                                     <option value="60000">1 minute</option>
                                     <option value="120000">2 minutes</option>
                                 </select>
-                                <span class="label label-info newlabel">New</span>
                             </div>
                             
                             <h3 id="api-keys">API Keys</h3>
@@ -455,7 +459,7 @@
 
                 <div id="tagsrow" class="row">
                     <div class="col-lg-12">
-                        <h2 class="section-head" id="tags" data-toggle="collapse" data-target="#tags-body" aria-expanded="false" aria-controls="collapsetranslated">Tags <span class="label label-info newlabel">New</span></h2>
+                        <h2 class="section-head" id="tags" data-toggle="collapse" data-target="#tags-body" aria-expanded="false" aria-controls="collapsetranslated">Tags</h2>
                         <div id="tags-body" class="collapse">
                             <div class="checkbox">
                                 <input id="tags-tag" type="checkbox" onclick="javascript:config('tag', this.checked, switchTags);">
@@ -577,7 +581,7 @@
 
                 <div class="row">
                     <div class="col-lg-12">
-                        <h2 class="section-head" id="public" data-toggle="collapse" data-target="#public-body" aria-expanded="false" aria-controls="collapsepublic">Public Data <span class="label label-info newlabel">New</span></h2>
+                        <h2 class="section-head" id="public" data-toggle="collapse" data-target="#public-body" aria-expanded="false" aria-controls="collapsepublic">Public Data</h2>
                         <div id="public-body" class="collapse">
                             <div class="checkbox">
                                 <input id="publicentry-showsvr" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, switchPublic);">
@@ -715,7 +719,7 @@
                                 <div class="checkbox">
                                     <input id="manageentry-twitchmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
                                     <label for="manageentry-twitchmembermsg">
-                                        Twitch streaming messages <span class="label label-info newlabel">New</span>
+                                        Twitch streaming messages
                                     </label>
                                     &nbsp;
                                     <select id="manageentry-select-twitchmembermsg" onchange="javascript:config(this.id.substring(19), this.value, function() {});" class="selectpicker show-tick" data-width="fit"></select>
@@ -724,17 +728,17 @@
                                 <div class="checkbox">
                                     <input id="manageentry-editmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
                                     <label for="manageentry-editmembermsg">
-                                        Message edited messages <span class="label label-info newlabel">New</span>
+                                        Message edited messages
                                     </label>
-                                    <select id="manageentry-select-editmembermsg" class="selectpicker show-tick" data-width="fit" title="Select Channel(s)" onchange="javascript:config(this.id.substring(19), $('#' + this.id).val() || [], function() {});" data-actions-box="true" multiple></select>
+                                    <select id="manageentry-select-editmembermsg" class="selectpicker show-tick" data-width="fit" title="Select Channel(s)" data-selected-text-format="count > 3" onchange="javascript:config(this.id.substring(19), $('#' + this.id).val() || [], function() {});" data-actions-box="true" multiple></select>
                                 </div>
 
                                 <div class="checkbox">
                                     <input id="manageentry-deletemembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
                                     <label for="manageentry-deletemembermsg">
-                                        Message deleted messages <span class="label label-info newlabel">New</span>
+                                        Message deleted messages
                                     </label>
-                                    <select id="manageentry-select-deletemembermsg" class="selectpicker show-tick" data-width="fit" title="Select Channel(s)" onchange="javascript:config(this.id.substring(19), $('#' + this.id).val() || [], function() {});" data-actions-box="true" multiple></select>
+                                    <select id="manageentry-select-deletemembermsg" class="selectpicker show-tick" data-width="fit" title="Select Channel(s)" data-selected-text-format="count > 3" onchange="javascript:config(this.id.substring(19), $('#' + this.id).val() || [], function() {});" data-actions-box="true" multiple></select>
                                 </div>
                                 
                                 <div class="checkbox">
@@ -817,6 +821,7 @@
                                     </label>
                                     &nbsp;
                                     <select id="manageentry-spamfilter-action" onChange="javascript:config('spamfilter', 'action-' + this.value, function() {});" class="selectpicker show-tick" data-width="fit">
+                                        <option id="spamfilter-none" value="none">Do Nothing</option>
                                         <option id="spamfilter-kick" value="kick">Kick Violators</option>
                                         <option id="spamfilter-mute" value="mute">Mute Violators</option>
                                         <option id="spamfilter-block" value="block">Block Violators</option>
@@ -835,7 +840,7 @@
                                         &nbsp;&nbsp;&nbsp;&nbsp;
                                         <input id="manageentry-spamfilter-delete" type="checkbox" onclick="javascript:config('spamfilter', 'delete', function() {});">
                                         <label for="manageentry-spamfilter-delete">
-                                            Delete offending messages <span class="label label-info newlabel">New</span>
+                                            Delete offending messages
                                         </label>
                                     </div>
                                 </span>
@@ -848,6 +853,7 @@
                                     </label>
                                     &nbsp;
                                     <select id="manageentry-nsfwfilter-action" onChange="javascript:config('nsfwfilter', 'action-' + this.value, function() {});" class="selectpicker show-tick" data-width="fit">
+                                        <option id="spamfilter-none" value="none">Do Nothing</option>
                                         <option id="nsfwfilter-kick" value="kick">Kick Violators</option>
                                         <option id="nsfwfilter-mute" value="mute">Mute Violators</option>
                                         <option id="nsfwfilter-block" value="block">Block Violators</option>
@@ -861,7 +867,7 @@
                                         &nbsp;&nbsp;&nbsp;&nbsp;
                                         <input id="manageentry-nsfwfilter-delete" type="checkbox" onclick="javascript:config('nsfwfilter', 'delete', function() {});">
                                         <label for="manageentry-nsfwfilter-delete">
-                                            Delete offending command message <span class="label label-info newlabel">New</span>
+                                            Delete offending command message
                                         </label>
                                     </div>
                                 </span>
@@ -874,6 +880,7 @@
                                 </div>
                                 <br>
                                 <select id="manageentry-filter-action" onChange="javascript:config('filter', 'action-' + this.value, function() {});" class="selectpicker show-tick" data-width="fit">
+                                    <option id="spamfilter-none" value="none">Do Nothing</option>
                                     <option id="filter-kick" value="kick">Kick Violators</option>
                                     <option id="filter-mute" value="mute">Mute Violators</option>
                                     <option id="filter-block" value="block">Block Violators</option>
@@ -882,7 +889,7 @@
                                 <div class="checkbox">
                                     <input id="manageentry-filter-delete" type="checkbox" onclick="javascript:config('filter', 'delete', function() {});">
                                     <label for="manageentry-filter-delete">
-                                        Delete offending message <span class="label label-info newlabel">New</span>
+                                        Delete offending message
                                     </label>
                                 </div>
                             </span>
@@ -906,7 +913,7 @@
                             <button class="btn btn-default" onclick="javascript:config('motd', 'time-' + $('#manageentry-motd-time').val(), function() {});">Set</button>
 
                             <br>
-                            <h3 id="name-diplay">Name Display <span class="label label-info newlabel">New</span></h3>
+                            <h3 id="name-diplay">Name Display</h3>
                             <div class="checkbox">
                                 <input id="manageentry-usenicks" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
                                 <label for="manageentry-usenicks">
@@ -930,7 +937,7 @@
                             <div class="checkbox">
                                 <input id="manageentry-role" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
                                 <label for="manageentry-role">
-                                    role <span class="label label-info newlabel">New</span>
+                                    role
                                     &nbsp;
                                     <p class="help-block" style="display: inline">
                                         Set roles and colors
@@ -1031,15 +1038,13 @@
                             <a role="button" href="javascript:launchBuilder();" target="_blank" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Easily build and test AwesomeBot extensions"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Extension Builder</a>
                             &nbsp;
                             <a role="button" href="http://awesome.awesomebot.xyz/extensions" target="_blank" class="btn btn-default"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Discover Extensions</a>
-                            &nbsp;
-                            <span class="label label-info newlabel">New</span>
                         </div>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="col-lg-12">
-                        <br><i>Created by @BitQuote, <a href="http://awesomebot.xyz">http://awesomebot.xyz</a>. This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product.</i> Themes provided by <a href="https://bootswatch.com/">Bootswatch</a>
+                        <br>Created by @BitQuote, <a href="http://awesomebot.xyz">http://awesomebot.xyz</a>. This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product. Themes provided by <a href="https://bootswatch.com/">Bootswatch</a>.
                     </div>
                 </div>
             </div>
@@ -1103,7 +1108,7 @@
                                     </div>
                                     <div id="extensionbuilder-type-timer" class="hide">
                                         <div id="extensionbuilder-input-interval-block">
-                                            <input type="number" id="extensionbuilder-input-interval" class="form-control" placeholder="Interval (seconds)" min="10" max="86400">
+                                            <input type="number" id="extensionbuilder-input-interval" class="form-control" placeholder="Interval (seconds)" min="60" max="86400">
                                         </div>
                                     </div>
                                 </div>
@@ -1203,7 +1208,7 @@
                         <h4 class="modal-title">Session</h4>
                     </div>
                     <div class="modal-body">
-                        It's been nearly 5 minutes. Would you like to extend your session?
+                        It's been nearly 15 minutes. Would you like to extend your session?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">No</button>

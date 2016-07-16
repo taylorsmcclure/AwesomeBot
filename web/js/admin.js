@@ -332,7 +332,7 @@ function newRssUrl(site) {
             url = "https://github.com/USERNAME/REPO/commits/master.atom";
             break;
         case "reddit":
-            url = "https://www.reddit.com/r/SUBREDDIT/.rss";
+            url = "https://www.reddit.com/r/SUBREDDIT/new/.rss";
             break;
         case "twitter":
             url = "http://twitrss.me/twitter_user_to_rss/?user=USERNAME";
@@ -587,9 +587,11 @@ function switchCommands() {
         "alert": "Allows members to message the admins",
         "pokedex": "Searches Pokemon database by Pokedex number",
         "cool": "Sets a command cooldown for the channel",
-        "strikes": "Shows strikes for a user"
+        "strikes": "Shows strikes for a user",
+        "mute": "Prevents users from sending messages in a channel",
+        "count": "Keeps tallies of various things"
     }
-    var newcmds = ["kick", "ban", "nuke", "list", "avatar", "archive", "mute", "anime", "manga", "room", "giveaway", "calc", "countdown", "ddg", "imdb", "8ball", "fortune", "catfact", "numfact", "e621", "rule34", "safebooru", "cat", "info", "imgur", "xkcd", "alert", "pokedex", "strikes", "cool"];
+    var newcmds = ["count"];
     var nsfwcmds = ["e621", "rule34", "safebooru"];
     var blacklist = ["admins", "blocked", "extensions", "voicetext", "motd", "newgreeting", "rmgreeting", "nsfwfilter", "servermod", "spamfilter", "customroles", "customcolors", "customkeys", "cmdtag", "newmembermsg", "onmembermsg", "offmembermsg", "changemembermsg", "rankmembermsg", "twitchmembermsg", "editmembermsg", "deletemembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg", "triviasets", "newrole", "showpub", "defaultcount", "maxcount", "autoprune", "translated", "filter", "usenicks", "usediscriminators", "listsrc", "listing", "tagcommands", "cooldown", "stats", "points", "ranks", "rankslist", "messages", "games", "lottery", "admincommands", "showsvr", "chrestrict", "newmemberpm", "role", "addtagadmin", "addtagcommandadmin", "muted", "removetagadmin", "removetagcommandadmin", "tag", "tags", "deletecommands", "statsexclude"];
 
@@ -1066,6 +1068,14 @@ function configCA(type) {
     }
 }
 
+function exportConfigs() {
+    NProgress.start();
+    getJSON("export?auth=" + authtoken + "&type=" + authtype + "&svrid=" + JSON.parse(localStorage.getItem("auth")).svrid, function(configs) {
+        window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(configs, null, 2)));
+        NProgress.done();
+    });
+}
+
 function switchTriviaSets() {
     document.getElementById("triviasetstable").style.display = "";
     
@@ -1354,10 +1364,7 @@ function runExtension(message) {
 
             postExtension({
                 extension: packagedExtension,
-                message: packagedExtension.type!="timer" ? {
-                    content: (botData.configs.cmdtag=="tag" ? ("<@" + botData.usrid + "> ") : botData.configs.cmdtag) + document.getElementById("extensionbuilder-run-message").value,
-                    cleanContent: (botData.configs.cmdtag=="tag" ? ("@" + botData.botnm + " ") : botData.configs.cmdtag) + document.getElementById("extensionbuilder-run-message").value
-                } : null
+                message: packagedExtension.type!="timer" ? ((botData.configs.cmdtag=="tag" ? ("<@" + botData.usrid + "> ") : botData.configs.cmdtag) + document.getElementById("extensionbuilder-run-message").value) : null
             }, "test", document.getElementById("extensionbuilder-run-channel").value, function(response) {
                 if(!response) {
                     response = {
@@ -1368,7 +1375,7 @@ function runExtension(message) {
 
                 document.getElementById("extensionbuilder-button-run").removeAttribute("disabled");
                 document.getElementById("extensionbuilder-button-run").onclick = runBuilderContent;
-                document.getElementById("extensionbuilder-output-body").innerHTML = response.extensionLog.join("<br>");
+                document.getElementById("extensionbuilder-output-body").innerHTML = response.extensionLog.join("!--AWESOME_EXTENSION_NEWLINE--").replace(new RegExp("&", 'g'), "&amp;").replace(new RegExp("<", 'g'), "&lt;").replace(new RegExp(">", 'g'), "&gt;").replace(new RegExp("!--AWESOME_EXTENSION_NEWLINE--", 'g'), "<br>");
                 $("#extensionbuilder-button-output").removeClass("btn-default");
                 $("#extensionbuilder-button-output").addClass(response.isValid ? "btn-success" : "btn-danger");
                 $("#extensionbuilder-button-output").tooltip("show");
