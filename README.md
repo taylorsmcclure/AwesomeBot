@@ -42,7 +42,7 @@ And finally, AwesomeBot can conduct **in-chat polls**, offers a fun **live trivi
 About
 -----
 
-This repository provides the source for the already-running `@AwesomeBot` instance. You are free to use this code as a base for your own bot, so long as you abide by the terms set in the license and [apply for a bot hosting token](http://self-host.awesomebot.xyz/). Also, please join our [Discord server](http://discord.awesomebot.xyz/) if you are modifying the code in any way.
+This repository provides the source for the already-running [`@AwesomeBot`](http://add.awesomebot.xyz/) instance. You are free to use this code as a base for your own bot, so long as you abide by the terms set in the license and [apply for a bot hosting token](http://self-host.awesomebot.xyz/). Also, please join our [Discord server](http://discord.awesomebot.xyz/) if you are modifying the code in any way.
 
 [Head to our wiki for more information »](http://wiki.awesomebot.xyz/)
 
