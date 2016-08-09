@@ -105,6 +105,10 @@
             null,
             false
         ],
+        "pinmembermsg": [
+            false,
+            []
+        ],
         "editmembermsg": [
             false,
             []
@@ -169,7 +173,8 @@
             "quiet",
             "cool",
             "strikes",
-            "mute"
+            "mute",
+            "perms"
         ],
         "chrestrict": {},
         "quiet": true,
@@ -295,6 +300,7 @@
         "games": true,
         "profile": true,
         "role": true,
+        "perms": true,
         "tagreaction": true,
         "poll": true,
         "giveaway": true,
@@ -385,6 +391,7 @@
         "games": false,
         "profile": false,
         "role": false,
+        "perms": false,
         "tagreaction": false,
         "poll": true,
         "giveaway": false,
@@ -475,6 +482,7 @@
         "games": true,
         "profile": true,
         "role": false,
+        "perms": false,
         "tagreaction": false,
         "poll": true,
         "giveaway": false,
