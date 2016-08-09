@@ -6128,6 +6128,7 @@ function getExtensionParams(extension, svr, ch, msg, keywordcontains, suffix, te
         RegExp: RegExp,
         Array: Array,
         Number: Number,
+        Object: Object,
         encodeURI: encodeURI,
         decodeURI: decodeURI,
         parseInt: parseInt,
