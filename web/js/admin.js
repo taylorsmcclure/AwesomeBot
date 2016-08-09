@@ -5,7 +5,7 @@ function doAdminSetup() {
     document.getElementById("botname").innerHTML = botData.botnm;
     document.getElementById("botsince").innerHTML = " added " + botData.joined + " ago";
     document.getElementById("rssrow").style.display = botData.configs.rss[0] ? "" : "none";
-    
+
     switchAdmins();
     $("#admins-body").collapse("show");
     switchBlocked();
@@ -32,8 +32,9 @@ function doAdminSetup() {
     $("#triviasets-body").collapse("show");
     switchExtensions();
     $("#extensions-body").collapse("show");
-    
+
     NProgress.done();
+    goToSection(window.location.hash.slice(1).toLowerCase());
 }
 
 function configNickname() {
@@ -49,7 +50,7 @@ function configNickname() {
 
 function switchAdmins() {
     document.getElementById("adminstable").style.display = "";
-    
+
     var blacklist = [];
     var adminstablebody = "";
     for(var i=0; i<botData.configs.admins.length; i++) {
@@ -60,7 +61,7 @@ function switchAdmins() {
     if(botData.configs.admins.length==0) {
         document.getElementById("adminstable").style.display = "none";
     }
-    
+
     for(var i=0; i<botData.configs.blocked.length; i++) {
         blacklist.push(botData.configs.blocked[i][2]);
     }
@@ -83,7 +84,7 @@ function switchAdmins() {
 
 function switchBlocked() {
     document.getElementById("blockedtable").style.display = "";
-    
+
     var blacklist = [];
     var blockedtablebody = "";
     for(var i=0; i<botData.configs.blocked.length; i++) {
@@ -94,7 +95,7 @@ function switchBlocked() {
     if(botData.configs.blocked.length==0) {
         document.getElementById("blockedtable").style.display = "none";
     }
-    
+
     for(var i=0; i<botData.configs.admins.length; i++) {
         blacklist.push(botData.configs.admins[i][2]);
     }
@@ -117,7 +118,7 @@ function switchBlocked() {
 
 function switchMuted() {
     document.getElementById("mutedtable").style.display = "";
-    
+
     var blacklist = [];
     var mutedtablebody = "";
     for(var i=0; i<botData.configs.muted.length; i++) {
@@ -128,7 +129,7 @@ function switchMuted() {
     if(botData.configs.muted.length==0) {
         document.getElementById("mutedtable").style.display = "none";
     }
-    
+
     $("#mutedtable").popover({
         html: true,
         title: function() {
@@ -149,7 +150,7 @@ function switchMuted() {
         container: "body",
         trigger: "click"
     });
-    
+
     for(var i=0; i<botData.configs.admins.length; i++) {
         blacklist.push(botData.configs.admins[i][2]);
     }
@@ -170,7 +171,7 @@ function newMute(data, i) {
 
 function switchStrikes() {
     document.getElementById("strikestable").style.display = "";
-    
+
     var blacklist = [];
     var strikestablebody = "";
     for(var i=botData.strikes.length-1; i>=0; i--) {
@@ -180,8 +181,8 @@ function switchStrikes() {
     if(botData.strikes.length==0) {
         document.getElementById("strikestable").style.display = "none";
     }
-    
-    $("#strikestable").popover({ 
+
+    $("#strikestable").popover({
         html: true,
         title: function() {
             i = parseInt(this.id.substring(this.id.indexOf("-")+1, this.id.lastIndexOf("-")));
@@ -216,7 +217,7 @@ function switchStrikes() {
         container: "body",
         trigger: "click"
     });
-    
+
     for(var i=0; i<botData.configs.admins.length; i++) {
         blacklist.push(botData.configs.admins[i][2]);
     }
@@ -273,7 +274,7 @@ function removeStrike(usrid, i, u) {
 
 function switchRss() {
     document.getElementById("rsstable").style.display = "";
-    
+
     var rsstablebody = "";
     for(var i=0; i<botData.configs.rss[1].length; i++) {
         rsstablebody += "<tr id=\"rssentry-" + i + "\"><td>" + botData.configs.rss[2][i] + "</td><td><a href=\"" + botData.configs.rss[1][i] + "\">" + botData.configs.rss[1][i] + "</a></td><td><button type=\"button\" id=\"rssentry-" + i + "-updates\" class=\"btn btn-primary btn-xs rssupdates\"><span class=\"glyphicon glyphicon-refresh\" aria-hidden=\"true\"></span> Updates</button>&nbsp;<button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:config('rss', this.parentNode.parentNode.id.substring(9), switchRss);\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span> Remove</button></td></tr>";
@@ -283,7 +284,7 @@ function switchRss() {
         document.getElementById("rsstable").style.display = "none";
     }
 
-    $("#rsstable").popover({ 
+    $("#rsstable").popover({
         html: true,
         title: function() {
             i = parseInt(this.id.substring(this.id.indexOf("-")+1, this.id.lastIndexOf("-")));
@@ -406,9 +407,43 @@ function newTag() {
     }
 }
 
+function showTags(i) {
+    var exportedTags = {};
+    for(var i=0; i<botData.configs.tags.length; i++) {
+        exportedTags[botData.configs.tags[i][0][1]] = botData.configs.tags[i][4];
+    }
+    window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(exportedTags, null, 2)));
+}
+
+function newTags(uploads) {
+    if(!uploads) {
+        richModal("Upload a file and enter a name");
+        return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function(event) {
+        try {
+            var tset = JSON.parse(event.target.result);
+            config("tags", tset, function(err) {
+                if(err) {
+                    richModal("Something went wrong");
+                } else {
+                    switchTags();
+                }
+            });
+        } catch(err) {
+            richModal("File must be JSON format");
+        }
+    };
+    reader.readAsText(uploads[0]);
+
+    document.getElementById("tagsupload").value = null;
+}
+
 function switchTranslated() {
     document.getElementById("translatedtable").style.display = "";
-    
+
     var blacklist = [];
     var translatedtablebody = "";
     for(var i=0; i<botData.configs.translated.length; i++) {
@@ -419,7 +454,7 @@ function switchTranslated() {
     if(botData.configs.translated.length==0) {
         document.getElementById("translatedtable").style.display = "none";
     }
-    
+
     for(var i=0; i<botData.configs.blocked.length; i++) {
         blacklist.push(botData.configs.blocked[i][2]);
     }
@@ -527,33 +562,33 @@ function switchCommands() {
     var descs = {
         "rss": "Fetches entries from an <a href='#rss'>RSS feed</a>",
         "stats": "Shows the most active members, richest users, most played games, and most used commands on the server for this week",
-        "lottery": "Hourly point giveaways in the <code>points</code> command", 
-        "linkme": "Searches the Google Play Store for one or more apps", 
-        "appstore": "Searches the Apple App Store for one or more apps", 
-        "say": "Says something in the chat", 
-        "convert": "Converts between units of measurement and currencies", 
-        "twitter": "Fetches the Twitter timeline for a given user", 
-        "youtube": "Gets a YouTube link with the given query, including channels, videos, and playlists", 
-        "image": "Searches Google Images with the given query and returns the first or a random result", 
-        "gif": "Gets a GIF from Giphy with the given tags", 
-        "wolfram": "Displays an entire Wolfram|Alpha knowledge page about a given topic or person", 
-        "wiki": "Shows the first three paragraphs of the Wikipedia article matching the given search query", 
-        "weather": "Gets the current weather and forecast for the given location from MSN Weather", 
-        "stock": "Fetches basic information about a stock symbol from Yahoo! Finance", 
-        "reddit": "Gets the top HOT posts from a given sub on Reddit", 
-        "roll": "Generates a random number or rolls a die", 
-        "profile": "An all-in-one command to view information about users", 
-        "tagreaction": "Responds when tagged without a command", 
-        "poll": "Allows users to create live, in-chat polls", 
-        "trivia": "<a href='#triviasets'>AwesomeTrivia</a>, a fun question-and-answer group quiz game", 
-        "meme": "Generates a dank new meme", 
-        "urban": "Defines the given word from Urban Dictionary", 
-        "choose": "Randomly chooses from a set of options", 
-        "afk": "Display AFK message for users when tagged", 
-        "shorten": "Uses goo.gl to shorten or decode a URL", 
-        "joke": "Tells a random joke!", 
-        "translate": "Uses Microsoft Translate to translate a word/phrase into another language", 
-        "emoji": "Fetches the large version of an emoji", 
+        "lottery": "Hourly point giveaways in the <code>points</code> command",
+        "linkme": "Searches the Google Play Store for one or more apps",
+        "appstore": "Searches the Apple App Store for one or more apps",
+        "say": "Says something in the chat",
+        "convert": "Converts between units of measurement and currencies",
+        "twitter": "Fetches the Twitter timeline for a given user",
+        "youtube": "Gets a YouTube link with the given query, including channels, videos, and playlists",
+        "image": "Searches Google Images with the given query and returns the first or a random result",
+        "gif": "Gets a GIF from Giphy with the given tags",
+        "wolfram": "Displays an entire Wolfram|Alpha knowledge page about a given topic or person",
+        "wiki": "Shows the first three paragraphs of the Wikipedia article matching the given search query",
+        "weather": "Gets the current weather and forecast for the given location from MSN Weather",
+        "stock": "Fetches basic information about a stock symbol from Yahoo! Finance",
+        "reddit": "Gets the top HOT posts from a given sub on Reddit",
+        "roll": "Generates a random number or rolls a die",
+        "profile": "An all-in-one command to view information about users",
+        "tagreaction": "Responds when tagged without a command",
+        "poll": "Allows users to create live, in-chat polls",
+        "trivia": "<a href='#triviasets'>AwesomeTrivia</a>, a fun question-and-answer group quiz game",
+        "meme": "Generates a dank new meme",
+        "urban": "Defines the given word from Urban Dictionary",
+        "choose": "Randomly chooses from a set of options",
+        "afk": "Display AFK message for users when tagged",
+        "shorten": "Uses goo.gl to shorten or decode a URL",
+        "joke": "Tells a random joke!",
+        "translate": "Uses Microsoft Translate to translate a word/phrase into another language",
+        "emoji": "Fetches the large version of an emoji",
         "time": "Gets the time in a city or country",
         "avatar": "Posts a user's profile picture",
         "list": "In-chat to-do list",
@@ -589,11 +624,12 @@ function switchCommands() {
         "cool": "Sets a command cooldown for the channel",
         "strikes": "Shows strikes for a user",
         "mute": "Prevents users from sending messages in a channel",
-        "count": "Keeps tallies of various things"
+        "count": "Keeps tallies of various things",
+        "perms": "Modifies permissions for a role or user in a channel"
     }
-    var newcmds = ["count"];
+    var newcmds = ["perms"];
     var nsfwcmds = ["e621", "rule34", "safebooru"];
-    var blacklist = ["admins", "blocked", "extensions", "voicetext", "motd", "newgreeting", "rmgreeting", "nsfwfilter", "servermod", "spamfilter", "customroles", "customcolors", "customkeys", "cmdtag", "newmembermsg", "onmembermsg", "offmembermsg", "changemembermsg", "rankmembermsg", "twitchmembermsg", "editmembermsg", "deletemembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg", "triviasets", "newrole", "showpub", "defaultcount", "maxcount", "autoprune", "translated", "filter", "usenicks", "usediscriminators", "listsrc", "listing", "tagcommands", "cooldown", "stats", "points", "ranks", "rankslist", "messages", "games", "lottery", "admincommands", "showsvr", "chrestrict", "newmemberpm", "role", "addtagadmin", "addtagcommandadmin", "muted", "removetagadmin", "removetagcommandadmin", "tag", "tags", "deletecommands", "statsexclude"];
+    var blacklist = ["admins", "blocked", "extensions", "voicetext", "motd", "newgreeting", "rmgreeting", "nsfwfilter", "servermod", "spamfilter", "customroles", "customcolors", "customkeys", "cmdtag", "newmembermsg", "onmembermsg", "offmembermsg", "changemembermsg", "rankmembermsg", "twitchmembermsg", "pinmembermsg", "editmembermsg", "deletemembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg", "triviasets", "newrole", "showpub", "defaultcount", "maxcount", "autoprune", "translated", "filter", "usenicks", "usediscriminators", "listsrc", "listing", "tagcommands", "cooldown", "stats", "points", "ranks", "rankslist", "messages", "games", "lottery", "admincommands", "showsvr", "chrestrict", "newmemberpm", "role", "addtagadmin", "addtagcommandadmin", "muted", "removetagadmin", "removetagcommandadmin", "tag", "tags", "deletecommands", "statsexclude", "counts"];
 
     var cmdchannelselect = "";
     for(var i=0; i<botData.channels.length; i++) {
@@ -662,7 +698,7 @@ function switchCommands() {
         document.getElementById("commands-cooldown-select").removeAttribute("disabled");
         $("#commands-cooldown-select").selectpicker("refresh");
     }
-    
+
     document.getElementById("api-google-input").value = botData.configs.customkeys.google_api_key;
     if(!botData.configs.customkeys.google_api_key) {
         document.getElementById("api-google-default").style.display = "none";
@@ -687,7 +723,7 @@ function resetConfigs() {
 
 function switchManage() {
     document.getElementById("manageentry-servermod").checked = botData.configs.servermod;
-    
+
     document.getElementById("manageentry-autoprune").checked = botData.configs.autoprune[0];
     document.getElementById("manageentry-select-autoprune").value = botData.configs.autoprune[1];
     if(!botData.configs.autoprune[0] || !botData.configs.servermod) {
@@ -703,17 +739,17 @@ function switchManage() {
     } else {
         document.getElementById("rankmembermsg").style.display = "";
     }
-    
-    var membermsg = ["newmembermsg", "onmembermsg", "offmembermsg", "changemembermsg", "twitchmembermsg", "rankmembermsg", "editmembermsg", "deletemembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg"];
+
+    var membermsg = ["newmembermsg", "onmembermsg", "offmembermsg", "changemembermsg", "twitchmembermsg", "rankmembermsg", "pinmembermsg", "editmembermsg", "deletemembermsg", "rmmembermsg", "banmembermsg", "unbanmembermsg"];
     for(var i=0; i<membermsg.length; i++) {
         document.getElementById("manageentry-" + membermsg[i]).checked = botData.configs[membermsg[i]][0];
         if(botData.configs[membermsg[i]][0]) {
-            var manageentry_select = ""; 
+            var manageentry_select = "";
             for(var j=0; j<botData.channels.length; j++) {
                 manageentry_select += "<option value=\"" + botData.channels[j][1] + "\">#" + botData.channels[j][0] + "</option>";
             }
             document.getElementById("manageentry-select-" + membermsg[i]).innerHTML = manageentry_select;
-            if(["editmembermsg", "deletemembermsg"].indexOf(membermsg[i])>-1) {
+            if(["pinmembermsg", "editmembermsg", "deletemembermsg"].indexOf(membermsg[i])>-1) {
                 $("#manageentry-select-" + membermsg[i]).val(botData.configs[membermsg[i]][1]);
             } else {
                 document.getElementById("manageentry-select-" + membermsg[i]).value = (["changemembermsg", "twitchmembermsg", "rankmembermsg"].indexOf(membermsg[i])>-1 ? botData.configs[membermsg[i]][1] : botData.configs[membermsg[i]][2]);
@@ -726,8 +762,8 @@ function switchManage() {
                 document.getElementById("manageentry-select-pm-" + membermsg[i]).removeAttribute("disabled");
                 $("#manageentry-select-pm-" + membermsg[i]).selectpicker("refresh");
             }
-            
-            if(["changemembermsg", "rankmembermsg", "twitchmembermsg", "editmembermsg", "deletemembermsg"].indexOf(membermsg[i])==-1) {
+
+            if(["changemembermsg", "rankmembermsg", "twitchmembermsg", "pinmembermsg", "editmembermsg", "deletemembermsg"].indexOf(membermsg[i])==-1) {
                 var current_block = "";
                 for(var j=0; j<botData.configs[membermsg[i]][1].length; j++) {
                     current_block += "<div class=\"checkbox\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" onclick=\"javascript:config('" + membermsg[i] + "', this.value, function() {});\" id=\"manageentry-" + membermsg[i] + "-" + j + "\" value=\"" + botData.configs[membermsg[i]][1][j] + "\" checked><label for=\"manageentry-" + membermsg[i] + "-" + j + "\">" + botData.configs[membermsg[i]][1][j].replace("++", "<b>@user</b>") + "</label></div>";
@@ -748,7 +784,7 @@ function switchManage() {
             }
         }
     }
-    
+
     if(!document.getElementById("manageentry-select-newrole").innerHTML) {
         var newrole = "";
         for(var i=botData.roles.length-1; i>=0; i--) {
@@ -758,7 +794,7 @@ function switchManage() {
     }
     $("#manageentry-select-newrole").val(botData.configs.newrole);
     $("#manageentry-select-newrole").selectpicker("refresh");
-    
+
     document.getElementById("manageentry-spamfilter").checked = botData.configs.spamfilter[0];
     if(botData.configs.spamfilter[0]) {
         if(!document.getElementById("manageentry-spamfilter-block").innerHTML) {
@@ -791,7 +827,7 @@ function switchManage() {
     document.getElementById("manageentry-spamfilter-role").innerHTML = spamfilter_role;
     document.getElementById("manageentry-spamfilter-role").value = "role-" + botData.configs.spamfilter[4];
     document.getElementById("manageentry-spamfilter-delete").checked = botData.configs.spamfilter[5];
-    
+
     document.getElementById("manageentry-nsfwfilter").checked = botData.configs.nsfwfilter[0];
     if(botData.configs.nsfwfilter[0]) {
         if(!document.getElementById("manageentry-nsfwfilter-block").innerHTML) {
@@ -813,7 +849,7 @@ function switchManage() {
     document.getElementById("manageentry-nsfwfilter-role").innerHTML = nsfwfilter_role;
     document.getElementById("manageentry-nsfwfilter-role").value = "role-" + botData.configs.nsfwfilter[3];
     document.getElementById("manageentry-nsfwfilter-delete").checked = botData.configs.nsfwfilter[4];
-    
+
     disableBlock("manageentry-servermod-block", !botData.configs.servermod);
     if(!botData.configs.servermod) {
         document.getElementById("manageentry-spamfilter-selector").setAttribute("disabled", "disable");
@@ -839,7 +875,8 @@ function switchManage() {
     $("#manageentry-spamfilter-role").selectpicker("refresh");
     $("#manageentry-nsfwfilter-action").selectpicker("refresh");
     $("#manageentry-nsfwfilter-role").selectpicker("refresh");
-    
+
+    document.getElementById("manageentry-newmemberpm").checked = botData.configs.newmemberpm;
     document.getElementById("manageentry-newgreeting").style.display = "";
     if(botData.configs.newgreeting && botData.configs.newmemberpm && botData.configs.servermod) {
         document.getElementById("newgreetingremove").style.display = "";
@@ -861,7 +898,7 @@ function switchManage() {
         document.getElementById("rmgreetingremove").style.display = "none";
         document.getElementById("rmgreetinginput").value = "";
     }
-    
+
     var filterstr = botData.configs.filter[0].join();
     document.getElementById("manageentry-filter").style.display = "";
     document.getElementById("manageentry-filter-action").value = botData.configs.filter[1];
@@ -892,14 +929,14 @@ function switchManage() {
         document.getElementById("motdinput").value = "";
     }
     document.getElementById("manageentry-motd-time").value = botData.configs.motd[3];
-    var manageentry_motd_channel = ""; 
+    var manageentry_motd_channel = "";
     for(var i=0; i<botData.channels.length; i++) {
         manageentry_motd_channel += "<option value=\"" + botData.channels[i][1] + "\">#" + botData.channels[i][0] + "</option>";
     }
     document.getElementById("manageentry-motd-channel").innerHTML = manageentry_motd_channel;
     document.getElementById("manageentry-motd-channel").value = botData.configs.motd[2];
     $("#manageentry-motd-channel").selectpicker("refresh");
-    
+
     document.getElementById("manageentry-usenicks").checked = botData.configs.usenicks;
     document.getElementById("manageentry-usediscriminators").checked = botData.configs.usediscriminators;
 
@@ -926,7 +963,7 @@ function switchManage() {
         $("#manageentry-customroles-body").collapse("hide");
     }
     disableBlock("manageentry-role-block", !botData.configs.role)
-    
+
     if(botData.polls.length>0) {
         document.getElementById("manageentry-polls").style.display = "";
         var manageentry_polls_block = "";
@@ -937,7 +974,7 @@ function switchManage() {
     } else {
         document.getElementById("manageentry-polls").style.display = "none";
     }
-    
+
     if(botData.trivia.length>0) {
         document.getElementById("manageentry-trivia").style.display = "";
         var manageentry_trivia_block = "";
@@ -959,9 +996,9 @@ function switchManage() {
     } else {
         document.getElementById("manageentry-giveaways").style.display = "none";
     }
-    
+
     if(!document.getElementById("caselector").innerHTML) {
-        var caselector = ""; 
+        var caselector = "";
         for(var i=0; i<botData.channels.length; i++) {
             caselector += "<option id=\"caentry-" + botData.channels[i][1] + "\" value=\"" + botData.channels[i][1] + "\">#" + botData.channels[i][0] + "</option>";
         }
@@ -1049,7 +1086,7 @@ function configCA(type) {
         $("#cainput-block").addClass("has-error");
         return;
     }
-    
+
     $("#cainput-block").addClass("remove-error");
     if(["clean", "purge"].indexOf(type)>-1) {
         config(type, [document.getElementById("caselector").value, parseInt(document.getElementById("cainput").value)], function(err) {
@@ -1078,7 +1115,7 @@ function exportConfigs() {
 
 function switchTriviaSets() {
     document.getElementById("triviasetstable").style.display = "";
-    
+
     var triviasetstablebody = "";
     for(var i=0; i<botData.configs.triviasets.length; i++) {
         triviasetstablebody += "<tr id=\"triviasetsentry-" + encodeURI(botData.configs.triviasets[i][0]) + "\"><td>" + botData.configs.triviasets[i][0] + "</td><td>" + botData.configs.triviasets[i][1] + "</td><td><button type=\"button\" class=\"btn btn-default btn-xs\" onclick=\"javascript:showTriviaSet(" + i + ");\"><span class=\"glyphicon glyphicon-eye-open\" aria-hidden=\"true\"></span> View</button>&nbsp;<button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:config('triviasets', this.parentNode.parentNode.id.substring(16), switchTriviaSets);\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span> Remove</button></td></tr>";
@@ -1098,14 +1135,14 @@ function newTriviaSet(uploads) {
         richModal("Upload a file and enter a name");
         return;
     }
-    
+
     var reader = new FileReader();
     reader.onload = function(event) {
         try {
             var tset = JSON.parse(event.target.result);
             config("triviasets", tset, function(err) {
                 if(err) {
-                    richModal("Error adding trivia set, see logs for details");
+                    richModal("Something went wrong");
                 } else {
                     switchTriviaSets();
                 }
@@ -1115,7 +1152,7 @@ function newTriviaSet(uploads) {
         }
     };
     reader.readAsText(uploads[0]);
-    
+
     document.getElementById("triviasetsupload").value = null;
 }
 
@@ -1128,10 +1165,10 @@ function leaveServer() {
 
 function switchExtensions() {
     document.getElementById("extensionstable").style.display = "";
-    
+
     var extensionstablebody = "";
     for(var ext in botData.configs.extensions) {
-        extensionstablebody += "<tr id=\"extensionsentry-" + encodeURI(botData.configs.extensions[ext].name) + "\"><td>" + botData.configs.extensions[ext].name + "</td><td>" + botData.configs.extensions[ext].type.charAt(0).toUpperCase() + botData.configs.extensions[ext].type.slice(1) + "</td><td>" + botData.configs.extensions[ext].channels.length + "</td><td><button type=\"button\" class=\"btn btn-default btn-xs\" onclick=\"javascript:launchBuilder('" + ext + "');\"><span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span> Edit</button>&nbsp;<button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:config('extensions', this.parentNode.parentNode.id.substring(16), switchExtensions);\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span> Remove</button></td></tr>";
+        extensionstablebody += "<tr id=\"extensionsentry-" + encodeURI(botData.configs.extensions[ext].name) + "\"><td>" + botData.configs.extensions[ext].name + "</td><td>" + botData.configs.extensions[ext].type.charAt(0).toUpperCase() + botData.configs.extensions[ext].type.slice(1) + "</td><td>" + botData.configs.extensions[ext].channels.length + "</td><td><button type=\"button\" class=\"btn btn-default btn-xs\" onclick=\"javascript:launchBuilder(" + Object.keys(botData.configs.extensions).indexOf(ext) + ");\"><span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span> Edit</button>&nbsp;<button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"javascript:config('extensions', this.parentNode.parentNode.id.substring(16), switchExtensions);\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span> Remove</button></td></tr>";
     }
     document.getElementById("extensionstablebody").innerHTML = extensionstablebody;
     if(Object.keys(botData.configs.extensions).length==0) {
@@ -1149,8 +1186,8 @@ function launchBuilder(ext) {
     document.getElementById("extensionbuilder-select-channels").innerHTML = extensionbuilder_select_channels;
     $("#extensionbuilder-select-channels").selectpicker("refresh");
 
-    if(ext) {
-        ext = botData.configs.extensions[ext];
+    if(ext!=null) {
+        ext = typeof(ext)=="number" ? botData.configs.extensions[Object.keys(botData.configs.extensions)[ext]] : ext;
         document.getElementById("extensionbuilder-input-name").value = ext.name;
         document.getElementById("extensionbuilder-input-name").setAttribute("disabled", "disable");
         $("#extensionbuilder-select-channels").val(ext.channels);
@@ -1381,8 +1418,10 @@ function runExtension(message) {
                 $("#extensionbuilder-button-output").tooltip("show");
                 if(response.isValid) {
                     document.getElementById("extensionbuilder-button-save").style.display = "";
+                    document.getElementById("extensionbuilder-button-gallery").style.display = "";
                 } else {
                     document.getElementById("extensionbuilder-button-save").style.display = "none";
+                    document.getElementById("extensionbuilder-button-gallery").style.display = "none";
                 }
                 NProgress.done();
             });
@@ -1445,6 +1484,35 @@ function postExtension(data, type, chid, callback) {
     };
 }
 
+function publishExtension() {
+    var name = $('.popover-content').find("#extensionbuilder-gallery-name").val();
+    var description = $('.popover-content').find("#extensionbuilder-gallery-description").val();
+    if(!name) {
+        $('.popover-content').find("#extensionbuilder-gallery-name-block").addClass("has-error");
+    } else {
+        $('.popover-content').find("#extensionbuilder-gallery-name-block").removeClass("has-error");
+        var packagedExtension = packageBuilderContent();
+        if(packagedExtension) {
+            NProgress.start();
+            document.getElementById("extensionbuilder-button-gallery").setAttribute("disabled", "disable");
+
+            delete packagedExtension.channels;
+            packagedExtension.name = name;
+            packagedExtension.description = description;
+            postJSON({extension: packagedExtension}, "gallery?action=submit&auth=" + authtoken + "&svrid=" + JSON.parse(localStorage.getItem("auth")).svrid, function(status) {
+                document.getElementById("extensionbuilder-button-gallery").removeAttribute("disabled");
+                document.getElementById("extensionbuilder-output-body").innerHTML = "INFO: Validating extension properties...<br>" + (status==200 ? "INFO: Submitted extension to gallery, expect a response soon" : "ERROR: Failed to submit extension to gallery");
+                $("#extensionbuilder-button-output").removeClass("btn-default");
+                $("#extensionbuilder-button-output").addClass(status==200 ? "btn-success" : "btn-danger");
+                $("#extensionbuilder-button-output").tooltip("show");
+                $("#extensionbuilder-button-gallery").popover("hide");
+                document.getElementById("extensionbuilder-button-gallery").style.display = "none";
+                NProgress.done();
+            });
+        }
+    }
+}
+
 function closeBuilder() {
     $("#extensionbuilder-button-output").popover("hide");
     $("#extensionbuilder").modal("hide");
@@ -1460,5 +1528,7 @@ function closeBuilder() {
     $("#extensionbuilder-button-output").removeClass("btn-danger");
     $("#extensionbuilder-button-output").addClass("btn-default");
     $("#extensionbuilder-button-output").tooltip("hide");
-    document.getElementById("extensionbuilder-output-content").innerHTML = "<pre id=\"extensionbuilder-output-body\"><i>Nothing here at the moment. Run the extension to produce output.</i></pre>";
+    document.getElementById("extensionbuilder-output-content").innerHTML = "<pre id=\"extensionbuilder-output-body\" style=\"max-height:500px;\"><i>Nothing here at the moment. Run the extension to produce output.</i></pre>";
+    document.getElementById("extensionbuilder-button-save").style.display = "none";
+    document.getElementById("extensionbuilder-button-gallery").style.display = "none";
 }

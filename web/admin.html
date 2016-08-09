@@ -538,7 +538,11 @@
                                         <option value="command">Command</option>
                                     </select>
                                     <input type="submit" class="btn btn-default" value="Add">
-                                </form>
+                                </form><br>
+                                <button type="button" class="btn btn-default" onclick="showTags();"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download All</button>&nbsp;
+                                <label class="btn btn-default btn-file">
+                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Import Set<input id="tagsupload" type="file" style="display: none;"accept="application/json" onchange="javascript:newTags(this.files)" />
+                                </label>
                             </span>
                         </div>
                     </div>
@@ -723,6 +727,14 @@
                                     </label>
                                     &nbsp;
                                     <select id="manageentry-select-twitchmembermsg" onchange="javascript:config(this.id.substring(19), this.value, function() {});" class="selectpicker show-tick" data-width="fit"></select>
+                                </div>
+
+                                <div class="checkbox">
+                                    <input id="manageentry-pinmembermsg" type="checkbox" onclick="javascript:config(this.id.substring(12), this.checked, function() {});">
+                                    <label for="manageentry-pinmembermsg">
+                                        Message pinned messages
+                                    </label>
+                                    <select id="manageentry-select-pinmembermsg" class="selectpicker show-tick" data-width="fit" title="Select Channel(s)" data-selected-text-format="count > 3" onchange="javascript:config(this.id.substring(19), $('#' + this.id).val() || [], function() {});" data-actions-box="true" multiple></select>
                                 </div>
 
                                 <div class="checkbox">
@@ -1035,16 +1047,16 @@
                                     <tbody id="extensionstablebody"></tbody>
                                 </table>
                             </div>
-                            <a role="button" href="javascript:launchBuilder();" target="_blank" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Easily build and test AwesomeBot extensions"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Extension Builder</a>
+                            <a role="button" href="javascript:launchBuilder();" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Easily build and test AwesomeBot extensions"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Extension Builder</a>
                             &nbsp;
-                            <a role="button" href="http://awesome.awesomebot.xyz/extensions" target="_blank" class="btn btn-default"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Discover Extensions</a>
+                            <a role="button" href="http://extensions.awesomebot.xyz/" class="btn btn-default"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Discover Extensions</a>
                         </div>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="col-lg-12">
-                        <br>Created by @BitQuote, <a href="http://awesomebot.xyz">http://awesomebot.xyz</a>. This project is in no way affiliated with Alphabet, Inc., who does not own or endorse this product. Themes provided by <a href="https://bootswatch.com/">Bootswatch</a>.
+                        <br>Created by @BitQuote, <a href="http://awesomebot.xyz">http://awesomebot.xyz</a>. Themes provided by <a href="https://bootswatch.com/">Bootswatch</a>.
                     </div>
                 </div>
             </div>
@@ -1153,16 +1165,28 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div id="extensionbuilder-footer" class="modal-footer">
                         <button id="extensionbuilder-button-output" type="button" class="btn btn-default" style="float:left;"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Output</button>
                         <div id="extensionbuilder-output-title" class="hide">
                             <h5 class="modal-title">Extension Testing Output</h5>
                         </div>
                         <div id="extensionbuilder-output-content" class="hide">
-                            <pre id="extensionbuilder-output-body"><i>Nothing here at the moment. Run the extension to produce output.</i></pre>
+                            <pre id="extensionbuilder-output-body" style="max-height:500px;"><i>Nothing here at the moment. Run the extension to produce output.</i></pre>
                         </div>
 
                         <button id="extensionbuilder-button-save" type="button" class="btn btn-default" style="display:none;" onclick="addExtension();"><span class="glyphicon glyphicon-saved" aria-hidden="true"></span> Save</button>
+
+                        <button id="extensionbuilder-button-gallery" type="button" class="btn btn-default" style="display:none;"><span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span> Publish</button>&nbsp;&nbsp;
+                        <div id="extensionbuilder-gallery-title" class="hide">
+                            <h5 class="modal-title">Publish Extension to Gallery</h5>
+                        </div>
+                        <div id="extensionbuilder-gallery-content" class="hide">
+                            <div id="extensionbuilder-gallery-name-block">
+                                <input type="text" class="form-control" id="extensionbuilder-gallery-name" placeholder="Public Name" maxlength="200" style="width:300px;">
+                            </div><br>
+                            <textarea id="extensionbuilder-gallery-description" class="form-control custom-control" rows="3" columns="150" style="resize:none" placeholder="Extension description, in markdown" maxlength="2000"></textarea><br>
+                            <button id="extensionbuilder-gallery-submit" type="button" class="btn btn-default" onclick="publishExtension();">Submit</button>
+                        </div>
 
                         <div id="extensionbuilder-run-content" class="form-inline" style="display:none;">
                             <select id="extensionbuilder-run-channel" class="selectpicker show-tick" data-width="fit"></select>
@@ -1291,6 +1315,18 @@
         },
         placement: "top",
         container: "body",
+        trigger: "click"
+    });
+    $("#extensionbuilder-button-gallery").popover({
+        html: true,
+        title: function() {
+            return $("#extensionbuilder-gallery-titlel-title").html();
+        },
+        content: function() {
+            return $("#extensionbuilder-gallery-content").html();
+        },
+        placement: "top",
+        container: "#extensionbuilder-footer",
         trigger: "click"
     });
     $("#extensionbuilder-run-content").submit(function() {

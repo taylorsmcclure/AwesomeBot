@@ -62,7 +62,7 @@ function doAuth() {
 
 function checkAuth(extend) {
     if(extend) {
-        postJSON({extend: true}, function(response) {
+        postJSON({extend: true}, "config?auth=" + authtoken + "&type=" + authtype + (authtype=="admin" ? ("&svrid=" + JSON.parse(localStorage.getItem("auth")).svrid + "&usrid=" + JSON.parse(localStorage.getItem("auth")).usrid) : ""), function(response) {
             $("#extender-modal").modal("hide");
             if(response!=200) {
                 leaveConsole("Session timeout");
@@ -108,9 +108,9 @@ function filterMembers(toRemove, callback) {
     callback({data: filtered});
 }
 
-function postJSON(data, callback) {
+function postJSON(data, url, callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open("post", "config?auth=" + authtoken + "&type=" + authtype + (authtype=="admin" ? ("&svrid=" + JSON.parse(localStorage.getItem("auth")).svrid + "&usrid=" + JSON.parse(localStorage.getItem("auth")).usrid) : ""), true);
+    xhr.open("post", url, true);
     xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
     xhr.send(JSON.stringify(data));
     xhr.onloadend = function() {
@@ -130,7 +130,7 @@ function config(key, value, callback) {
     }
     var data = {};
     data[key] = value;
-    postJSON(data, function(response) {
+    postJSON(data, "config?auth=" + authtoken + "&type=" + authtype + (authtype=="admin" ? ("&svrid=" + JSON.parse(localStorage.getItem("auth")).svrid + "&usrid=" + JSON.parse(localStorage.getItem("auth")).usrid) : ""), function(response) {
         if(response==200) {
             getJSON("data/?auth=" + authtoken + "&type=" + authtype, function(mData) {
                 if(Object.keys(mData).length>0) {
@@ -160,7 +160,7 @@ function config(key, value, callback) {
 }
 
 function doLogout() {
-    postJSON({logout: JSON.parse(localStorage.getItem("auth")).usrid}, function(response) {
+    postJSON({logout: JSON.parse(localStorage.getItem("auth")).usrid}, "config?auth=" + authtoken + "&type=" + authtype + (authtype=="admin" ? ("&svrid=" + JSON.parse(localStorage.getItem("auth")).svrid + "&usrid=" + JSON.parse(localStorage.getItem("auth")).usrid) : ""), function(response) {
         if(response==200) {
             localStorage.removeItem("auth");
             window.close();

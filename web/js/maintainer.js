@@ -18,6 +18,7 @@ function doMaintainerSetup() {
     $("#bigmessage-body").collapse("show");
     
     NProgress.done();
+    goToSection(window.location.hash.slice(1).toLowerCase());
 }
 
 function configStatus(statstr) {

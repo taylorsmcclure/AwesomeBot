@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="AwesomeBot: the best Discord bot!">
+    <meta name="author" content="BitQuote">
+    <title>AwesomeBot Extension Gallery</title>
+    <link rel="shortcut icon" type="image/png" href="http://i.imgur.com/cCDyBv8.png"/>
+
+    <link id="theme" href="./css/bootstrap-default.min.css" rel="stylesheet">
+    <link href="./css/bootstrap-select.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/nprogress.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+    :root #content > #right > .dose > .dosesingle,
+    :root #content > #center > .dose > .dosesingle {
+        display: none !important;
+    }
+    body {
+        position: relative;
+        padding-top: 70px;
+    }
+    .col-centered{
+        float: none;
+        margin: 0 auto;
+        text-align: left;
+    }
+    .navbar {
+        border-width: 0px;
+        background-color:rgba(255, 255, 255, 0);
+        transition: all 0.5s ease;
+        color: white !important;
+        background-color: rgba(34, 34, 34, 1);
+    }
+    .navbar-nav>li>.dropdown-menu {
+        background-color: rgba(34, 34, 34, 1);
+    }
+    .navbar-default, .navbar-nav, .navbar-brand, .nav, .navbar-default .navbar-nav>li>a, .navbar-default .navbar-text, .navbar-default .navbar-nav .open .dropdown-menu>li>a {
+        color: white !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .navbar-default .navbar-collapse {
+        border-color: rgba(255, 255, 255, .02);
+    }
+    .navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:focus, .navbar-default .navbar-nav>.open>a:hover, .dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover, .navbar-default .navbar-toggle:hover,.navbar-default .navbar-toggle:focus {
+        background-color: #009688;
+    }
+    .navbar-default .navbar-toggle{
+        background-color:#009688;
+        border-color:#009688;
+    }
+    .navbar-default .navbar-toggle .icon-bar{
+        background-color:#fff;
+    }
+    </style>
+    <script type="text/javascript">
+    window.onscroll = function(e) {
+        document.getElementById("mainnav").style.boxShadow = window.scrollY>5 ? "0 6px 12px rgba(0,0,0,.175)" : "";
+    };
+    </script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/nprogress.js"></script>
+    <script src="./js/micromarkdown.min.js"></script>
+    <script src="./js/index.js"></script>
+    <script src="./js/extensions.js"></script>
+</head>
+<body onload="switchColors();getData();" data-spy="scroll" data-target="#navbar">
+    <!-- Navbar -->
+    <nav id="mainnav" class="navbar navbar-default navbar-fixed-top" style="font-family:Montserrat,'Helvetica Neue',Helvetica,Arial">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" style="float:left;margin-left:10px;">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#" style="padding-left:0px;">
+                    <img alt="Icon" id="profilepic" src="http://i.imgur.com/cCDyBv8.png" style="float:left;" width="24" height="24" class="img-responsive img-circle">
+                    &nbsp;
+                    <span style="text-transform:none !important;letter-spacing:normal !important;">AwesomeBot Extensions</span>
+                </a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a id="addserverlink" target="_blank" href="http://add.awesomebot.xyz/"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add To Server</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-tint" aria-hidden="true"></span> Theme <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a id="theme-default" href="javascript:switchColors('default');">Default</a></li>
+                            <li><a id="theme-cyborg" href="javascript:switchColors('cyborg');">Cyborg</a></li>
+                            <li><a id="theme-paper" href="javascript:switchColors('paper');">Paper</a></li>
+                            <li><a id="theme-slate" href="javascript:switchColors('slate');">Slate</a></li>
+                            <li><a id="theme-superhero" href="javascript:switchColors('superhero');">Superhero</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container-fluid">
+        <div class="jumbotron" id="header" ondblclick="loadBackground();" style="color:white !important;background-size: cover;">
+            <h1>Extensions for everyone.</h1>
+            <p>
+                Whether you know how to code or not, the AwesomeBot Extension Gallery is for you. Explore community-built extensions that make the best Discord bot even better, suitable to any server.
+            </p>
+            <p>
+                <a class="btn btn-primary btn-lg" href="https://github.com/BitQuote/AwesomeBot/wiki/Extensions" role="button">Extensions Wiki Page</a>
+            </p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-10 col-md-offset-1">
+                <a href="javascript:getData();" id="ext-type-button" role="button" class="btn btn-default col-xs-4"></a>
+                <div class="col-xs-5"></div>
+                <div class="input-group col-xs-3">
+                    <input type="text" id="ext-search" class="form-control" onkeydown="if(event.keyCode==13){searchData(this.value)}" style="min-width:200px;" placeholder="Search" style="float:right;">
+                    <span class="input-group-addon btn btn-primary" onclick="searchData(document.getElementById('ext-search').value);"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></span>
+                </div>
+                <br>
+
+                <div class="panel-group" id="ext-container" role="tablist" aria-multiselectable="true"></div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-12">
+                <br>Created by @BitQuote, <a href="http://awesomebot.xyz">http://awesomebot.xyz</a>. Themes provided by <a href="https://bootswatch.com/">Bootswatch</a>.<br><br>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="error-modal" tabindex="-1" role="dialog" aria-labelledby="error">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="error-modal-header" class="modal-title">Error</h4>
+                </div>
+                <div id="error-modal-body" class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
