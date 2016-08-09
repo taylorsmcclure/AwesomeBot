@@ -8170,7 +8170,8 @@ function addExtension(extension, svr, consoleid, callback) {
         validateExtension(extension, svr, function(valid) {
             if(valid) {
                 logMsg(Date.now(), "INFO", svr.id, null, "Extension " + extension.name + " " + (configs.servers[svr.id].extensions[extension.name] ? "updated" : "added to server") + " (@" + consoleusr.username + ")");
-                extension.store = {};
+                var conf_ext = configs.servers[svr.id].extensions[extension.name];
+                extension.store = conf_ext && conf_ext.hasOwnProperty("store") ? conf_ext.store : {};
                 if(extension.channels.length==0) {
                     extension.channels = [svr.defaultChannel.id];
                 }
