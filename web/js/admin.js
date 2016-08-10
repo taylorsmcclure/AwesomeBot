@@ -1199,7 +1199,7 @@ function launchBuilder(ext) {
             case "command":
                 document.getElementById("extensionbuilder-input-commandkey").value = ext.key;
                 document.getElementById("extensionbuilder-input-usage").value = ext.usage || "";
-                document.getElementById("extensionbuilder-input-extended").value = ext.usage || "";
+                document.getElementById("extensionbuilder-input-extended").value = ext.extended || "";
                 break;
             case "keyword":
                 document.getElementById("extensionbuilder-input-keywordkey").value = ext.key.join();
