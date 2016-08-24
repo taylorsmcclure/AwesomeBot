@@ -1259,7 +1259,7 @@ var commands = {
                         if(select) {
                             var info = "Select one of the following:\n";
                             for(var i=0; i<results.length; i++) {
-                                info += "\t" + i + ") " + results[i].substring(4, results[i].substring(4).indexOf("**")) + "\n";
+                                info += "\t" + i + ") " + results[i].substring(4, 4 + results[i].substring(4).indexOf("**")) + "\n";
                             }
                             bot.sendMessage(msg.channel, info);
                         } else {
