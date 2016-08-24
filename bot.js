@@ -3876,7 +3876,7 @@ var pmcommands = {
         usage: "<key>|<value or \".\">",
         process: function(bot, msg, suffix) {
             if(suffix) {
-                if(msg.content.indexOf("|")==-1) {
+                if(msg.content.indexOf("|")==-1 || msg.content.indexOf("|")==msg.content.length-1) {
                     logMsg(Date.now(), "WARN", null, msg.author.id, "User did not specify parameters for profile data");
                     bot.sendMessage(msg.channel, "Please include the name of the value as well as the value itself, separated by `|`.");
                     return;
@@ -3890,7 +3890,7 @@ var pmcommands = {
                 }
                 var info = "";
                 if(value=="." && profileData[msg.author.id]) {
-                    if(!profileData[msg.author.id][key]) {
+                    if(!profileData[msg.author.id].hasOwnProperty(key)) {
                         logMsg(Date.now(), "WARN", null, msg.author.id, "User tried to delete a nonexistent profile value");
                         bot.sendMessage(msg.channel, "I didn't have anything for " + key + " in the first place.");
                         return;
