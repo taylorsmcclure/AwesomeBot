@@ -5094,15 +5094,23 @@ bot.on("serverNewMember", function(svr, usr) {
         }
     }
     if(configs.servers[svr.id].servermod && configs.servers[svr.id].newrole.length>0) {
+        var newroles = [];
         for(var i=0; i<configs.servers[svr.id].newrole.length; i++) {
             var role = svr.roles.get("id", configs.servers[svr.id].newrole[i]);
-            if(role) {
-                bot.addMemberToRole(usr, role, function(err) {
-                    if(err) {
-                        logMsg(Date.now(), "ERROR", svr.id, null, "Failed to add new member " + usr.username + " to default role " + role.name);
-                    }
-                });
+            if (role) {
+                newroles.push(role);
             }
+        }
+
+        if(newroles.length) {
+            var newroles_names = newroles.map(function (role) {
+                return role.name;
+            }).join(", ");
+            bot.addMemberToRole(usr, newroles, function(err) {
+                if(err) {
+                    logMsg(Date.now(), "ERROR", svr.id, null, "Failed to add new member " + usr.username + " to default role(s): " + newroles_names);
+                }
+            });
         }
     }
 
