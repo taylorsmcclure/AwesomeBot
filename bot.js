@@ -6236,7 +6236,7 @@ function getExtensionChannel(ch, testing) {
         },
         sendFile: function(url, name, message) {
             if(testing) {
-                extensiontestlogs[svr.id].push("INFO: Sent file " + url + " in #" + ch.name);
+                extensiontestlogs[ch.server.id].push("INFO: Sent file " + url + " in #" + ch.name);
             } else {
                 try {
                     bot.sendFile(ch, url, name, message);
