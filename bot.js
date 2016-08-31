@@ -4301,7 +4301,6 @@ var pmcommands = {
 // Initializes bot and outputs to console
 var bot = new Discord.Client({forceFetchUsers: true});
 bot.on("ready", function() {
-    postData();
     if(!openedweb) {
         //checkVersion();
 
@@ -4964,26 +4963,6 @@ function newServer(svr) {
     defaultConfig(svr);
     adminMsg(false, svr, {username: bot.user.username}, " (me) has been added to " + svr.name + ". You're one of my admins. You can manage me in this server by PMing me `config " + svr.name + "`. Check out http://awesomebot.xyz/ to learn more.");
     bot.sendMessage(svr.defaultChannel, "Hi, I'm " + (svr.detailsOfUser(bot.user).nick || bot.user.username) + "! " + (bot.servers.length % 100==0 ? ("*Wow, you're server #" + bot.servers.length + " for me!* ") : "") + "Use `" + getPrefix(svr) + "help` to learn more or check out http://awesomebot.xyz/");
-    postData();
-}
-
-function postData() {
-    // Authorize AwesomeBot
-    unirest.post("http://awesome.awesomebot.xyz/botauth?token=" + AuthDetails.awesome_token)
-    .end(function(response) {
-        if(response.status==401 || !AuthDetails.awesome_token) {
-            logMsg(Date.now(), "ERROR", "General", null, "Unauthorized AwesomeBot running, exiting. Please see https://github.com/BitQuote/AwesomeBot/wiki/Setup#getting-started");
-            process.exit();
-        } else if(response.status==200) {
-            postCarbon();
-            unirest.post("http://awesome.awesomebot.xyz/botdata?token=" + AuthDetails.awesome_token + "&svrcount=" + bot.servers.length + "&usrcount=" + bot.users.length)
-            .end(function(response) {
-                if(response.status==200) {
-                    logMsg(Date.now(), "INFO", "General", null, "Successfully POSTed to Awesome");
-                }
-            });
-        }
-    });
 }
 
 function postCarbon() {
@@ -5025,7 +5004,6 @@ bot.on("serverDeleted", function(svr) {
         deleteServerData(svr.id);
     });
     logMsg(Date.now(), "INFO", "General", null, "Server " + svr.name + " removed, left server");
-    postData();
 });
 
 // Checks for old servers
