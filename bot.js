@@ -113,8 +113,8 @@ var lottery = {};
 var app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-var server_port = 8080;
-var server_ip_address = "127.0.0.1";
+var server_port = parseInt(AuthDetails.server_port) || 8080;
+var server_ip_address = AuthDetails.server_ip_address || "127.0.0.1";
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
