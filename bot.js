@@ -3756,9 +3756,6 @@ var pmcommands = {
                                 delete onlineconsole[msg.author.id];
                             }, 900000)
                         };
-                    } else if(onlineconsole[msg.author.id]) {
-                        bot.sendMessage(msg.channel, "You already have an online console session open. Logout of that first or wait 15 minutes...");
-                        return;
                     } else if(adminconsole[msg.author.id]) {
                         bot.sendMessage(msg.channel, "One step at a time...Finish configuring this server, then come back later!");
                         return;
@@ -3781,7 +3778,8 @@ var pmcommands = {
                 } else if(configs.servers[svr.id].admins.indexOf(msg.author.id)>-1) {
                     // Check to make sure no one is already using the console
                     if(onlineconsole[msg.author.id] || adminconsole[msg.author.id]) {
-                        bot.sendMessage(msg.channel, "You already have an online console session open. Logout of that first or wait 15 minutes...");
+                        var url = (configs.hosting.charAt(configs.hosting.length-1)=='/' ? configs.hosting.substring(0, configs.hosting.length-1) : configs.hosting) + "?auth=" + onlineconsole[msg.author.id].token;
+                        bot.sendMessage(msg.channel, url);
                         return;
                     }
                     var adminsToLogout = activeAdmins(svr.id);
