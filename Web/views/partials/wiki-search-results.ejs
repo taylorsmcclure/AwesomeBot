@@ -1,0 +1,28 @@
+<% if(wikiResults.length>0) { %>
+	<% for(var i=0; i<wikiResults.length; i++) { %>
+		<div class="box">
+			<a class="title is-3" href="/wiki?page=<%= wikiResults[i].pageTitle %>"><%= wikiResults[i].pageTitle %></a>
+			<div class="content">
+				<%- wikiResults[i].matchText %>
+			</div>
+		</div>
+	<% } %>
+<% } else { %>
+	<article class="message is-danger">
+		<div class="message-header">
+			<span class="icon">
+				<i class="fa fa-meh-o"></i>
+			</span>
+			<span>No Results</span>
+		</div>
+		<div class="message-body">
+			There aren't any wiki pages that matched your search. 
+			<a class="button is-small" href="javascript:loadPage('Home');">
+				<span class="icon is-small">
+					<i class="fa fa-chevron-left"></i>
+				</span>
+				<span>Reset</span>
+			</a>
+		</div>
+	</article>
+<% } %>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>AwesomeBot Wiki</title>
+	<% include ../partials/head %>
+	
+	<script>
+	var currentPage;
+	function loadPage(title) {
+		var section = window.location.hash.slice(0);
+		if(currentPage) {
+			$("#menu-" + currentPage.toLowerCase()).removeClass("is-active");
+			$("#submenu").html("");
+		}
+		window.location.hash = "";
+		if(history.pushState) {
+			var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?page=" + title;
+			window.history.pushState({
+				path: newurl
+			}, "", newurl);
+		}
+		document.title = title + " - AwesomeBot Wiki";
+		loadFrameContent("/wikipage?title=" + title, function(err) {
+			if(err) {
+				$("#error-message").removeClass("is-hidden");
+			} else {
+				currentPage = title;
+				$("#page-title").html(currentPage);
+
+				$("#error-message").addClass("is-hidden");
+				$("#menu-" + currentPage.toLowerCase()).addClass("is-active");
+
+				var subMenu = "<ul>";
+				var pageSections = document.getElementById("frame").querySelectorAll("h1, h2, h3");
+				for(var i=0; i<pageSections.length; i++) {
+					if(i>0 && pageSections[i].tagName!="H3" && pageSections[i-1].tagName=="H3") {
+						subMenu += "</ul>";
+					}
+					subMenu += "<li>";
+					if(pageSections[i].tagName=="H3" && ((i>0 && pageSections[i-1].tagName!="H3") || i==0)) {
+						subMenu += "<ul>"
+					}
+					subMenu += "<a href='#" + pageSections[i].id + "'>" + pageSections[i].innerHTML + "</a></li>";
+				}
+				subMenu += "</ul>";
+				if(pageSections[i-1].tagName=="H3") {
+					subMenu += "</ul>";
+				}
+				$("#submenu").html(subMenu);
+
+				$("table").addClass("table");
+				window.location.hash = section;
+			}
+		});
+	}
+
+	function searchWiki(query) {
+		if(query) {
+			$("#menu-" + currentPage.toLowerCase()).removeClass("is-active");
+			$("#submenu").html("");
+			loadFrameContent("/wikipage?q=" + query, function() {
+				$("#page-title").html("Search: <strong>" + query + "</strong>");
+			});
+		} else {
+			loadPage("Home");
+		}
+	}
+	</script>
+</head>
+<body onload="loadBackground();loadPage(window.location.search.slice(6) || 'Home');">
+	<section id="header" class="hero is-primary is-small is-bold" style="background: url('/img/header-bg.jpg'); background-size: cover;" ondblclick="loadBackground();">
+		<div class="hero-head">
+			<% include ../partials/header %>
+		</div>
+		<div class="hero-body">
+			<div class="container has-text-centered">
+				<h1 class="title is-1">
+					<span class="icon is-large">
+                        <i class="fa fa-book"></i>
+                    </span>
+					AwesomeBot <strong>Wiki</strong>
+				</h1>
+				<h3 class="subtitle is-3">
+					Documentation for everything.
+				</h3>
+			</div>
+		</div>
+	</section>
+	<section class="section is-white">
+		<div class="container">
+			<div class="columns">
+				<div class="column">
+					<h1 id="page-title" class="title"></h1>
+					<div id="frame" class="content">
+						<article class="message is-primary">
+							<div class="message-body">
+								Choose a <strong>page</strong> on the left to read about how to use AwesomeBot.
+							</div>
+						</article>
+					</div>
+					<article id="error-message" class="message is-danger is-hidden">
+						<div class="message-header">
+							<span class="icon">
+		                        <i class="fa fa-frown-o"></i>
+		                    </span>
+							Something went wrong
+						</div>
+						<div class="message-body">
+							Sorry, an <strong>error</strong> occured when we tried to fetch this wiki page. Please try again later.
+						</div>
+					</article>
+				</div>
+				<div class="column is-one-quarter">
+					<p class="control has-addons has-addons-centered">
+						<input id="search-input" class="input is-expanded" type="text" placeholder="I'm looking for..." onkeydown="if(event.keyCode==13) {searchWiki(this.value);}">
+						<a id="search-button" class="button" href="javascript:searchWiki(document.getElementById('search-input').value);">
+							<span class="icon is-small">
+								<i class="fa fa-search"></i>
+							</span>
+							<span>Search</span>
+						</a>
+					</p>
+					<br>
+					<aside class="menu">
+						<p class="menu-label">
+							Pages
+						</p>
+						<ul class="menu-list">
+							<% for(var i=0; i<pageList.length; i++) { %>
+								<li>
+									<% var pageName = pageList[i].substring(0, pageList[i].indexOf(".")); %>
+									<a id="menu-<%= pageName.toLowerCase() %>" href="javascript:loadPage('<%= pageName %>');"><%= pageName %></a>
+								</li>
+							<% } %>
+						</ul>
+						<p class="menu-label">
+							Sections
+						</p>
+						<ul id="submenu" class="menu-list"></ul>
+					</aside>
+					<br>
+					<a class="button is-light is-fullwidth" href="https://github.com/BitQuote/AwesomeBot/wiki">
+						<span class="icon">
+	                        <i class="fa fa-github"></i>
+	                    </span>
+	                    <span>Edit on GitHub</span>
+                    </a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<% include ../partials/footer %>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="description" content="AwesomeBot is a fun, easy-to-use, feature-packed bot designed to increase activity on your Discord server">
+<meta name="author" content="BitQuote, mistmurk">
+<link rel="shortcut icon" type="image/png" href="/img/icon.png">
+<meta name="theme-color" content="#009688">
+
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+<link rel="stylesheet" href="/css/bulma.css">
+
+<script src="/js/jquery-2.2.0.min.js"></script>
+<script src="/js/bulma.js"></script>
+
+<script>
+function loadBackground() {
+    document.getElementById("header").style.backgroundImage = "url('/img/header-bg-" + (Math.floor(Math.random() * (53)) + 1) + ".jpg')";
+}
+
+function loadFrameContent(url, callback) {
+	$.ajax({
+		url: url,
+		type: "GET",
+		success: function(data){
+			$("#frame").html(data);
+			if(callback) {
+				callback();
+			}
+		},
+		error: function(err) {
+			if(callback) {
+				callback(err);
+			} else {
+				window.location.replace("/error");
+			}
+		}
+	});
+}
+
+function setUserAutocomplete(svrid) {
+	$.getJSON("/userlist" + (svrid ? ("?svrid=" + svrid) : ""), function(data) {
+		new autoComplete({
+		    selector: ".user-autocomplete",
+		    minChars: 2,
+		    source: function(query, res) {
+		    	query = query.toLowerCase();
+		       	res(data.filter(function(a) {
+		       		return a.toLowerCase().indexOf(query)>-1;
+		       	}));
+		    }
+		});
+	});		
+}
+</script>

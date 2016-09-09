@@ -1,0 +1,23 @@
+<p class="control">
+	<label class="checkbox">
+	<input name="<%= commandData.name %>-isEnabled" type="checkbox" <%= commandData.isEnabled ? "checked" : "" %>>
+		<strong><%= commandData.name %></strong> <%= commandData.description %>
+	</label>
+	<% if(commandData.isEnabled) { %>
+		<span class="select is-small">
+			<select name="<%= commandData.name %>-isAdminOnly" value="<%= commandData.isAdminOnly ? "true" : "false" %>">
+				<option value="false">@everyone</option>
+				<option value="true">Admin-only</option>
+			</select>
+		</span>
+		<br>
+		<% for(var i=0; i<channelData.length; i++) { %>
+			&nbsp;&nbsp;&nbsp;
+			<label class="checkbox">
+			<input name="<%= commandData.name %>-disabled_channel_ids-<%= channelData[i].id %>" type="checkbox" <%= commandData.disabled_channel_ids.indexOf(channelData[i].id)==-1 ? "checked" : "" %>>
+				#<%= channelData[i].name %>
+			</label>
+			<br>
+		<% } %>
+	<% } %>
+</p>

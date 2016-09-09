@@ -1,0 +1,211 @@
+<script src="/js/bulma.js"></script>
+
+<br><br>
+<div class="container">
+	<nav class="columns">
+		<div class="column is-8 is-offset-2">
+			<% if(activeSearchQuery && userProfile) { %>
+				<div class="box">
+					<article class="media">
+						<div class="media-left">
+			    			<img class="image" style="width: 256px;" src="<%= userProfile.avatar %>" alt="<%= userProfile.id %>">
+		    			</div>
+			    		<div class="media-content">
+							<h2 class="title">
+								<%= userProfile.username %><small class="subtitle is-4">#<%= userProfile.discriminator %></small> 
+								<span class="tag is-medium <%= userProfile.statusColor %>"><%= userProfile.status.charAt(0).toUpperCase() + userProfile.status.slice(1) %></span>
+							</h2>
+							<h5 class="subtitle">
+								Joined Discord <span title="<%= userProfile.rawAccountAge %>"><%= userProfile.roundedAccountAge %> days ago</span>
+							</h5>
+							<div class="content">
+								<h4 class="title is-3">
+									<% if(userProfile.game) { %>
+										<span class="icon is-medium">
+											<i class="fa fa-gamepad"></i>
+										</span>
+										<span>Playing <strong><%= userProfile.game %></strong></span>
+										<br>
+									<% } %>
+									<% if(userProfile.status!="online" && userProfile.rawLastSeen && userProfile.lastSeen) { %>
+										<span class="icon is-medium">
+											<i class="fa fa-clock-o"></i>
+										</span>
+										<span>Seen <span title="<%= userProfile.lastSeen %>"><strong><%= userProfile.rawLastSeen %></strong>ago</span></span>
+										<br>
+									<% } %>
+									<span class="icon is-medium">
+										<i class="fa fa-user"></i>
+									</span>
+									<span>ID <strong><%= userProfile.id %></strong></span>
+									<br>
+									<% if(userProfile.mutualServers) { %>
+										<span class="modal-button" data-target="#mutual-servers-modal">
+									<% } %>
+									<span class="icon is-medium">
+										<i class="fa fa-list-ul"></i>
+									</span>
+									<span><strong><%= userProfile.mutualServerCount %></strong> servers with AwesomeBot</span>
+									<% if(userProfile.mutualServers) { %>
+										</span>
+										<div id="mutual-servers-modal" class="modal">
+											<div class="modal-background"></div>
+											<div class="modal-container">
+												<div class="modal-content">
+													<div class="box">
+														<% for(var i=0; i<userProfile.mutualServers.length; i++) { %>
+															<article class="media">
+																<div class="media-left">
+																	<img class="image is-64x64" src="<%= userProfile.mutualServers[i].icon %>" alt="<%= userProfile.mutualServers[i].id %>">
+																</div>
+																<div class="media-content">
+																	<p class="title is-3"><%= userProfile.mutualServers[i].name %></p>
+																	<p class="subtitle is-5">Owned by @<%= userProfile.mutualServers[i].owner %></p>
+																</div>
+															</article>
+														<% } %>
+													</div>
+												</div>
+											</div>
+											<button class="modal-close"></button>
+										</div>
+									<% } %>
+								</h4>
+
+								<h4 class="title is-3">
+									<% if(userProfile.isAfk) { %>
+										<% if(userProfile.afkMessage) { %>
+											<span class="modal-button" data-target="#afk-message-modal">
+										<% } %>
+										<span class="icon is-medium">
+											<i class="fa fa-keyboard-o"></i>
+										</span>
+										<span>Currently <strong>AFK</strong></span>
+										<% if(userProfile.afkMessage) { %>
+											</span>
+											<div id="afk-message-modal" class="modal">
+												<div class="modal-background"></div>
+												<div class="modal-container">
+													<div class="modal-content">
+														<div class="box">
+															<p class="title is-3"><%= userProfile.afkMessage %></p>
+														</div>
+													</div>
+												</div>
+												<button class="modal-close"></button>
+											</div>
+										<% } %>
+										<br>
+									<% } %>
+									<span class="icon is-medium">
+										<i class="fa fa-star"></i>
+									</span>
+									<span>Has <strong><%= userProfile.points %></strong> points</span>
+									<br>
+									<% if(userProfile.pastNames && userProfile.pastNames.length>0) { %>
+										<span class="modal-button" data-target="#past-names-modal">
+									<% } %>
+									<span class="icon is-medium">
+										<i class="fa fa-font"></i>
+									</span>
+									<span><strong><%= userProfile.pastNameCount %></strong> past names</span>
+									<% if(userProfile.pastNames && userProfile.pastNames.length>0) { %>
+										</span>
+										<div id="past-names-modal" class="modal">
+											<div class="modal-background"></div>
+											<div class="modal-container">
+												<div class="modal-content">
+													<div class="box">
+														<% for(var i=0; i<userProfile.pastNames.length; i++) { %>
+															<p class="title is-3"><%= userProfile.pastNames[i] %></p>
+														<% } %>
+													</div>
+												</div>
+											</div>
+											<button class="modal-close"></button>
+										</div>
+									<% } %>
+								</h4>
+
+								<% if(userProfile.profileFields) { %>
+									<% for(var key in userProfile.profileFields) { %>
+										<span><%= key.charAt(0).toUpperCase() + key.slice(1) %>: <%= userProfile.profileFields[key] %></span>
+										<br>
+									<% } %>
+								<% } %>
+							</div>
+			    		</div>
+					</article>
+				</div>
+				<script>
+				document.getElementById("frame").style.backgroundImage = "url('<%= userProfile.backgroundImage %>')";document.getElementById("frame").style.paddingBottom = "200px"
+				</script>
+			<% } else if(!activeSearchQuery) { %>
+				<script>
+				document.getElementById("frame").style.backgroundImage = "";document.getElementById("frame").style.paddingBottom = "";
+				</script>
+				<div class="box">
+					<article class="media">
+			    		<div class="media-content">
+							<h2 class="title">
+								<span class="icon is-medium">
+									<i class="fa fa-star"></i>
+								</span>
+								<span><strong><%= totalPoints %></strong> points total</span>
+							</h2>
+							<h2 class="title">
+								<span class="icon is-medium">
+									<i class="fa fa-user"></i>
+								</span>
+								<span><strong><%= publicProfilesCount %></strong> public user profiles</span>
+							</h2>
+							<h2 class="title">
+								<span class="icon is-medium">
+									<i class="fa fa-bell"></i>
+								</span>
+								<span><strong><%= reminderCount %></strong> reminders set</span>
+							</h2>
+							<h2 class="title">
+								<span class="icon is-medium">
+									<i class="fa fa-info-circle"></i>
+								</span>
+								<span><strong><%= profileFieldCount %></strong> profile fields</span>
+							</h2>
+							<h2 class="title">
+								<span class="icon is-medium">
+									<i class="fa fa-keyboard-o"></i>
+								</span>
+								<span><strong><%= afkUserCount %></strong> users AFK right now</span>
+							</h2>
+						</div>
+				    	<div class="media-right">
+				    		<img class="image" style="width: 256px;border-radius: 100%;" src="/img/profile.png">
+			    		</div>
+					</article>
+				</div>
+			<% } else { %>
+				<script>
+				document.getElementById("frame").style.backgroundImage = "";document.getElementById("frame").style.paddingBottom = "";
+				</script>
+				<article class="message is-danger">
+					<div class="message-header">
+						<span class="icon">
+							<i class="fa fa-meh-o"></i>
+						</span>
+						<span>No Results</span>
+					</div>
+					<div class="message-body">
+						There aren't any users that matched your search. 
+						<a class="button is-small" href="javascript:loadFrameContent('/users?q=');">
+							<span class="icon is-small">
+								<i class="fa fa-chevron-left"></i>
+							</span>
+							<span>Reset</span>
+						</a>
+					</div>
+				</article>
+			<% } %>
+		</div>
+	</nav>
+</div>
+<br><br>

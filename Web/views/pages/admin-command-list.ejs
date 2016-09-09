@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><%= serverData.name %> Command List - AwesomeBot Admin Console</title>
+	<% include ../partials/head %>
+	<script src="/js/form-change-listener.js"></script>
+</head>
+<body onload="loadBackground();saveFormState();">
+	<% include ../partials/admin-header %>
+		
+	<section class="section is-white">
+		<div class="container">
+			<div class="columns">
+				<div class="column is-one-quarter">
+					<% include ../partials/admin-menu %>
+				</div>
+				<div class="column">
+					<h1 class="title">
+						Command List
+					</h1>
+					<div class="container">
+						<article class="message is-primary">
+							<div class="message-body">
+								<div class="content">
+									<strong>All AwesomeBot commands</strong> are listed here. You can change <strong>who</strong> can use them and <strong>where</strong>. Some things to keep in mind:
+									<ul>
+										<li>
+											Admin-only commands can only be activated by members who have an admin role that is level 1 or higher. Other users will not receive a response if they try to use an admin-only command.
+										</li>
+										<li>
+											You can restrict commands to certain channels. They will not be accessible elsewhere. It's best not to use this for some core commands like <code>ping</code>, <code>help</code>, and <code>join</code>.
+										</li>
+									</ul>
+								</div>
+							</div>
+						</article>
+					</div>
+					<br>
+					<div class="container">
+						<form id="form" action="/uc-submit?svrid=<%= serverData.id %>&path=<%= currentPage %>" method="post">
+							<% for(var i=Object.keys(configData.commands).length-1; i>=0; i--) { %>
+								<% var commandData = configData.commands[Object.keys(configData.commands)[i]];commandData.name = Object.keys(configData.commands)[i];commandData.description = commandDescriptions[Object.keys(configData.commands)[i]]; %>
+								<% include ../partials/admin-command-item %>
+							<% } %>
+							<br>
+							<% include ../partials/form-buttons %>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<% include ../partials/footer %>
+</body>
+</html>

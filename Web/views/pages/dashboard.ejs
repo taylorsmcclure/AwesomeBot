@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>AwesomeBot Dashboard</title>
+	<% include ../partials/head %>
+</head>
+<body onload="loadBackground();">
+	<section id="header" class="hero is-primary is-fullheight is-bold" style="background: url('/img/header-bg.jpg'); background-size: cover;" ondblclick="loadBackground();">
+		<div class="hero-head">
+			<% include ../partials/header %>
+		</div>
+		<div class="hero-body">
+			<div class="container">
+				<div class="has-text-centered">
+					<h1 class="title is-1">
+						Welcome, <strong><%= authUser.username %></strong>!
+					</h1>
+					<h3 class="subtitle is-3">
+						Select a server to configure.
+					</h3>
+				</div>
+				<br><br><br>
+				<div class="columns">
+					<div class="column is-half is-offset-one-quarter">
+						<% for(var i=0; i<serverData.length; i++) { %>
+							<% if(!serverData[i].botJoined) { %>
+								<a class="media" target="_blank" href="<%= rawJoinLink + '&guild_id=' + serverData[i].id %>">
+							<% } else if(!serverData[i].isAdmin) { %>
+								<a class="media modal-button" data-target="#not-admin-modal">
+							<% } else { %>
+								<a class="media" href="/dashboard/overview?svrid=<%= serverData[i].id %>">
+							<% } %>
+								<figure class="media-left">
+									<p class="image is-48x48">
+										<img src="<%= serverData[i].icon %>" style="border-radius: 100%;" alt="<%= serverData[i].id %>">
+									</p>
+								</figure>
+								<div class="media-content">
+									<h2 class="title is-2"><%= serverData[i].name %></h2>
+								</div>
+								<% if(serverData[i].botJoined && serverData[i].isAdmin) { %>
+									<div class="media-right">
+										<span class="icon is-large">
+					                        <i class="fa fa-chevron-right"></i>
+					                    </span>
+									</div>
+								<% } %>
+							</a>
+						<% } %>
+					</div>
+				</div>
+				<div id="not-admin-modal" class="modal">
+					<div class="modal-background"></div>
+					<div class="modal-container">
+						<div class="modal-content">
+							<div class="box">
+								<h4 class="title is-4">
+									<strong>You do not have permission to access the admin console for that server.</strong> Ask the owner of the server or other moderators to give you access to the admin console (level 3 admin).
+								</h4>
+							</div>
+						</div>
+					</div>
+					<button class="modal-close"></button>
+				</div>
+			</div>
+		</div>
+		<div class="hero-foot">
+			<div class="container has-text-centered">
+				<a class="button is-white is-outlined" target="_blank" href="https://github.com/BitQuote/AwesomeBot/wiki/Configuration">
+                    <span class="icon">
+                        <i class="fa fa-question-circle"></i>
+                    </span>
+                    <span>Help</span>
+                </a>
+                &nbsp;
+				<a class="button is-white is-outlined" href="/logout">
+                    <span class="icon">
+                        <i class="fa fa-sign-out"></i>
+                    </span>
+                    <span>Logout</span>
+                </a>
+                <br><br>
+			</div>
+		</div>
+	</section>
+
+	<% include ../partials/footer %>
+</body>
+</html>
