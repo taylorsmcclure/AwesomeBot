@@ -1,4 +1,4 @@
-try {
+//try {
     // Get all the basic modules and files setup
     const Discord = require("discord.js");
     var configs = require("./data/config.json");
@@ -60,11 +60,11 @@ try {
         client_secret: AuthDetails.microsoft_client_secret
     });
     const xmlparser = require("xml-parser");
-} catch(startError) {
-    console.log(startError.stack);
-    console.log("Exiting...");
-    process.exit(1);
-}
+//} catch(startError) {
+//    console.log(startError.stack);
+//    console.log("Exiting...");
+//    process.exit(1);
+//}
 
 // Bot setup
 var version = "3.4.3";
