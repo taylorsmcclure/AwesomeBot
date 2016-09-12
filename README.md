@@ -35,16 +35,11 @@ In addition, he has many built-in utility functions:
  - Stats for members, games, and commands
  - Even more than this!
 
-And finally, AwesomeBot can conduct **in-chat polls**, offers a fun **live trivia game**, and provides **karma for Discord**. He is fully configurable via private message or online, and can be controlled independently between servers. New servers can be added with Discord OAuth, and admins are automatically detected.
+And finally, AwesomeBot can conduct **in-chat polls**, offers a fun **live trivia game**, and provides **karma for Discord**. He is fully configurable via private message or online, and can be controlled independently between servers. New servers can be added with Discord OAuth, and admins are automatically detected. For support on AwesomeBot, please join our [Discord server](http://discord.awesomebot.xyz/). Most of the information can be found on [our wiki](http://wiki.awesomebot.xyz/).
+
+[Add AwesomeBot to your server now!](http://add.awesomebot.xyz/)
 
 [Check out the release history »](http://awesome.awesomebot.xyz/)
-
-About
------
-
-This repository provides the source for the already-running [`@AwesomeBot`](http://add.awesomebot.xyz/) instance. You are free to use this code as a base for your own bot, so long as you abide by the terms set in the license and [apply for a bot hosting token](http://self-host.awesomebot.xyz/). Also, please join our [Discord server](http://discord.awesomebot.xyz/) if you are modifying the code in any way.
-
-[Head to our wiki for more information »](http://wiki.awesomebot.xyz/)
 
 Contribute
 ----------
