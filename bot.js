@@ -1,70 +1,65 @@
-//try {
-    // Get all the basic modules and files setup
-    const Discord = require("discord.js");
-    var configs = require("./data/config.json");
-    const configDefaults = require("./defaults.json");
-    var AuthDetails = require("./auth.json");
-    var profileData = require("./data/profiles.json");
-    var stats = require("./data/stats.json");
-    var filter = require("./filter.json");
-    var reminders = require("./data/reminders.json");
-    var polls = require("./data/polls.json");
-    var giveaways = require("./data/giveaways.json");
-    var logs = require("./data/logs.json");
-    const emotes = require("./emotes.json");
-    const memes = require("./memes.json");
-    const manga = require("./manga.json").manga;
+// Get all the basic modules and files setup
+const Discord = require("discord.js");
+var configs = require("./data/config.json");
+const configDefaults = require("./defaults.json");
+var AuthDetails = require("./auth.json");
+var profileData = require("./data/profiles.json");
+var stats = require("./data/stats.json");
+var filter = require("./filter.json");
+var reminders = require("./data/reminders.json");
+var polls = require("./data/polls.json");
+var giveaways = require("./data/giveaways.json");
+var logs = require("./data/logs.json");
+const emotes = require("./emotes.json");
+const memes = require("./memes.json");
+const manga = require("./manga.json").manga;
 
-    // Hijack process spawn for auto-update to work properly
-    (function() {
-        var childProcess = require("child_process");
-        childProcess.spawn = require("cross-spawn");
-    })();
+// Hijack process spawn for auto-update to work properly
+(function() {
+var childProcess = require("child_process");
+childProcess.spawn = require("cross-spawn");
+})();
 
-    // Misc. modules to make everything work
-    var os = require("os");
-    var domainRoot = require("domain");
-    var domain = domainRoot.create();
-    var express = require("express");
-    var bodyParser = require("body-parser");
-    const writeFileAtomic = require("write-file-atomic");
-    const youtube_node = require("youtube-node");
-    const unirest = require("unirest");
-    const request = require("request");
-    const levenshtein = require("fast-levenshtein");
-    const qs = require("querystring");
-    const fs = require("fs");
-    const Wiki = require("wikijs");
-    const feed = require("./feed-read.js");
-    const convert = require("convert-units");
-    const imgur = require("imgur-node-api");
-    var wolfram;
-    const urban = require("urban");
-    const base64 = require("node-base64-image");
-    const weather = require("weather-js");
-    const fx = require("money");
-    const cheerio = require("cheerio");
-    const util = require("util");
-    const vm = require("vm");
-    const readline = require("readline");
-    const searcher = require("google-search-scraper");
-    const urlInfo = require("url-info-scraper");
-    const itunes = require("searchitunes");
-    const googl = require("goo.gl");
-    const emoji = require("emoji-dictionary");
-    const removeMd = require("remove-markdown");
-    const mathjs = require("mathjs");
-    const jokesearch = require("jokesearch");
-    const bingTranslate = require("bing-translate").init({
-        client_id: AuthDetails.microsoft_client_id,
-        client_secret: AuthDetails.microsoft_client_secret
-    });
-    const xmlparser = require("xml-parser");
-//} catch(startError) {
-//    console.log(startError.stack);
-//    console.log("Exiting...");
-//    process.exit(1);
-//}
+// Misc. modules to make everything work
+var os = require("os");
+var domainRoot = require("domain");
+var domain = domainRoot.create();
+var express = require("express");
+var bodyParser = require("body-parser");
+const writeFileAtomic = require("write-file-atomic");
+const youtube_node = require("youtube-node");
+const unirest = require("unirest");
+const request = require("request");
+const levenshtein = require("fast-levenshtein");
+const qs = require("querystring");
+const fs = require("fs");
+const Wiki = require("wikijs");
+const feed = require("./feed-read.js");
+const convert = require("convert-units");
+const imgur = require("imgur-node-api");
+var wolfram;
+const urban = require("urban");
+const base64 = require("node-base64-image");
+const weather = require("weather-js");
+const fx = require("money");
+const cheerio = require("cheerio");
+const util = require("util");
+const vm = require("vm");
+const readline = require("readline");
+const searcher = require("google-search-scraper");
+const urlInfo = require("url-info-scraper");
+const itunes = require("searchitunes");
+const googl = require("goo.gl");
+const emoji = require("emoji-dictionary");
+const removeMd = require("remove-markdown");
+const mathjs = require("mathjs");
+const jokesearch = require("jokesearch");
+const bingTranslate = require("bing-translate").init({
+client_id: AuthDetails.microsoft_client_id,
+client_secret: AuthDetails.microsoft_client_secret
+});
+const xmlparser = require("xml-parser");
+
 
 // Bot setup
 var version = "3.4.3";
