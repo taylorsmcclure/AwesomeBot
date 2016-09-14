@@ -8,7 +8,7 @@
   },
   "license": "CCPL",
   "dependencies": {
-    "discord.js": "hydrabolt/discord.js#indev",
+    "discord.js": "hydrabolt/discord.js#8.1.0",
     "request": ">=2.58.0",
     "underscore": "1.8.x",
     "winston": "1.0.x",
